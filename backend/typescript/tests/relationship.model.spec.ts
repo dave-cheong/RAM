@@ -10,7 +10,7 @@ describe('RAM Relationship', () => {
     it('spikes mongo connectivity', async (done) => {
         try {
             const objectId = new mongoose.Types.ObjectId('5743cfe831286f0250b87da6');
-            const relationship = await RelationshipModel.getRelationshipById(objectId);
+            await RelationshipModel.getRelationshipById(objectId);
             done();
         } catch (e) {
             fail();

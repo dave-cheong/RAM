@@ -24,9 +24,7 @@ export const relationshipTypes = [
 ];
 
 export interface IRelationshipType extends IRAMObject {
-
     type: string;
-
 }
 
 const RelationshipTypeSchema = RAMSchema({
@@ -43,7 +41,6 @@ RelationshipTypeSchema.plugin(mongooseIdValidator);
 
 export interface IRelationshipTypeModel extends mongoose.Model<IRelationshipType> {
     findValidById: (id:String) => mongoose.Promise<IRelationshipType>;
-    delete: () => void
 }
 
 RelationshipTypeSchema.static('findValidById', (id:String) => {

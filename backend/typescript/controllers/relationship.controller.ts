@@ -130,7 +130,7 @@ export class RelationshipController {
       }
     });
   }
-  private getList = async (req: Request, res: Response) => {   
+  private getList = async (req: Request, res: Response) => {
     try {
       const params = await this.parsePaginationParams(req);
       const query = this.createQueryObject(params.delegateOrSubject, params.id);
