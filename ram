@@ -13,7 +13,6 @@ DEFAULT_CONF=$DIR/backend/conf/conf-localhost.js
 # (TESTING: push to test-1)
 
 #  test commit 5 on develop
-#
 
 export PATH=./node_modules/.bin:../node_modules/.bin:$PATH
 
