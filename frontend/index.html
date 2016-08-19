@@ -44,6 +44,13 @@
     <script src="/js/lib/ie10-viewport-bug-workaround.js"></script>
     <!-- 1. Load libraries -->
     <!-- IE required polyfills, in this exact order -->
+    <!--
+      Safari was the last to implement the Intl JavaScript object. As of testing
+      (18/8/2016), it was implemented on the latest OS X, but not on iOS. This
+      polyfill will provide the functionality needed if, and only if, Intl is
+      not already available. Note that RAM does not use Intl directly - it is
+      expected deep within the Angular-2 framework.
+      -->
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en"></script>
    <script src="//cdn.rawgit.com/systemjs/systemjs/master/dist/system.js"></script>
     <!--<script src="jspm_packages/system.js"></script>-->
@@ -79,6 +86,7 @@
     <!--<script src="js/frontend/typescript/Boot.js"></script>-->
 
     <!--
+        Required to fulfill RAMTEST-6.
         Combimed files for JSPM and RAM code. If search string on loading
         URL starts with ?debug then ram-app is ignored and the individual
         JS files are loaded (not for JSPM libraries). This gives access to
