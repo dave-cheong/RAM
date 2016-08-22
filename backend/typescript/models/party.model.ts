@@ -47,7 +47,7 @@ export class PartyType extends RAMEnum {
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<PartyTypeDTO>> {
-        return Promise.resolve(new HrefValue(
+        return Promise.resolve(new HrefValue<PartyTypeDTO>(
             await Url.forPartyType(this),
             includeValue ? this.toDTO() : undefined
         ));
@@ -236,7 +236,7 @@ PartySchema.method('addOrModifyRole', async function (roleDTO: RoleDTO, agencyUs
     let processAttribute = async (code: string, value: string[], roleAttributes: IRoleAttribute[], role: IRole) => {
         const roleAttributeName = await RoleAttributeNameModel.findByCodeIgnoringDateRange(code);
         if (roleAttributeName) {
-            const filteredRoleAttributes = role.attributes.filter((item) => {
+            const filteredRoleAttributes: IRoleAttribute[] = role.attributes.filter((item) => {
                 return item.attributeName.code === code;
             });
             const roleAttributeDoesNotExist = filteredRoleAttributes.length === 0;
@@ -367,7 +367,7 @@ PartySchema.method('modifyRole', async function (roleDTO: RoleDTO) {
                     let matchingAttributes = roleDTO.attributes.filter( (val) => {
                         return val.attributeName.value.code === attribute.attributeName.code &&
                             val.attributeName.value.category === attribute.attributeName.category &&
-                            val.attributeName.value.classifier === attribute.attributeName.classifier
+                            val.attributeName.value.classifier === attribute.attributeName.classifier;
                     });
 
                     if(matchingAttributes.length === 0) {
