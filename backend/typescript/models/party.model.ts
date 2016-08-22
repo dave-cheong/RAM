@@ -22,7 +22,7 @@ import {
     IRelationship as IRelationshipDTO
 } from '../../../commons/RamAPI';
 import {context} from '../providers/context.provider';
-import {logger} from "../logger";
+import {logger} from '../logger';
 
 /* tslint:disable:no-unused-variable */
 const _RoleAttributeModel = RoleAttributeModel;
