@@ -45,10 +45,10 @@ class SharedSecretTypeInstanceContractImpl implements ISharedSecretTypeInstanceC
 // static .............................................................................................................
 
 interface ISharedSecretTypeStaticContract {
-    findByCodeIgnoringDateRange: (code: string) => mongoose.Promise<ISharedSecretType>;
-    findByCodeInDateRange: (code: string, date: Date) => mongoose.Promise<ISharedSecretType>;
-    listIgnoringDateRange: () => mongoose.Promise<ISharedSecretType[]>;
-    listInDateRange: (date: Date) => mongoose.Promise<ISharedSecretType[]>;
+    findByCodeIgnoringDateRange(code: string): mongoose.Promise<ISharedSecretType>;
+    findByCodeInDateRange(code: string, date: Date): mongoose.Promise<ISharedSecretType>;
+    listIgnoringDateRange(): mongoose.Promise<ISharedSecretType[]>;
+    listInDateRange(date: Date): mongoose.Promise<ISharedSecretType[]>;
 }
 
 class SharedSecretTypeStaticContractImpl implements ISharedSecretTypeStaticContract {
