@@ -9,9 +9,11 @@
 <authorisation-type [data]='newRelationship.authType' [options]='relationshipTypeRefs' (dataChange)="authTypeChange($event)" (isValid)='authTypeIsValid=$event'>
 </authorisation-type>
 
+<authorisation-management [(data)]='newRelationship.authorisationManagement' [attributeNameUsage]='manageAuthAttribute'></authorisation-management>
+
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h4><span class="badge square">3</span> {{'addRelationship.accessPeriod.header' | translate}}</h4>
+        <h4><span class="badge square">4</span> {{'addRelationship.accessPeriod.header' | translate}}</h4>
     </div>
     <div class="panel-body">
 
@@ -20,8 +22,6 @@
 
     </div>
 </div>
-
-<authorisation-management [(data)]='newRelationship.authorisationManagement' [attributeNameUsage]='manageAuthAttribute'></authorisation-management>
 
 <!--authorisation-permissions (validationErrors)='authorisationPermissionErrors=$event'></authorisation-permissions-->
 
