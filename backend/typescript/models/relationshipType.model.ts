@@ -128,7 +128,7 @@ RelationshipTypeSchema.method('toDTO', async function () {
         await Promise.all<RelationshipAttributeNameUsageDTO>(this.attributeNameUsages.map(
             async (attributeNameUsage:IRelationshipAttributeNameUsage) => {
                 return new RelationshipAttributeNameUsageDTO(
-                    attributeNameUsage.optionalInd,
+                    !attributeNameUsage.optionalInd,
                     attributeNameUsage.defaultValue,
                     await attributeNameUsage.attributeName.toHrefValue(true)
                 );
