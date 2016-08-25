@@ -826,7 +826,7 @@ export class Seeder {
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true'},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: 'Markdown for Delegate Universal Representative Declaration'},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
@@ -855,7 +855,7 @@ export class Seeder {
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true'},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: 'Markdown for Delegate Universal Representative Declaration'},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,

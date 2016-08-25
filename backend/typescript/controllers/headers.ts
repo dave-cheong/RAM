@@ -7,6 +7,8 @@ export class Headers {
 
     public static AuthAUSkey = `${Headers.Prefix}-auth-auskey`;
 
+    // todo overall security enforcer need to accommodate the presence of this header (VANGUARD, ABR, AUSKEY truth stores)
+    // which act as a trusted party with set permissions
     public static ClientAuth = `${Headers.Prefix}-clientauth`;
 
     public static Principal = `${Headers.Prefix}-principal`;
@@ -38,8 +40,8 @@ export class Headers {
 
     public static ProfileProvider = `${Headers.Prefix}-profileprovider`;
 
-    public static AgencyScheme = `${Headers.Prefix}-agencyscheme`;
-    public static AgencyToken = `${Headers.Prefix}-agencytoken`;
+    public static AgencyScheme = `${Headers.Prefix}-programscheme`;
+    public static AgencyToken = `${Headers.Prefix}-programtoken`;
     public static LinkIdScheme = `${Headers.Prefix}-linkidscheme`;
     public static LinkIdConsumer = `${Headers.Prefix}-linkidconsumer`;
     public static PublicIdentifierScheme = `${Headers.Prefix}-publicidentifierscheme`;

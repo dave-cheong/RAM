@@ -19,6 +19,7 @@
   "addRelationship.dob.label" : "Date of birth",
   "addRelationship.dob.placeholder" : "dd/mm/yyyy ...",
   "addRelationship.abn.label" : "ABN",
+  "addRelationship.abn.placeholder" : "Type ABN here ...",
   "addRelationship.checkABN" : "Check ABN",
   "addRelationship.changeABN" : "Change ABN",
   "addRelationship.authType.heading" : "Set authorisation type",
