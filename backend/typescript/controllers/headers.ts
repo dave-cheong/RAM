@@ -7,6 +7,8 @@ export class Headers {
 
     public static AuthAUSkey = `${Headers.Prefix}-auth-auskey`;
 
+    // todo overall security enforcer need to accommodate the presence of this header (VANGUARD, ABR, AUSKEY truth stores)
+    // which act as a trusted party with set permissions
     public static ClientAuth = `${Headers.Prefix}-clientauth`;
 
     public static Principal = `${Headers.Prefix}-principal`;
