@@ -52,6 +52,19 @@ describe('RAM Shared Secret Type', () => {
 
     });
 
+    it('accesses domain attribute on instance', async (done) => {
+        try {
+            const instance = await SharedSecretTypeModel.findByCodeInDateRange(sharedSecretTypeNoEndDate.code, new Date());
+            expect(instance.domain).not.toBeNull();
+            expect(instance.domain).toBe(sharedSecretTypeNoEndDate.domain);
+            expect(instance.helloDomain()).toBe('hello ' + sharedSecretTypeNoEndDate.domain);
+            done();
+        } catch (e) {
+            fail('Because ' + e);
+            done();
+        }
+    });
+
     it('finds in date range with no end date by code', async (done) => {
         try {
             const instance = await SharedSecretTypeModel.findByCodeInDateRange(sharedSecretTypeNoEndDate.code, new Date());
