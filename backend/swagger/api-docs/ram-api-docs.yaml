@@ -1335,10 +1335,10 @@ definitions:
 
   RelationshipAttributeNameUsageDetails:
     type: object
-    required: ["mandatory","defaultValue"]
+    required: ["optionalInd","defaultValue"]
     properties:
-      mandatory:
-        description: Indicator of whether the attribute is mandatory or not
+      optionalInd:
+        description: Indicator of whether the attribute is optional or not
         type: boolean
       defaultValue:
         description: The default value of the attribute
@@ -1365,7 +1365,7 @@ definitions:
 
   RelationshipAttributeNameDetails:
     type: object
-    required: ["mandatory","fieldType"]
+    required: ["optionalInd","fieldType"]
     properties:
       domain:
         description: It is the field type
@@ -1505,10 +1505,10 @@ definitions:
 
   RoleAttributeNameUsageDetails:
     type: object
-    required: ["mandatory","defaultValue"]
+    required: ["optionalInd","defaultValue"]
     properties:
-      mandatory:
-        description: Indicator of whether the attribute is mandatory or not
+      optionalInd:
+        description: Indicator of whether the attribute is optional or not
         type: boolean
       defaultValue:
         description: The default value of the attribute
@@ -1535,7 +1535,7 @@ definitions:
 
   RoleAttributeNameDetails:
     type: object
-    required: ["mandatory","fieldType"]
+    required: ["optionalInd","fieldType"]
     properties:
       domain:
         description: It is the field type
