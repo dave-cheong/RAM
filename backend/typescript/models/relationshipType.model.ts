@@ -130,7 +130,8 @@ RelationshipTypeSchema.method('toDTO', async function () {
                 return new RelationshipAttributeNameUsageDTO(
                     attributeNameUsage.optionalInd,
                     attributeNameUsage.defaultValue,
-                    await attributeNameUsage.attributeName.toHrefValue(true)
+                    await attributeNameUsage.attributeName.toHrefValue(true),
+                    attributeNameUsage.sortOrder
                 );
             }))
     );

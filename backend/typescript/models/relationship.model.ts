@@ -424,9 +424,9 @@ RelationshipSchema.method('claimPendingInvitation', async function (claimingDele
 
         // If we received ABN from headers (ie from AUSkey), check it against ABN in relationship
         const abn = context.getAuthenticatedABN();
-        logger.info('abn is <' + abn + '>');
+        logger.debug('abn is <' + abn + '>');
         if (abn) {
-            logger.info('checking abn');
+            logger.info('checking abn <' + abn + '>');
             const allIdentities = await IdentityModel.listByPartyId(this.subject.id);
             let found:boolean = false;
             for (let identity of allIdentities) {

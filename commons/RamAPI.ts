@@ -347,12 +347,14 @@ export interface IRelationshipAttributeNameUsage {
     optionalInd: boolean;
     defaultValue: string;
     attributeNameDef: IHrefValue<IRelationshipAttributeName>;
+    sortOrder: number;
 }
 
 export class RelationshipAttributeNameUsage implements IRelationshipAttributeNameUsage {
     constructor(public optionalInd: boolean,
                 public defaultValue: string,
-                public attributeNameDef: HrefValue<RelationshipAttributeName>) {
+                public attributeNameDef: HrefValue<RelationshipAttributeName>,
+                public sortOrder: number) {
     }
 }
 

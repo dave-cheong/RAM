@@ -81,7 +81,8 @@ describe('RAM Relationship Attribute Name', () => {
                 attributeNameUsages: [
                     await RelationshipAttributeNameUsageModel.create({
                         optionalInd: true,
-                        attributeName: stringRelationshipAttributeNameNoEndDate
+                        attributeName: stringRelationshipAttributeNameNoEndDate,
+                        sortOrder : 1
                     })
                 ]
             });
@@ -101,6 +102,7 @@ describe('RAM Relationship Attribute Name', () => {
             expect(instance).not.toBeNull();
             expect(instance.attributeNameUsages.length).toBe(1);
             expect(instance.attributeNameUsages[0].optionalInd).toBe(true);
+            expect(instance.attributeNameUsages[0].sortOrder).toBe(1);
             expect(instance.attributeNameUsages[0].attributeName.domain).toBe(stringRelationshipAttributeNameNoEndDate.domain);
             expect(instance.attributeNameUsages[0].attributeName.purposeText).toBe(stringRelationshipAttributeNameNoEndDate.purposeText);
             done();

@@ -1335,7 +1335,7 @@ definitions:
 
   RelationshipAttributeNameUsageDetails:
     type: object
-    required: ["optionalInd","defaultValue"]
+    required: ["optionalInd","defaultValue","sortOrder"]
     properties:
       optionalInd:
         description: Indicator of whether the attribute is optional or not
@@ -1346,6 +1346,9 @@ definitions:
       attributeNameDef:
         description: The attribute name
         $ref: '#/definitions/RelationshipAttributeNameResourceReference'
+      sortOrder:
+        description: Order/position in which the attribute is displayed
+        type: number
 
   # Relationship Attribute Name .......................................................................................
 
