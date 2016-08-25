@@ -158,6 +158,28 @@ export const CodeDecodeSchema = (schema: Object) => {
     return result;
 };
 
+export const Model = (name: string, schema: mongoose.Schema, instanceContract: any, staticContract: any) => {
+
+    Object.getOwnPropertyNames(instanceContract.prototype).forEach((key, index) => {
+        let value = instanceContract.prototype[key];
+        if (key !== 'constructor') {
+            // console.log(key, value);
+            schema.method(key, value);
+        }
+    });
+
+    Object.getOwnPropertyNames(staticContract.prototype).forEach((key, index) => {
+        let value = staticContract.prototype[key];
+        if (key !== 'constructor') {
+            // console.log(key, value);
+            schema.static(key, value);
+        }
+    });
+
+    return mongoose.model(name, schema);
+
+};
+
 export class Assert {
 
     public static assertNotNull(object: Object, failMessage: string, detail?: string) {
