@@ -344,15 +344,17 @@ export class RelationshipType extends CodeDecode implements RelationshipType {
 // relationship attribute name usage ..................................................................................
 
 export interface IRelationshipAttributeNameUsage {
-    mandatory: boolean;
+    optionalInd: boolean;
     defaultValue: string;
     attributeNameDef: IHrefValue<IRelationshipAttributeName>;
+    sortOrder: number;
 }
 
 export class RelationshipAttributeNameUsage implements IRelationshipAttributeNameUsage {
-    constructor(public mandatory: boolean,
+    constructor(public optionalInd: boolean,
                 public defaultValue: string,
-                public attributeNameDef: HrefValue<RelationshipAttributeName>) {
+                public attributeNameDef: HrefValue<RelationshipAttributeName>,
+                public sortOrder: number) {
     }
 }
 
@@ -623,13 +625,13 @@ export class RoleAttribute implements IRoleAttribute {
 // role attribute name usage ..........................................................................................
 
 export interface IRoleAttributeNameUsage {
-    mandatory: boolean;
+    optionalInd: boolean;
     defaultValue: string;
     attributeNameDef: IHrefValue<IRoleAttributeName>;
 }
 
-export class RoleAttributeNameUsage implements IRelationshipAttributeNameUsage {
-    constructor(public mandatory: boolean,
+export class RoleAttributeNameUsage implements IRoleAttributeNameUsage {
+    constructor(public optionalInd: boolean,
                 public defaultValue: string,
                 public attributeNameDef: IHrefValue<IRoleAttributeName>) {
     }
