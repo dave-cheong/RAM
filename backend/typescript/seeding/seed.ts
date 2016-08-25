@@ -129,7 +129,8 @@ export class Seeder {
     private static exportLDIFMode:boolean = true;
 
     public static full_accessLevel = 'Full access';
-    public static accessLevels = [Seeder.full_accessLevel, 'Limited access'];
+    public static limited_accessLevel = 'Limited access';
+    public static accessLevels = [Seeder.full_accessLevel, Seeder.limited_accessLevel];
 
     // relationship types
     public static associate_delegate_relationshipType:IRelationshipType;
