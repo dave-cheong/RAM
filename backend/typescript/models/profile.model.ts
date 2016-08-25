@@ -26,7 +26,8 @@ export class ProfileProvider extends RAMEnum {
     public static Invitation = new ProfileProvider('INVITATION', 'Invitation'); // TODO validate for temp identities
     public static MyGov = new ProfileProvider('MY_GOV', 'myGov');
     public static SelfAsserted = new ProfileProvider('SELF_ASSERTED', 'Self Asserted');
-    public static Vanguard = new ProfileProvider('VANGUARD', 'Vanguard');
+    public static VanguardFAS = new ProfileProvider('VANGUARD_FAS', 'Vanguard FAS');
+    public static VanguardMyGov = new ProfileProvider('VANGUARD_MY_GOV', 'Vanguard myGov');
 
     protected static AllValues = [
         ProfileProvider.ABR,
@@ -34,7 +35,8 @@ export class ProfileProvider extends RAMEnum {
         ProfileProvider.Invitation,
         ProfileProvider.MyGov,
         ProfileProvider.SelfAsserted,
-        ProfileProvider.Vanguard
+        ProfileProvider.VanguardFAS,
+        ProfileProvider.VanguardMyGov
     ];
 
     constructor(public code:string, shortDecodeText:string) {
