@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import {IRAMObject, RAMSchema} from './base';
+import {IRAMObject, RAMSchema, Model} from './base';
 import {ISharedSecretType, SharedSecretTypeModel} from './sharedSecretType.model';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -10,13 +10,23 @@ const _SharedSecretTypeModel = SharedSecretTypeModel;
 
 // enums, utilities, helpers ..........................................................................................
 
-// schema .............................................................................................................
+// exports ............................................................................................................
+
+export interface ISharedSecret extends IRAMObject, ISharedSecretInstanceContract {
+}
+
+export interface ISharedSecretModel extends mongoose.Model<ISharedSecret>, ISharedSecretStaticContract {
+}
+
+export let SharedSecretModel: ISharedSecretModel;
+
+// instance ...........................................................................................................
 
 const SharedSecretSchema = RAMSchema({
     value: {
         type: String,
         required: [true, 'Value is required'],
-        set: (value:String) => {
+        set: (value: String) => {
             if (value) {
                 const salt = bcrypt.genSaltSync(10);
                 return bcrypt.hashSync(value, salt);
@@ -31,31 +41,40 @@ const SharedSecretSchema = RAMSchema({
     }
 });
 
-// interfaces .........................................................................................................
-
-export interface ISharedSecret extends IRAMObject {
+interface ISharedSecretInstanceContract {
     value: string;
     sharedSecretType: ISharedSecretType;
-    matchesValue(candidateValue:String): boolean;
+    matchesValue(candidateValue: string): boolean;
 }
 
-/* tslint:disable:no-empty-interfaces */
-export interface ISharedSecretModel extends mongoose.Model<ISharedSecret> {
-}
+class SharedSecretInstanceContractImpl implements ISharedSecretInstanceContract {
 
-// instance methods ...................................................................................................
+    public value: string;
+    public sharedSecretType: ISharedSecretType;
 
-SharedSecretSchema.method('matchesValue', function (candidateValue:String) {
-    if (candidateValue && this.value) {
-        return bcrypt.compareSync(candidateValue, this.value);
+    public matchesValue(candidateValue: string) {
+        if (candidateValue && this.value) {
+            return bcrypt.compareSync(candidateValue, this.value);
+        }
+        return false;
     }
-    return false;
-});
 
-// static methods .....................................................................................................
+}
+
+// static .............................................................................................................
+
+interface ISharedSecretStaticContract {
+}
+
+class SharedSecretStaticContractImpl implements ISharedSecretStaticContract {
+}
 
 // concrete model .....................................................................................................
 
-export const SharedSecretModel = mongoose.model(
-    'SharedSecret',
-    SharedSecretSchema) as ISharedSecretModel;
+SharedSecretModel =
+    Model(
+        'SharedSecret',
+        SharedSecretSchema,
+        SharedSecretInstanceContractImpl,
+        SharedSecretStaticContractImpl
+    ) as ISharedSecretModel;
