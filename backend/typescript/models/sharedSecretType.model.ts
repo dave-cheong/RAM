@@ -5,16 +5,6 @@ import {ICodeDecode, CodeDecodeSchema, Model} from './base';
 
 export const DOB_SHARED_SECRET_TYPE_CODE = 'DATE_OF_BIRTH';
 
-// schema .............................................................................................................
-
-const SharedSecretTypeSchema = CodeDecodeSchema({
-    domain: {
-        type: String,
-        required: [true, 'Domain is required'],
-        trim: true
-    }
-});
-
 // exports ............................................................................................................
 
 export interface ISharedSecretType extends ICodeDecode, ISharedSecretTypeInstanceContract {
@@ -26,6 +16,14 @@ export interface ISharedSecretTypeModel extends mongoose.Model<ISharedSecretType
 export let SharedSecretTypeModel: ISharedSecretTypeModel;
 
 // instance ...........................................................................................................
+
+const SharedSecretTypeSchema = CodeDecodeSchema({
+    domain: {
+        type: String,
+        required: [true, 'Domain is required'],
+        trim: true
+    }
+});
 
 interface ISharedSecretTypeInstanceContract {
 
