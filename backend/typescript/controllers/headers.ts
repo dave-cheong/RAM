@@ -38,8 +38,8 @@ export class Headers {
 
     public static ProfileProvider = `${Headers.Prefix}-profileprovider`;
 
-    public static AgencyScheme = `${Headers.Prefix}-agencyscheme`;
-    public static AgencyToken = `${Headers.Prefix}-agencytoken`;
+    public static AgencyScheme = `${Headers.Prefix}-programscheme`;
+    public static AgencyToken = `${Headers.Prefix}-programtoken`;
     public static LinkIdScheme = `${Headers.Prefix}-linkidscheme`;
     public static LinkIdConsumer = `${Headers.Prefix}-linkidconsumer`;
     public static PublicIdentifierScheme = `${Headers.Prefix}-publicidentifierscheme`;
