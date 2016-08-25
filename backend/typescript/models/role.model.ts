@@ -12,7 +12,7 @@ import {
     RoleAttribute as RoleAttributeDTO,
     SearchResult
 } from '../../../commons/RamAPI';
-import {logger} from "../logger";
+import {logger} from '../logger';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -239,7 +239,7 @@ RoleSchema.method('findAttribute', async function (code: string, classifier: str
 RoleSchema.method('deleteAttribute', async function (code: string, classifier: string) {
     this.attributes.forEach((attribute: IRoleAttribute) => {
         if (attribute.attributeName.classifier === classifier && attribute.attributeName.code === code) {
-            console.log("removing = ", attribute);
+            //console.log('removing = ', attribute);
             this.attributes.pull({_id: attribute.id});
             this.save();
             attribute.remove();
