@@ -628,7 +628,7 @@ export interface IRoleAttributeNameUsage {
     attributeNameDef: IHrefValue<IRoleAttributeName>;
 }
 
-export class RoleAttributeNameUsage implements IRelationshipAttributeNameUsage {
+export class RoleAttributeNameUsage implements IRoleAttributeNameUsage {
     constructor(public mandatory: boolean,
                 public defaultValue: string,
                 public attributeNameDef: IHrefValue<IRoleAttributeName>) {
