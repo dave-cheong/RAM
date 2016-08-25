@@ -163,8 +163,6 @@ export interface IRoleModel extends mongoose.Model<IRole> {
           attributes: IRoleAttribute[]) => Promise<IRole>;
     findByIdentifier: (id: string) => Promise<IRole>;
     findByRoleTypeAndParty: (roleType: IRoleType, party: IParty) => Promise<IRole>;
-    findAttribute(roleAttributeNameCode: string, roleAttributeNameClassifier?: string): IRoleAttribute;
-    deleteAttribute(roleAttributeNameCode: string, roleAttributeNameClassifier: string): void;
     searchByIdentity: (identityIdValue: string,
                        roleType: string,
                        status: string,
@@ -174,6 +172,8 @@ export interface IRoleModel extends mongoose.Model<IRole> {
     findActiveByIdentityInDateRange: (identityIdValue: string,
                                       roleType: string,
                                       date: Date) => Promise<IRole>;
+    findAttribute(roleAttributeNameCode: string, roleAttributeNameClassifier?: string): IRoleAttribute;
+    deleteAttribute(roleAttributeNameCode: string, roleAttributeNameClassifier: string): void;
 }
 
 // instance methods ...................................................................................................
