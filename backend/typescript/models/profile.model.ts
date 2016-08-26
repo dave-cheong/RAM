@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, IRAMObject, RAMSchema} from './base';
+import {RAMEnum, IRAMObject, RAMSchema, Model} from './base';
 import {Url} from './url';
 import {IName, NameModel} from './name.model';
 import {ISharedSecret, SharedSecretModel} from './sharedSecret.model';
@@ -39,11 +39,11 @@ export class ProfileProvider extends RAMEnum {
         ProfileProvider.VanguardMyGov
     ];
 
-    constructor(public code:string, shortDecodeText:string) {
+    constructor(public code: string, shortDecodeText: string) {
         super(code, shortDecodeText);
     }
 
-    public async toHrefValue(includeValue:boolean): Promise<HrefValue<ProfileProviderDTO>> {
+    public async toHrefValue(includeValue: boolean): Promise<HrefValue<ProfileProviderDTO>> {
         return Promise.resolve(new HrefValue(
             await Url.forProfileProvider(this),
             includeValue ? this.toDTO() : undefined
@@ -54,6 +54,16 @@ export class ProfileProvider extends RAMEnum {
         return new ProfileProviderDTO(this.code, this.shortDecodeText);
     }
 }
+
+// exports ............................................................................................................
+
+export interface IProfile extends IRAMObject, IProfileInstanceContract {
+}
+
+export interface IProfileModel extends mongoose.Model<IProfile>, IProfileStaticContract {
+}
+
+export let ProfileModel: IProfileModel;
 
 // schema .............................................................................................................
 
@@ -75,58 +85,73 @@ const ProfileSchema = RAMSchema({
     }]
 });
 
-// interfaces .........................................................................................................
+// instance ...........................................................................................................
 
-export interface IProfile extends IRAMObject {
+export interface IProfileInstanceContract {
     provider: string;
     name: IName;
     sharedSecrets: [ISharedSecret];
     providerEnum(): ProfileProvider;
-    getSharedSecret(code:string): ISharedSecret;
-    toHrefValue():Promise<HrefValue<DTO>>;
-    toDTO():Promise<DTO>;
+    getSharedSecret(code: string): ISharedSecret;
+    toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
+    toDTO(): Promise<DTO>;
+}
+
+class ProfileInstanceContractImpl implements IProfileInstanceContract {
+
+    public provider: string;
+    public name: IName;
+    public sharedSecrets: [ISharedSecret];
+
+    public providerEnum(): ProfileProvider {
+        return ProfileProvider.valueOf(this.provider) as ProfileProvider;
+    }
+
+    public getSharedSecret(code: string): ISharedSecret {
+        if (code && this.sharedSecrets) {
+            for (let sharedSecret of this.sharedSecrets) {
+                if (sharedSecret.sharedSecretType.code === code) {
+                    return sharedSecret;
+                }
+            }
+        }
+        return null;
+    }
+
+    public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
+        return new HrefValue(
+            null, // TODO do these have endpoints?
+            includeValue ? await this.toDTO() : undefined
+        );
+    }
+
+    public async toDTO(): Promise<DTO> {
+        return new DTO(
+            this.provider,
+            await this.name.toDTO(),
+            undefined
+        );
+    }
+
 }
 
 /* tslint:disable:no-empty-interfaces */
 export interface IProfileModel extends mongoose.Model<IProfile> {
 }
 
-// instance methods ...................................................................................................
+// static .............................................................................................................
 
-ProfileSchema.method('providerEnum', function () {
-    return ProfileProvider.valueOf(this.provider);
-});
+interface IProfileStaticContract {
+}
 
-ProfileSchema.method('getSharedSecret', function (code:string) {
-    if (code && this.sharedSecrets) {
-        for (let sharedSecret of this.sharedSecrets) {
-            if (sharedSecret.sharedSecretType.code === code) {
-                return sharedSecret;
-            }
-        }
-    }
-    return null;
-});
-
-ProfileSchema.method('toHrefValue', async function (includeValue:boolean) {
-    return new HrefValue(
-        null, // TODO do these have endpoints?
-        includeValue ? this.toDTO() : undefined
-    );
-});
-
-ProfileSchema.method('toDTO', async function () {
-    return new DTO(
-        this.provider,
-        await this.name.toDTO(),
-        undefined
-    );
-});
-
-// static methods .....................................................................................................
+class ProfileStaticContractImpl implements IProfileStaticContract {
+}
 
 // concrete model .....................................................................................................
 
-export const ProfileModel = mongoose.model(
+ProfileModel = Model(
     'Profile',
-    ProfileSchema) as IProfileModel;
+    ProfileSchema,
+    ProfileInstanceContractImpl,
+    ProfileStaticContractImpl
+) as IProfileModel;

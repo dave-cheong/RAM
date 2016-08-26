@@ -11,7 +11,7 @@ export const doResetDataInMongo = (done?: () => void) => {
 
     return new Promise<void>(function (mainResolve, mainReject) {
 
-        mongoose.connection.db.listCollections().toArray((err: Error, collectionNames: [{name: string}]) => {
+        mongoose.connection.db.listCollections(undefined).toArray((err: Error, collectionNames: [{name: string}]) => {
 
             // drop all collections
             // reset identity counter

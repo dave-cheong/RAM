@@ -1,4 +1,5 @@
 /// <reference path="../typings/index.d.ts" />
+/// <reference path="mongoose-patch.d.ts" />
 /// <reference path="server.ts" />
 /// <reference path="logger.ts" />
 
@@ -36,3 +37,9 @@ declare module 'cls-domains-promise' {
     export = patchIt;
 
 }
+
+// type GlobalPromise<T> = Promise<T>;
+//
+// declare module 'mongoose' {
+//     type Promise<T> = GlobalPromise<T>;
+// }

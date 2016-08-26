@@ -53,7 +53,7 @@ class SharedSecretTypeStaticContractImpl implements ISharedSecretTypeStaticContr
             .findOne({
                 code: code
             })
-            .exec() as Promise;
+            .exec();
     }
 
     public findByCodeInDateRange(code: string, date: Date): Promise<ISharedSecretType> {
@@ -63,14 +63,14 @@ class SharedSecretTypeStaticContractImpl implements ISharedSecretTypeStaticContr
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
             })
-            .exec() as Promise;
+            .exec();
     }
 
     public listIgnoringDateRange(): Promise<ISharedSecretType[]> {
         return SharedSecretTypeModel
             .find({})
             .sort({name: 1})
-            .exec() as Promise;
+            .exec();
     }
 
     public listInDateRange(date: Date): Promise<ISharedSecretType[]> {
@@ -80,7 +80,7 @@ class SharedSecretTypeStaticContractImpl implements ISharedSecretTypeStaticContr
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
             })
             .sort({name: 1})
-            .exec() as Promise;
+            .exec();
     }
 
 }
