@@ -49,6 +49,7 @@ case "$1" in
     echo "Downloading frontend dependencies ..."
     echo ""
     cd frontend
+    rm -rf typings
     npm install && bower install && typings install && ./node_modules/.bin/jspm install
     echo ""
     ;;
@@ -58,6 +59,7 @@ case "$1" in
     echo "Downloading backend dependencies ..."
     echo ""
     cd backend
+    rm -rf typings
     npm install && typings install
     echo ""
     ;;
