@@ -8,21 +8,20 @@ interface IPersonDTO {
     mum: IPersonDTO;
     children: IPersonDTO[];
     pet: IPetDTO;
-    build(sourceObject: any): IPersonDTO;
     nameAndAge(): string;
 }
 
 class PersonDTO implements IPersonDTO {
 
-    constructor(public name: string, public age: number, public mum: IPersonDTO, public children: IPersonDTO[], public pet: IPetDTO) {
-    }
-
-    public build(sourceObject: any): IPersonDTO {
+    public static build(sourceObject: any): IPersonDTO {
         return new Builder<IPersonDTO>(sourceObject, this)
             .map('mum', PersonDTO)
             .mapArray('children', PersonDTO)
             .map('pet', PetDTO)
             .build();
+    }
+
+    constructor(public name: string, public age: number, public mum: IPersonDTO, public children: IPersonDTO[], public pet: IPetDTO) {
     }
 
     public nameAndAge(): string {
@@ -36,18 +35,17 @@ class PersonDTO implements IPersonDTO {
 interface IPetDTO {
     type: string;
     name: string;
-    build(sourceObject: any): IPetDTO;
     speak(): string;
 }
 
 class PetDTO implements IPetDTO {
 
-    constructor(public type: string, public name: string) {
-    }
-
-    public build(sourceObject: any): IPetDTO {
+    public static build(sourceObject: any): IPetDTO {
         return new Builder<IPetDTO>(sourceObject, this)
             .build();
+    }
+
+    constructor(public type: string, public name: string) {
     }
 
     public speak(): string {
@@ -113,35 +111,6 @@ describe('RAM DTO', () => {
         }
     });
 
-    it('instantiates with a regular object using a bad programming pattern', async(done) => {
-        try {
-
-            const me: IPersonDTO = {
-                name: myName,
-                age: myAge,
-                mum: null,
-                children: null,
-                pet: null,
-                nameAndAge: function (): string {
-                    return null;
-                },
-                build: function (sourceObject: any): IPersonDTO {
-                    return null;
-                }
-            };
-
-            expect(me.name).toBe(myName);
-            expect(me.age).toBe(myAge);
-            expect(me.nameAndAge()).toBe(null);
-
-            done();
-
-        } catch (e) {
-            fail('Because ' + e);
-            done();
-        }
-    });
-
     it('instantiates with reflective constructor', async(done) => {
         try {
 
@@ -166,8 +135,7 @@ describe('RAM DTO', () => {
                 }
             };
 
-            const me = Object.create(PersonDTO.prototype);
-            me.build(meLike);
+            const me = PersonDTO.build(meLike);
 
             expect(me.name).toBe(myName);
             expect(me.age).toBe(myAge);
@@ -193,6 +161,32 @@ describe('RAM DTO', () => {
         }
     });
 
+    it('instantiates with a regular object using a bad programming pattern', async(done) => {
+        try {
+
+            const me: IPersonDTO = {
+                name: myName,
+                age: myAge,
+                mum: null,
+                children: null,
+                pet: null,
+                nameAndAge: function (): string {
+                    return null;
+                }
+            };
+
+            expect(me.name).toBe(myName);
+            expect(me.age).toBe(myAge);
+            expect(me.nameAndAge()).toBe(null);
+
+            done();
+
+        } catch (e) {
+            fail('Because ' + e);
+            done();
+        }
+    });
+
     it('ignores injected functions', async(done) => {
         try {
 
@@ -208,8 +202,7 @@ describe('RAM DTO', () => {
                 children: []
             };
 
-            const me = Object.create(PersonDTO.prototype);
-            me.build(meLike);
+            const me = PersonDTO.build(meLike);
 
             expect(me.mum).toBeFalsy();
             expect(me['dad']).toBeFalsy();

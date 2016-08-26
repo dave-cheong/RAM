@@ -2,30 +2,32 @@
 
 export class Builder<T> {
 
-    constructor(public sourceObject: any, public targetObject: any) {
+    private targetObject: any;
+
+    constructor(public sourceObject: any, public targetClass: any) {
+        this.targetObject = Object.create(targetClass.prototype);
     }
 
-    public map(key: string, targetClass: any): Builder<T> {
+    public map(key: string, targetClass: any, targetGenericClass?: any): Builder<T> {
         if (key !== null && key !== undefined) {
             const newSourceObject = this.sourceObject[key];
             if (newSourceObject !== null && newSourceObject !== undefined && typeof newSourceObject === 'object') {
-                const newTargetObject = Object.create(targetClass.prototype);
-                newTargetObject.build(newSourceObject);
+                //noinspection UnnecessaryLocalVariableJS
+                const newTargetObject = targetClass.build(newSourceObject, targetGenericClass ? targetGenericClass : targetClass);
                 this.targetObject[key] = newTargetObject;
             }
         }
         return this;
     }
 
-    public mapArray(key: string, targetClass: any): Builder<T> {
+    public mapArray(key: string, targetClass: any, targetGenericClass?: any): Builder<T> {
         if (key !== null && key !== undefined) {
             const newTargetObjectArray: any[] = [];
             const newSourceObjectArray = this.sourceObject[key];
             if (newSourceObjectArray !== null && newSourceObjectArray !== undefined) {
                 for (let newSourceObject of newSourceObjectArray) {
                     if (newSourceObject !== null && newSourceObject !== undefined && typeof newSourceObject === 'object') {
-                        const newTargetObject = Object.create(targetClass.prototype);
-                        newTargetObject.build(newSourceObject);
+                        const newTargetObject = targetClass.build(newSourceObject, targetGenericClass ? targetGenericClass : targetClass);
                         newTargetObjectArray.push(newTargetObject);
                     }
                 }
@@ -35,7 +37,7 @@ export class Builder<T> {
         return this;
     }
 
-    private populatePrimitives(sourceObject: any, targetObject: any) {
+    private mapPrimitives(sourceObject: any, targetObject: any) {
         for (let key of Object.keys(sourceObject)) {
             let value = sourceObject[key];
             if (value !== undefined && value !== null) {
@@ -51,7 +53,7 @@ export class Builder<T> {
     }
 
     public build(): T {
-        this.populatePrimitives(this.sourceObject, this.targetObject);
+        this.mapPrimitives(this.sourceObject, this.targetObject);
         return this.targetObject as T;
     }
 
@@ -175,15 +177,17 @@ export interface IHrefValue<T> {
 }
 
 export class HrefValue<T> implements IHrefValue<T> {
+
+    public static build<T2>(sourceObject: any, targetClass: any): HrefValue<T2> {
+        return new Builder<HrefValue<T2>>(sourceObject, this)
+            .map('value', targetClass)
+            .build();
+    }
+
     constructor(public href: string,
                 public value?: T) {
     }
 
-    public build(sourceObject: any, targetClass: any): HrefValue<T> {
-        return new Builder<HrefValue<T>>(sourceObject, this)
-            .map('value', targetClass)
-            .build();
-    }
 }
 
 // link .............................................................................................................
@@ -652,14 +656,16 @@ export interface IRoleStatus {
 }
 
 export class RoleStatus implements IRoleStatus {
+
     constructor(public code: string,
                 public shortDecodeText: string) {
     }
 
-    public build(sourceObject: any): HrefValue<IRoleStatus> {
+    public static build(sourceObject: any): HrefValue<IRoleStatus> {
         return new Builder<HrefValue<IRoleStatus>>(sourceObject, this)
             .build();
     }
+
 }
 
 // role type ..........................................................................................................
