@@ -75,10 +75,9 @@ class LegislativeProgramStaticContractImpl implements ILegislativeProgramStaticC
 
 // concrete model .....................................................................................................
 
-LegislativeProgramModel =
-    Model(
-        'LegislativeProgram',
-        LegislativeProgramSchema,
-        LegislativeProgramInstanceContractImpl,
-        LegislativeProgramStaticContractImpl
-    ) as ILegislativeProgramModel;
+LegislativeProgramModel = Model(
+    'LegislativeProgram',
+    LegislativeProgramSchema,
+    LegislativeProgramInstanceContractImpl,
+    LegislativeProgramStaticContractImpl
+) as ILegislativeProgramModel;

@@ -102,11 +102,10 @@ class NameStaticContractImpl implements INameStaticContract {
 
 // concrete model .....................................................................................................
 
-NameModel =
-    Model(
-        'Name',
-        NameSchema,
-        NameInstanceContractImpl,
-        NameStaticContractImpl
-    ) as INameModel;
+NameModel = Model(
+    'Name',
+    NameSchema,
+    NameInstanceContractImpl,
+    NameStaticContractImpl
+) as INameModel;
 

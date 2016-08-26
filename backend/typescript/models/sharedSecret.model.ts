@@ -71,10 +71,9 @@ class SharedSecretStaticContractImpl implements ISharedSecretStaticContract {
 
 // concrete model .....................................................................................................
 
-SharedSecretModel =
-    Model(
-        'SharedSecret',
-        SharedSecretSchema,
-        SharedSecretInstanceContractImpl,
-        SharedSecretStaticContractImpl
-    ) as ISharedSecretModel;
+SharedSecretModel = Model(
+    'SharedSecret',
+    SharedSecretSchema,
+    SharedSecretInstanceContractImpl,
+    SharedSecretStaticContractImpl
+) as ISharedSecretModel;
