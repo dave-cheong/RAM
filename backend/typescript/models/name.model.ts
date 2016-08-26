@@ -17,7 +17,7 @@ export interface INameModel extends mongoose.Model<IName>, INameStaticContract {
 
 export let NameModel: INameModel;
 
-// instance ...........................................................................................................
+// schema .............................................................................................................
 
 const NameSchema = RAMSchema({
     givenName: {
@@ -57,6 +57,8 @@ NameSchema.pre('validate', function (next: () => void) {
         next();
     }
 });
+
+// instance ...........................................................................................................
 
 interface INameInstanceContract {
     givenName?: string;
@@ -102,11 +104,10 @@ class NameStaticContractImpl implements INameStaticContract {
 
 // concrete model .....................................................................................................
 
-NameModel =
-    Model(
-        'Name',
-        NameSchema,
-        NameInstanceContractImpl,
-        NameStaticContractImpl
-    ) as INameModel;
+NameModel = Model(
+    'Name',
+    NameSchema,
+    NameInstanceContractImpl,
+    NameStaticContractImpl
+) as INameModel;
 

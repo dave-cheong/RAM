@@ -15,7 +15,7 @@ export interface ISharedSecretTypeModel extends mongoose.Model<ISharedSecretType
 
 export let SharedSecretTypeModel: ISharedSecretTypeModel;
 
-// instance ...........................................................................................................
+// schema .............................................................................................................
 
 const SharedSecretTypeSchema = CodeDecodeSchema({
     domain: {
@@ -24,6 +24,8 @@ const SharedSecretTypeSchema = CodeDecodeSchema({
         trim: true
     }
 });
+
+// instance ...........................................................................................................
 
 interface ISharedSecretTypeInstanceContract {
     domain: string;
@@ -85,10 +87,9 @@ class SharedSecretTypeStaticContractImpl implements ISharedSecretTypeStaticContr
 
 // concrete model .....................................................................................................
 
-SharedSecretTypeModel =
-    Model(
-        'SharedSecretType',
-        SharedSecretTypeSchema,
-        SharedSecretTypeInstanceContractImpl,
-        SharedSecretTypeStaticContractImpl
-    ) as ISharedSecretTypeModel;
+SharedSecretTypeModel = Model(
+    'SharedSecretType',
+    SharedSecretTypeSchema,
+    SharedSecretTypeInstanceContractImpl,
+    SharedSecretTypeStaticContractImpl
+) as ISharedSecretTypeModel;

@@ -20,7 +20,7 @@ export interface ISharedSecretModel extends mongoose.Model<ISharedSecret>, IShar
 
 export let SharedSecretModel: ISharedSecretModel;
 
-// instance ...........................................................................................................
+// schema .............................................................................................................
 
 const SharedSecretSchema = RAMSchema({
     value: {
@@ -40,6 +40,8 @@ const SharedSecretSchema = RAMSchema({
         required: [true, 'Shared Secret Type is required']
     }
 });
+
+// instance ...........................................................................................................
 
 interface ISharedSecretInstanceContract {
     value: string;
@@ -71,10 +73,9 @@ class SharedSecretStaticContractImpl implements ISharedSecretStaticContract {
 
 // concrete model .....................................................................................................
 
-SharedSecretModel =
-    Model(
-        'SharedSecret',
-        SharedSecretSchema,
-        SharedSecretInstanceContractImpl,
-        SharedSecretStaticContractImpl
-    ) as ISharedSecretModel;
+SharedSecretModel = Model(
+    'SharedSecret',
+    SharedSecretSchema,
+    SharedSecretInstanceContractImpl,
+    SharedSecretStaticContractImpl
+) as ISharedSecretModel;
