@@ -1,3 +1,56 @@
+// builder ............................................................................................................
+
+export class Builder<T> {
+
+    constructor(public sourceObject: any, public targetObject: any) {
+    }
+
+    public map(key: string, targetClass: any): Builder<T> {
+        if (key !== null && key !== undefined) {
+            const newSourceObject = this.sourceObject[key];
+            if (newSourceObject !== null && newSourceObject !== undefined) {
+                const newTargetObject = Object.create(targetClass.prototype);
+                newTargetObject.build(newSourceObject);
+                this.targetObject[key] = newTargetObject;
+            }
+        }
+        return this;
+    }
+
+    public mapArray(key: string, targetClass: any): Builder<T> {
+        if (key !== null && key !== undefined) {
+            const newTargetObjectArray: any[] = [];
+            const newSourceObjectArray = this.sourceObject[key];
+            if (newSourceObjectArray !== null && newSourceObjectArray !== undefined) {
+                for (let newSourceObject of newSourceObjectArray) {
+                    const newTargetObject = Object.create(targetClass.prototype);
+                    newTargetObject.build(newSourceObject);
+                    newTargetObjectArray.push(newTargetObject);
+                }
+            }
+            this.targetObject[key] = newTargetObjectArray;
+        }
+        return this;
+    }
+
+    private populatePrimitives(sourceObject: any, targetObject: any) {
+        for (let key of Object.keys(sourceObject)) {
+            let value = sourceObject[key];
+            if (value !== undefined && value !== null) {
+                if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+                    targetObject[key] = value;
+                }
+            }
+        }
+    }
+
+    public build(): T {
+        this.populatePrimitives(this.sourceObject, this.targetObject);
+        return this.targetObject as T;
+    }
+
+}
+
 // response ...........................................................................................................
 
 export enum RAMMessageType {
