@@ -37,7 +37,11 @@ export class Builder<T> {
         for (let key of Object.keys(sourceObject)) {
             let value = sourceObject[key];
             if (value !== undefined && value !== null) {
-                if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+                if (key === 'timestamp' || key.indexOf('Timestamp') !== -1 || key.endsWith('At')) {
+                    if (value) {
+                        targetObject[key] = new Date(value);
+                    }
+                } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
                     targetObject[key] = value;
                 }
             }
@@ -171,6 +175,12 @@ export interface IHrefValue<T> {
 export class HrefValue<T> implements IHrefValue<T> {
     constructor(public href: string,
                 public value?: T) {
+    }
+
+    public build(sourceObject: any, targetClass: any): HrefValue<T> {
+        return new Builder<HrefValue<T>>(sourceObject, this)
+            .map('value', targetClass)
+            .build();
     }
 }
 
@@ -642,6 +652,11 @@ export interface IRoleStatus {
 export class RoleStatus implements IRoleStatus {
     constructor(public code: string,
                 public shortDecodeText: string) {
+    }
+
+    public build(sourceObject: any): HrefValue<IRoleStatus> {
+        return new Builder<HrefValue<IRoleStatus>>(sourceObject, this)
+            .build();
     }
 }
 

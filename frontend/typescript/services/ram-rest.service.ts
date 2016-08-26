@@ -1,3 +1,5 @@
+/* tslint:disable:no-unused-variable */
+
 import 'rxjs/add/operator/map';
 import {Observable} from 'rxjs/Observable';
 import {Injectable} from '@angular/core';
@@ -22,7 +24,7 @@ import {
     IRoleType,
     IRoleStatus,
     INotifyDelegateDTO,
-    IAUSkey
+    IAUSkey, RoleStatus, HrefValue
 } from '../../../commons/RamAPI';
 import {ABRentry} from '../../../commons/abr';
 
@@ -64,7 +66,7 @@ export class RAMRestService {
     public searchAusKeysByHref(href: string, filter: string, page: number): Observable<ISearchResult<IHrefValue<IAUSkey>>> {
         return this.http
             .get(new Href(href).param('filter', filter).param('page', page).toString())
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // misc ...........................................................................................................
@@ -85,7 +87,7 @@ export class RAMRestService {
     public getABRfromABN(abn: string) {
         return this.http
             .get(`/api/v1/business/abn/` + abn)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     /*
@@ -96,7 +98,7 @@ export class RAMRestService {
     public getABRfromName(name: string) {
         return this.http
             .get(`/api/v1/business/name/` + name)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     /*
@@ -107,7 +109,7 @@ export class RAMRestService {
     public registerABRCompany(abr: ABRentry): Observable<IIdentity> {
         return this.http
             .get(`/api/v1/business/register/` + abr.abn + '/' + abr.name)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // principal ......................................................................................................
@@ -115,7 +117,7 @@ export class RAMRestService {
     public findMyPrincipal(): Observable<IPrincipal> {
         return this.http
             .get(`/api/v1/me`)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // agency user ....................................................................................................
@@ -123,7 +125,7 @@ export class RAMRestService {
     public findMyAgencyUser(): Observable<IAgencyUser> {
         return this.http
             .get(`/api/v1/agencyUser/me`)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // party ..........................................................................................................
@@ -132,7 +134,7 @@ export class RAMRestService {
         const idValue = `PUBLIC_IDENTIFIER:ABN:${abn}`;
         return this.http
             .get(`/api/v1/party/identity/${idValue}`)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // identity .......................................................................................................
@@ -140,19 +142,19 @@ export class RAMRestService {
     public findMyIdentity(): Observable<IIdentity> {
         return this.http
             .get(`/api/v1/identity/me`)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public findIdentityByValue(identityValue: string): Observable<IIdentity> {
         return this.http
             .get(`/api/v1/identity/${identityValue}`)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public findIdentityByHref(href: string): Observable<IIdentity> {
         return this.http
             .get(new Href(href).toString())
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // party type .....................................................................................................
@@ -160,7 +162,7 @@ export class RAMRestService {
     public listPartyTypes(): Observable<IHrefValue<IPartyType>[]> {
         return this.http
             .get('/api/v1/partyTypes')
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // profile provider ...............................................................................................
@@ -168,7 +170,7 @@ export class RAMRestService {
     public listProfileProviders(): Observable<IHrefValue<IProfileProvider>[]> {
         return this.http
             .get('/api/v1/profileProviders')
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // relationship ...................................................................................................
@@ -176,14 +178,14 @@ export class RAMRestService {
     public listRelationshipStatuses(): Observable<IHrefValue<IRelationshipStatus>[]> {
         return this.http
             .get('/api/v1/relationshipStatuses')
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public searchDistinctSubjectsForMe(filter: string,
                                        page: number): Observable<ISearchResult<IHrefValue<IParty>>> {
         return this.http
             .get(`/api/v1/relationships/identity/subjects?filter=${filter}&page=${page}`)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public searchRelationshipsByIdentity(idValue: string,
@@ -191,44 +193,44 @@ export class RAMRestService {
                                          page: number): Observable<ISearchResult<IHrefValue<IRelationship>>> {
         return this.http
             .get(`/api/v1/relationships/identity/${idValue}?filter=${filter}&page=${page}`)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public searchDistinctSubjectsBySubjectOrDelegateIdentity(idValue: string,
                                                              page: number): Observable<ISearchResult<IHrefValue<IParty>>> {
         return this.http
             .get(`/api/v1/relationships/identity/${idValue}/subjects?page=${page}`)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public claimRelationshipByInvitationCode(invitationCode: string): Observable<IRelationship> {
         return this.http
             .post(`/api/v1/relationship/invitationCode/${invitationCode}/claim`, '')
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public findRelationshipByHref(href: string): Observable<IRelationship> {
         return this.http
             .get(new Href(href).toString())
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public findPendingRelationshipByInvitationCode(invitationCode: string): Observable<IRelationship> {
         return this.http
             .get(`/api/v1/relationship/invitationCode/${invitationCode}`)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public acceptPendingRelationshipByInvitationCode(relationship: IRelationship): Observable<IRelationship> {
         return this.http
             .post(this.modelService.getLinkHrefByType('accept', relationship), '')
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public rejectPendingRelationshipByInvitationCode(relationship: IRelationship): Observable<IRelationship> {
         return this.http
             .post(this.modelService.getLinkHrefByType('reject', relationship), '')
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public notifyDelegateByInvitationCode(invitationCode: string, notification: INotifyDelegateDTO): Observable<IRelationship> {
@@ -236,7 +238,7 @@ export class RAMRestService {
             .post(`/api/v1/relationship/invitationCode/${invitationCode}/notifyDelegate`, JSON.stringify(notification), {
                 headers: this.headersForJson()
             })
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public createRelationship(relationship: IInvitationCodeRelationshipAddDTO): Observable<IRelationship> {
@@ -244,7 +246,7 @@ export class RAMRestService {
             .post(`/api/v1/relationship-by-invitation`, JSON.stringify(relationship), {
                 headers: this.headersForJson()
             })
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public insertRelationshipByHref(href: string, relationship: IRelationship): Observable<IRelationship> {
@@ -252,7 +254,7 @@ export class RAMRestService {
             .post(new Href(href).toString(), JSON.stringify(relationship), {
                 headers: this.headersForJson()
             })
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public updateRelationshipByHref(href: string, relationship: IRelationship): Observable<IRelationship> {
@@ -260,7 +262,7 @@ export class RAMRestService {
             .put(new Href(href).toString(), JSON.stringify(relationship), {
                 headers: this.headersForJson()
             })
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // relationship type ..............................................................................................
@@ -268,19 +270,19 @@ export class RAMRestService {
     public findRelationshipTypeByCode(code: string): Observable<IRelationshipType> {
         return this.http
             .get(`/api/v1/relationshipType/${code}`)
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public findRelationshipTypeByHref(href: string): Observable<IRelationshipType> {
         return this.http
             .get(new Href(href).toString())
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public listRelationshipTypes(): Observable<IHrefValue<IRelationshipType>[]> {
         return this.http
             .get('/api/v1/relationshipTypes')
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // role ...........................................................................................................
@@ -290,19 +292,19 @@ export class RAMRestService {
                              page: number): Observable<ISearchResult<IHrefValue<IRole>>> {
         return this.http
             .get(new Href(href).param('filter', filter).param('page', page).toString())
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public findRoleByHref(href: string): Observable<IRole> {
         return this.http
             .get(new Href(href).toString())
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public findRoleTypeByHref(href: string): Observable<IRoleType> {
         return this.http
             .get(new Href(href).toString())
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public createRole(role: IRole): Observable<IRole> {
@@ -310,7 +312,7 @@ export class RAMRestService {
             .post(`/api/v1/role`, JSON.stringify(role), {
                 headers: this.headersForJson()
             })
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public insertRoleByHref(href: string, role: IRole): Observable<IRole> {
@@ -318,7 +320,7 @@ export class RAMRestService {
             .post(new Href(href).toString(), JSON.stringify(role), {
                 headers: this.headersForJson()
             })
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     public updateRoleByHref(href: string, role: IRole): Observable<IRole> {
@@ -326,7 +328,7 @@ export class RAMRestService {
             .put(new Href(href).toString(), JSON.stringify(role), {
                 headers: this.headersForJson()
             })
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // role status ....................................................................................................
@@ -334,7 +336,7 @@ export class RAMRestService {
     public listRoleStatuses(): Observable<IHrefValue<IRoleStatus>[]> {
         return this.http
             .get('/api/v1/roleStatuses')
-            .map(this.extractData);
+            .map(this.extractDataHrefValue(RoleStatus));
     }
 
     // role type ......................................................................................................
@@ -342,7 +344,7 @@ export class RAMRestService {
     public listRoleTypes(): Observable<IHrefValue<IRoleType>[]> {
         return this.http
             .get('/api/v1/roleTypes')
-            .map(this.extractData);
+            .map(this.extractDataDeprecated);
     }
 
     // misc ...........................................................................................................
@@ -361,7 +363,8 @@ export class RAMRestService {
         return headers;
     }
 
-    private extractData(res: Response) {
+    // todo the be removed
+    private extractDataDeprecated(res: Response) {
         if (res.status < 200 || res.status >= 300) {
             throw new Error('Status code is:' + res.status);
         }
@@ -383,6 +386,50 @@ export class RAMRestService {
         let payload = res.json() || {};
         convertExtractedData(payload);
         return payload;
+    }
+
+    private extractDataHrefValue(targetClass) {
+        return (res: Response) => {
+            if (res.status < 200 || res.status >= 300) {
+                throw new Error('Status code is:' + res.status);
+            }
+            let payload = res.json() || {};
+            if (Array.isArray(payload)) {
+                const result: any[] = [];
+                for (let payloadElement of payload) {
+                    const hrefValueObject = Object.create(HrefValue.prototype);
+                    hrefValueObject.build(payloadElement, targetClass);
+                    result.push(hrefValueObject);
+                }
+                return result;
+            } else {
+                const hrefValueObject = Object.create(HrefValue.prototype);
+                hrefValueObject.build(payload, targetClass);
+                return hrefValueObject;
+            }
+        };
+    }
+
+    private extractData(targetClass) {
+        return (res: Response) => {
+            if (res.status < 200 || res.status >= 300) {
+                throw new Error('Status code is:' + res.status);
+            }
+            let payload = res.json() || {};
+            if (Array.isArray(payload)) {
+                const result: any[] = [];
+                for (let payloadElement of payload) {
+                    const targetObject = Object.create(targetClass.prototype);
+                    targetObject.build(payloadElement);
+                    result.push(targetObject);
+                }
+                return result;
+            } else {
+                const targetObject = Object.create(targetClass.prototype);
+                targetObject.build(payload);
+                return targetObject;
+            }
+        };
     }
 
 }
