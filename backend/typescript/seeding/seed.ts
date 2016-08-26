@@ -129,7 +129,8 @@ export class Seeder {
     private static exportLDIFMode:boolean = true;
 
     public static full_accessLevel = 'Full access';
-    public static accessLevels = [Seeder.full_accessLevel, 'Limited access'];
+    public static limited_accessLevel = 'Limited access';
+    public static accessLevels = [Seeder.full_accessLevel, Seeder.limited_accessLevel];
 
     // relationship types
     public static associate_delegate_relationshipType:IRelationshipType;
@@ -345,17 +346,18 @@ export class Seeder {
     }
 
     public static async createRelationshipAttributeNameUsageModels
-    <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string}>(attributeValues:T[]) {
+    <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string, sortOrder:number}>(attributeValues:T[]) {
         const attributeNameUsages:IRelationshipAttributeNameUsage[] = [];
         if (attributeValues) {
             for (let i = 0; i < attributeValues.length; i = i + 1) {
                 const attributeValue = attributeValues[i];
                 const truncatedDefaultValue = truncateString(attributeValue.defaultValue);
-                Seeder.log(`  - ${attributeValue.attribute.code} (${truncatedDefaultValue})`.green);
+                Seeder.log(`  - ${attributeValue.sortOrder} ${attributeValue.attribute.code} (${truncatedDefaultValue})`.green);
                 const attributeNameUsage = await RelationshipAttributeNameUsageModel.create({
                     attributeName: attributeValue.attribute,
                     optionalInd: attributeValue.optionalInd,
-                    defaultValue: attributeValue.defaultValue
+                    defaultValue: attributeValue.defaultValue,
+                    sortOrder: attributeValue.sortOrder
                 });
                 attributeNameUsages.push(attributeNameUsage);
             }
@@ -364,7 +366,7 @@ export class Seeder {
     }
 
     public static async createRelationshipTypeModel
-    <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string}>
+    <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string, sortOrder:number}>
     (values:IRelationshipType, attributeValues:T[]) {
         const code = values.code;
         const existingModel = await RelationshipTypeModel.findByCodeIgnoringDateRange(code);
@@ -825,10 +827,10 @@ export class Seeder {
                 autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
-                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true'},
+                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Delegate Universal Representative Declaration'},
+                    defaultValue: 'Markdown for Delegate Universal Representative Declaration', sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: `# This is declaration text
 
@@ -836,12 +838,12 @@ export class Seeder {
 * kept in database
 * relationshipTypeUsage.defaultValue
 * Use seed or admin UI to change it
-                    `},
-                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel}
+                    `, sortOrder: 4},
+                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 5},
+                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 6},
+                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 7},
+                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 8},
+                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 9}
             ]);
 
             Seeder.universal_delegate_relationshipType = await Seeder.createRelationshipTypeModel({
@@ -854,17 +856,17 @@ export class Seeder {
                 autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
-                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true'},
+                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Delegate Universal Representative Declaration'},
+                    defaultValue: 'Markdown for Delegate Universal Representative Declaration', sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Subject Universal Representative Declaration'},
-                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel}
+                    defaultValue: 'Markdown for Subject Universal Representative Declaration', sortOrder: 4},
+                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 5},
+                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 6},
+                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 7},
+                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 8},
+                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 9}
             ]);
 
             Seeder.custom_delegate_relationshipType = await Seeder.createRelationshipTypeModel({
@@ -878,17 +880,17 @@ export class Seeder {
                 autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
-                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true'},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
+                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 1},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Delegate Custom Representative Declaration'},
+                    defaultValue: 'Markdown for Delegate Custom Representative Declaration', sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Subject Custom Representative Declaration'},
-                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: null}
+                    defaultValue: 'Markdown for Subject Custom Representative Declaration', sortOrder: 4},
+                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 5},
+                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 6},
+                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 7},
+                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 8},
+                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 9}
             ]);
 
             Seeder.osp_delegate_relationshipType = await Seeder.createRelationshipTypeModel({
@@ -901,8 +903,8 @@ export class Seeder {
                 autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Notification.code
             } as any, [
-                {attribute: Seeder.selectedGovernmentServicesList_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.ssid_relAttributeName, optionalInd: false, defaultValue: null},
+                {attribute: Seeder.selectedGovernmentServicesList_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
+                {attribute: Seeder.ssid_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 2},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: `# This is declaration text
 
@@ -910,7 +912,7 @@ export class Seeder {
 * kept in database
 * relationshipTypeUsage.defaultValue
 * Use seed or admin UI to change it
-                    `}
+                    `, sortOrder: 3}
             ]);
 
         } catch (e) {

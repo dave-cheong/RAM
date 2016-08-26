@@ -24,6 +24,10 @@ const RelationshipAttributeNameUsageSchema = new mongoose.Schema({
     attributeName: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'RelationshipAttributeName'
+    },
+    sortOrder : {
+        type: Number,
+        required: true
     }
 });
 
@@ -33,6 +37,7 @@ export interface IRelationshipAttributeNameUsage extends mongoose.Document {
     optionalInd: boolean;
     defaultValue?: string;
     attributeName: IRelationshipAttributeName;
+    sortOrder: number;
 }
 
 /* tslint:disable:no-empty-interfaces */

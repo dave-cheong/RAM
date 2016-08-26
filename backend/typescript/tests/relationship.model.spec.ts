@@ -24,6 +24,7 @@ import {
     RelationshipInitiatedBy
 } from '../models/relationship.model';
 import {IRelationshipType} from '../models/relationshipType.model';
+import {context} from '../providers/context.provider';
 
 /* tslint:disable:max-func-body-length */
 describe('RAM Relationship', () => {
@@ -55,6 +56,7 @@ describe('RAM Relationship', () => {
             .then(async () => {
 
                 try {
+                    context.init();
 
                     relationshipTypeCustom = Seeder.custom_delegate_relationshipType;
 

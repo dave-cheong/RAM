@@ -1,11 +1,21 @@
 import * as mongoose from 'mongoose';
-import {ICodeDecode, CodeDecodeSchema} from './base';
+import {ICodeDecode, CodeDecodeSchema, Model} from './base';
 
 // enums, utilities, helpers ..........................................................................................
 
 export const DOB_SHARED_SECRET_TYPE_CODE = 'DATE_OF_BIRTH';
 
-// schema .............................................................................................................
+// exports ............................................................................................................
+
+export interface ISharedSecretType extends ICodeDecode, ISharedSecretTypeInstanceContract {
+}
+
+export interface ISharedSecretTypeModel extends mongoose.Model<ISharedSecretType>, ISharedSecretTypeStaticContract {
+}
+
+export let SharedSecretTypeModel: ISharedSecretTypeModel;
+
+// instance ...........................................................................................................
 
 const SharedSecretTypeSchema = CodeDecodeSchema({
     domain: {
@@ -15,61 +25,70 @@ const SharedSecretTypeSchema = CodeDecodeSchema({
     }
 });
 
-// interfaces .........................................................................................................
-
-export interface ISharedSecretType extends ICodeDecode {
+interface ISharedSecretTypeInstanceContract {
     domain: string;
 }
 
-export interface ISharedSecretTypeModel extends mongoose.Model<ISharedSecretType> {
-    findByCodeIgnoringDateRange: (code:String) => Promise<ISharedSecretType>;
-    findByCodeInDateRange: (code:String, date:Date) => Promise<ISharedSecretType>;
-    listIgnoringDateRange: () => Promise<ISharedSecretType[]>;
-    listInDateRange: (date:Date) => Promise<ISharedSecretType[]>;
+class SharedSecretTypeInstanceContractImpl implements ISharedSecretTypeInstanceContract {
+
+    public domain: string;
+
 }
 
-// instance methods ...................................................................................................
+// static .............................................................................................................
 
-// static methods .....................................................................................................
+interface ISharedSecretTypeStaticContract {
+    findByCodeIgnoringDateRange(code: string): Promise<ISharedSecretType>;
+    findByCodeInDateRange(code: string, date: Date): Promise<ISharedSecretType>;
+    listIgnoringDateRange(): Promise<ISharedSecretType[]>;
+    listInDateRange(date: Date): Promise<ISharedSecretType[]>;
+}
 
-SharedSecretTypeSchema.static('findByCodeIgnoringDateRange', (code:String) => {
-    return this.SharedSecretTypeModel
-        .findOne({
-            code: code
-        })
-        .exec();
-});
+class SharedSecretTypeStaticContractImpl implements ISharedSecretTypeStaticContract {
 
-SharedSecretTypeSchema.static('findByCodeInDateRange', (code:String, date:Date) => {
-    return this.SharedSecretTypeModel
-        .findOne({
-            code: code,
-            startDate: {$lte: date},
-            $or: [{endDate: null}, {endDate: {$gte: date}}]
-        })
-        .exec();
-});
+    public findByCodeIgnoringDateRange(code: string): Promise<ISharedSecretType> {
+        return SharedSecretTypeModel
+            .findOne({
+                code: code
+            })
+            .exec() as Promise;
+    }
 
-SharedSecretTypeSchema.static('listIgnoringDateRange', () => {
-    return this.SharedSecretTypeModel
-        .find({
-        })
-        .sort({name: 1})
-        .exec();
-});
+    public findByCodeInDateRange(code: string, date: Date): Promise<ISharedSecretType> {
+        return SharedSecretTypeModel
+            .findOne({
+                code: code,
+                startDate: {$lte: date},
+                $or: [{endDate: null}, {endDate: {$gte: date}}]
+            })
+            .exec() as Promise;
+    }
 
-SharedSecretTypeSchema.static('listInDateRange', (date:Date) => {
-    return this.SharedSecretTypeModel
-        .find({
-            startDate: {$lte: date},
-            $or: [{endDate: null}, {endDate: {$gte: date}}]
-        })
-        .sort({name: 1})
-        .exec();
-});
+    public listIgnoringDateRange(): Promise<ISharedSecretType[]> {
+        return SharedSecretTypeModel
+            .find({})
+            .sort({name: 1})
+            .exec() as Promise;
+    }
+
+    public listInDateRange(date: Date): Promise<ISharedSecretType[]> {
+        return SharedSecretTypeModel
+            .find({
+                startDate: {$lte: date},
+                $or: [{endDate: null}, {endDate: {$gte: date}}]
+            })
+            .sort({name: 1})
+            .exec() as Promise;
+    }
+
+}
 
 // concrete model .....................................................................................................
 
-export const SharedSecretTypeModel = mongoose.model(
-    'SharedSecretType',
-    SharedSecretTypeSchema) as ISharedSecretTypeModel;
+SharedSecretTypeModel =
+    Model(
+        'SharedSecretType',
+        SharedSecretTypeSchema,
+        SharedSecretTypeInstanceContractImpl,
+        SharedSecretTypeStaticContractImpl
+    ) as ISharedSecretTypeModel;
