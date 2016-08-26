@@ -28,47 +28,47 @@ class LegislativeProgramInstanceContractImpl implements ILegislativeProgramInsta
 // static .............................................................................................................
 
 interface ILegislativeProgramStaticContract {
-    findByCodeIgnoringDateRange: (code: String) => mongoose.Promise<ILegislativeProgram>;
-    findByCodeInDateRange: (code: String, date: Date) => mongoose.Promise<ILegislativeProgram>;
-    listIgnoringDateRange: () => mongoose.Promise<ILegislativeProgram[]>;
-    listInDateRange: (date: Date) => mongoose.Promise<ILegislativeProgram[]>;
+    findByCodeIgnoringDateRange(code: String): Promise<ILegislativeProgram>;
+    findByCodeInDateRange(code: String, date: Date): Promise<ILegislativeProgram>;
+    listIgnoringDateRange(): Promise<ILegislativeProgram[]>;
+    listInDateRange(date: Date): Promise<ILegislativeProgram[]>;
 }
 
 class LegislativeProgramStaticContractImpl implements ILegislativeProgramStaticContract {
 
-    public findByCodeIgnoringDateRange(code: string): mongoose.Promise<ILegislativeProgram> {
+    public findByCodeIgnoringDateRange(code: string): Promise<ILegislativeProgram> {
         return LegislativeProgramModel
             .findOne({
                 code: code
             })
-            .exec();
+            .exec() as Promise;
     }
 
-    public findByCodeInDateRange(code: string, date: Date): mongoose.Promise<ILegislativeProgram> {
+    public findByCodeInDateRange(code: string, date: Date): Promise<ILegislativeProgram> {
         return LegislativeProgramModel
             .findOne({
                 code: code,
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
             })
-            .exec();
+            .exec() as Promise;
     }
 
-    public listIgnoringDateRange(): mongoose.Promise<ILegislativeProgram[]> {
+    public listIgnoringDateRange(): Promise<ILegislativeProgram[]> {
         return LegislativeProgramModel
             .find({})
             .sort({shortDecodeText: 1})
-            .exec();
+            .exec() as Promise;
     }
 
-    public listInDateRange(date: Date): mongoose.Promise<ILegislativeProgram[]> {
+    public listInDateRange(date: Date): Promise<ILegislativeProgram[]> {
         return LegislativeProgramModel
             .find({
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
             })
             .sort({shortDecodeText: 1})
-            .exec();
+            .exec() as Promise;
     }
 
 }

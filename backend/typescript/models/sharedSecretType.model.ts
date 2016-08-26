@@ -38,47 +38,47 @@ class SharedSecretTypeInstanceContractImpl implements ISharedSecretTypeInstanceC
 // static .............................................................................................................
 
 interface ISharedSecretTypeStaticContract {
-    findByCodeIgnoringDateRange(code: string): mongoose.Promise<ISharedSecretType>;
-    findByCodeInDateRange(code: string, date: Date): mongoose.Promise<ISharedSecretType>;
-    listIgnoringDateRange(): mongoose.Promise<ISharedSecretType[]>;
-    listInDateRange(date: Date): mongoose.Promise<ISharedSecretType[]>;
+    findByCodeIgnoringDateRange(code: string): Promise<ISharedSecretType>;
+    findByCodeInDateRange(code: string, date: Date): Promise<ISharedSecretType>;
+    listIgnoringDateRange(): Promise<ISharedSecretType[]>;
+    listInDateRange(date: Date): Promise<ISharedSecretType[]>;
 }
 
 class SharedSecretTypeStaticContractImpl implements ISharedSecretTypeStaticContract {
 
-    public findByCodeIgnoringDateRange(code: string): mongoose.Promise<ISharedSecretType> {
+    public findByCodeIgnoringDateRange(code: string): Promise<ISharedSecretType> {
         return SharedSecretTypeModel
             .findOne({
                 code: code
             })
-            .exec();
+            .exec() as Promise;
     }
 
-    public findByCodeInDateRange(code: string, date: Date): mongoose.Promise<ISharedSecretType> {
+    public findByCodeInDateRange(code: string, date: Date): Promise<ISharedSecretType> {
         return SharedSecretTypeModel
             .findOne({
                 code: code,
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
             })
-            .exec();
+            .exec() as Promise;
     }
 
-    public listIgnoringDateRange(): mongoose.Promise<ISharedSecretType[]> {
+    public listIgnoringDateRange(): Promise<ISharedSecretType[]> {
         return SharedSecretTypeModel
             .find({})
             .sort({name: 1})
-            .exec();
+            .exec() as Promise;
     }
 
-    public listInDateRange(date: Date): mongoose.Promise<ISharedSecretType[]> {
+    public listInDateRange(date: Date): Promise<ISharedSecretType[]> {
         return SharedSecretTypeModel
             .find({
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
             })
             .sort({name: 1})
-            .exec();
+            .exec() as Promise;
     }
 
 }
