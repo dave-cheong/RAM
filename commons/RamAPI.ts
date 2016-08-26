@@ -657,13 +657,13 @@ export interface IRoleStatus {
 
 export class RoleStatus implements IRoleStatus {
 
-    constructor(public code: string,
-                public shortDecodeText: string) {
-    }
-
     public static build(sourceObject: any): HrefValue<IRoleStatus> {
         return new Builder<HrefValue<IRoleStatus>>(sourceObject, this)
             .build();
+    }
+
+    constructor(public code: string,
+                public shortDecodeText: string) {
     }
 
 }
