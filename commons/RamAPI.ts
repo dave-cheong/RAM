@@ -8,7 +8,7 @@ export class Builder<T> {
     public map(key: string, targetClass: any): Builder<T> {
         if (key !== null && key !== undefined) {
             const newSourceObject = this.sourceObject[key];
-            if (newSourceObject !== null && newSourceObject !== undefined) {
+            if (newSourceObject !== null && newSourceObject !== undefined && typeof newSourceObject === 'object') {
                 const newTargetObject = Object.create(targetClass.prototype);
                 newTargetObject.build(newSourceObject);
                 this.targetObject[key] = newTargetObject;
@@ -23,9 +23,11 @@ export class Builder<T> {
             const newSourceObjectArray = this.sourceObject[key];
             if (newSourceObjectArray !== null && newSourceObjectArray !== undefined) {
                 for (let newSourceObject of newSourceObjectArray) {
-                    const newTargetObject = Object.create(targetClass.prototype);
-                    newTargetObject.build(newSourceObject);
-                    newTargetObjectArray.push(newTargetObject);
+                    if (newSourceObject !== null && newSourceObject !== undefined && typeof newSourceObject === 'object') {
+                        const newTargetObject = Object.create(targetClass.prototype);
+                        newTargetObject.build(newSourceObject);
+                        newTargetObjectArray.push(newTargetObject);
+                    }
                 }
             }
             this.targetObject[key] = newTargetObjectArray;

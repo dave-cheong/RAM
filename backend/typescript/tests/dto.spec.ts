@@ -193,4 +193,33 @@ describe('RAM DTO', () => {
         }
     });
 
+    it('ignores injected functions', async(done) => {
+        try {
+
+            const meLike: any = {
+                name: myName,
+                age: myAge,
+                mum: function() {
+                    console.log('mum as an unsafe function');
+                },
+                dad: function() {
+                    console.log('dad as an unsafe function');
+                },
+                children: []
+            };
+
+            const me = Object.create(PersonDTO.prototype);
+            me.build(meLike);
+
+            expect(me.mum).toBeFalsy();
+            expect(me['dad']).toBeFalsy();
+
+            done();
+
+        } catch (e) {
+            fail('Because ' + e);
+            done();
+        }
+    });
+
 });
