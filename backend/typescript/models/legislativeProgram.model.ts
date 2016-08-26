@@ -41,7 +41,7 @@ class LegislativeProgramStaticContractImpl implements ILegislativeProgramStaticC
             .findOne({
                 code: code
             })
-            .exec() as Promise;
+            .exec();
     }
 
     public findByCodeInDateRange(code: string, date: Date): Promise<ILegislativeProgram> {
@@ -51,14 +51,14 @@ class LegislativeProgramStaticContractImpl implements ILegislativeProgramStaticC
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
             })
-            .exec() as Promise;
+            .exec();
     }
 
     public listIgnoringDateRange(): Promise<ILegislativeProgram[]> {
         return LegislativeProgramModel
             .find({})
             .sort({shortDecodeText: 1})
-            .exec() as Promise;
+            .exec();
     }
 
     public listInDateRange(date: Date): Promise<ILegislativeProgram[]> {
@@ -68,7 +68,7 @@ class LegislativeProgramStaticContractImpl implements ILegislativeProgramStaticC
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
             })
             .sort({shortDecodeText: 1})
-            .exec() as Promise;
+            .exec();
     }
 
 }
