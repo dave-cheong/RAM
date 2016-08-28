@@ -9,6 +9,7 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "inlineSources": true,
+        "suppressImplicitAnyIndexErrors": true,
         "outDir": "../dist/js",
         "module": "commonjs"
     },

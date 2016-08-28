@@ -1,3 +1,64 @@
+// builder ............................................................................................................
+
+export class Builder<T> {
+
+    private targetObject: any;
+
+    constructor(public sourceObject: any, public targetClass: any) {
+        this.targetObject = Object.create(targetClass.prototype);
+    }
+
+    public map(key: string, targetClass: any, targetGenericClass?: any): Builder<T> {
+        if (key !== null && key !== undefined) {
+            const newSourceObject = this.sourceObject[key];
+            if (newSourceObject !== null && newSourceObject !== undefined && typeof newSourceObject === 'object') {
+                //noinspection UnnecessaryLocalVariableJS
+                const newTargetObject = targetClass.build(newSourceObject, targetGenericClass ? targetGenericClass : targetClass);
+                this.targetObject[key] = newTargetObject;
+            }
+        }
+        return this;
+    }
+
+    public mapArray(key: string, targetClass: any, targetGenericClass?: any): Builder<T> {
+        if (key !== null && key !== undefined) {
+            const newTargetObjectArray: any[] = [];
+            const newSourceObjectArray = this.sourceObject[key];
+            if (newSourceObjectArray !== null && newSourceObjectArray !== undefined) {
+                for (let newSourceObject of newSourceObjectArray) {
+                    if (newSourceObject !== null && newSourceObject !== undefined && typeof newSourceObject === 'object') {
+                        const newTargetObject = targetClass.build(newSourceObject, targetGenericClass ? targetGenericClass : targetClass);
+                        newTargetObjectArray.push(newTargetObject);
+                    }
+                }
+            }
+            this.targetObject[key] = newTargetObjectArray;
+        }
+        return this;
+    }
+
+    private mapPrimitives(sourceObject: any, targetObject: any) {
+        for (let key of Object.keys(sourceObject)) {
+            let value = sourceObject[key];
+            if (value !== undefined && value !== null) {
+                if (key === 'timestamp' || key.indexOf('Timestamp') !== -1 || key.endsWith('At')) {
+                    if (value) {
+                        targetObject[key] = new Date(value);
+                    }
+                } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+                    targetObject[key] = value;
+                }
+            }
+        }
+    }
+
+    public build(): T {
+        this.mapPrimitives(this.sourceObject, this.targetObject);
+        return this.targetObject as T;
+    }
+
+}
+
 // response ...........................................................................................................
 
 export enum RAMMessageType {
@@ -116,9 +177,17 @@ export interface IHrefValue<T> {
 }
 
 export class HrefValue<T> implements IHrefValue<T> {
+
+    public static build<T2>(sourceObject: any, targetClass: any): HrefValue<T2> {
+        return new Builder<HrefValue<T2>>(sourceObject, this)
+            .map('value', targetClass)
+            .build();
+    }
+
     constructor(public href: string,
                 public value?: T) {
     }
+
 }
 
 // link .............................................................................................................
@@ -587,9 +656,16 @@ export interface IRoleStatus {
 }
 
 export class RoleStatus implements IRoleStatus {
+
+    public static build(sourceObject: any): HrefValue<IRoleStatus> {
+        return new Builder<HrefValue<IRoleStatus>>(sourceObject, this)
+            .build();
+    }
+
     constructor(public code: string,
                 public shortDecodeText: string) {
     }
+
 }
 
 // role type ..........................................................................................................

@@ -3,7 +3,10 @@ import {Observable} from 'rxjs/Observable';
 import fs = require('fs');
 
 export class TranslateUniversalLoader implements TranslateLoader {
-    constructor(private prefix: string = 'i18n', private suffix: string = '.json') {}
+
+    constructor(private prefix: string = 'i18n',
+                private suffix: string = '.json') {
+    }
 
     /**
      * Gets the translations from the server
@@ -11,9 +14,10 @@ export class TranslateUniversalLoader implements TranslateLoader {
      * @returns {any}
      */
     public getTranslation(lang: string): Observable<any> {
-        return Observable.create(observer => {
+        return Observable.create((observer: any) => {
             observer.next(JSON.parse(fs.readFileSync(`${this.prefix}/${lang}${this.suffix}`, 'utf8')));
             observer.complete();
         });
     }
+
 }

@@ -989,6 +989,7 @@ export class Seeder {
     public static loadMock() {
 
         return Promise.resolve(null)
+
             .then(Seeder.connectIdentityExporters)
 
             // identities
@@ -1021,6 +1022,7 @@ export class Seeder {
             .then(Seeder.exportAgencyUsers)
 
             .then(Seeder.disconnectIdentityExporters);
+
     }
 
 }

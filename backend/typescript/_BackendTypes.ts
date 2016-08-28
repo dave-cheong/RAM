@@ -37,9 +37,3 @@ declare module 'cls-domains-promise' {
     export = patchIt;
 
 }
-
-// type GlobalPromise<T> = Promise<T>;
-//
-// declare module 'mongoose' {
-//     type Promise<T> = GlobalPromise<T>;
-// }
