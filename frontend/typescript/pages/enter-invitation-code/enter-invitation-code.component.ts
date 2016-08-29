@@ -74,7 +74,9 @@ export class EnterInvitationCodeComponent extends AbstractPageComponent {
     }
 
     public goToRelationshipsPage() {
-        this.services.route.goToRelationshipsPage(this.idValue);
+        this.services.route.goToRelationshipsPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+        );
     };
 
 }

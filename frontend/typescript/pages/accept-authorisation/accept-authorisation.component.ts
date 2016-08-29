@@ -96,7 +96,12 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     public confirmDeclineAuthorisation = () => {
         this.services.rest.rejectPendingRelationshipByInvitationCode(this.relationship).subscribe(() => {
             this.declineDisplay = false;
-            this.services.route.goToRelationshipsPage(this.idValue, null, 1, RAMConstants.GlobalMessage.DECLINED_RELATIONSHIP);
+            this.services.route.goToRelationshipsPage(
+                this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+                null,
+                1,
+                RAMConstants.GlobalMessage.DECLINED_RELATIONSHIP
+            );
         }, (err) => {
             this.declineDisplay = false;
             this.addGlobalErrorMessages(err);
@@ -105,7 +110,12 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
 
     public acceptAuthorisation = () => {
         this.services.rest.acceptPendingRelationshipByInvitationCode(this.relationship).subscribe(() => {
-            this.services.route.goToRelationshipsPage(this.idValue, null, 1, RAMConstants.GlobalMessage.ACCEPTED_RELATIONSHIP);
+            this.services.route.goToRelationshipsPage(
+                this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+                null,
+                1,
+                RAMConstants.GlobalMessage.ACCEPTED_RELATIONSHIP
+            );
         }, (err) => {
             this.addGlobalErrorMessages(err);
         });
@@ -116,7 +126,12 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     };
 
     public goToRelationshipsPage = () => {
-        this.services.route.goToRelationshipsPage(this.idValue, null, 1, RAMConstants.GlobalMessage.CANCEL_ACCEPT_RELATIONSHIP);
+        this.services.route.goToRelationshipsPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+            null,
+            1,
+            RAMConstants.GlobalMessage.CANCEL_ACCEPT_RELATIONSHIP
+        );
     };
 
     // TODO: not sure how to set the locale, Implement as a pipe

@@ -1,3 +1,4 @@
+import {Url} from './url';
 import {IAgencyUser} from './agencyUser.model';
 import {IIdentity} from './identity.model';
 import {Principal as PrincipalDTO} from '../../../commons/RamAPI';
@@ -22,6 +23,9 @@ export class Principal implements IPrincipal {
 
     public async toDTO(): Promise<PrincipalDTO> {
         return Promise.resolve(new PrincipalDTO(
+            Url.links()
+                .push('relationship-list', Url.GET, await Url.forIdentityRelationshipList(this.identity), !this.agencyUserInd)
+                .toArray(),
             this.id,
             this.displayName,
             this.agencyUserInd,

@@ -67,7 +67,7 @@ export class Url {
     }
 
     public static async forIdentityRelationshipList(model: identity.IIdentityInstanceContract): Promise<string> {
-        return '/api/v1/relationships/identity/' + encodeURIComponent(model.idValue);
+        return '/api/v1/relationships/identity/' + encodeURIComponent(model ? model.idValue : 'undefined');
     }
 
     public static async forIdentityRelationshipCreate(model: identity.IIdentityInstanceContract): Promise<string> {
@@ -113,7 +113,7 @@ export class Url {
         return '/api/v1/relationshipStatus/' + encodeURIComponent(model.code);
     }
 
-    public static async forRelationship(model: relationship.IRelationship): Promise<string> {
+    public static async forRelationship(model: relationship.IRelationshipInstanceContract): Promise<string> {
         return '/api/v1/relationship/' + encodeURIComponent(model._id.toString());
     }
 

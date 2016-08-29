@@ -70,7 +70,12 @@ export class AddRelationshipCompleteComponent extends AbstractPageComponent {
         };
 
         this.services.rest.notifyDelegateByInvitationCode(this.code, notifyDelegateDTO).subscribe((relationship) => {
-            this.services.route.goToRelationshipsPage(this.idValue, null, 1, RAMConstants.GlobalMessage.DELEGATE_NOTIFIED);
+            this.services.route.goToRelationshipsPage(
+                this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+                null,
+                1,
+                RAMConstants.GlobalMessage.DELEGATE_NOTIFIED
+            );
         }, (err) => {
             const status = err.status;
             if (status === 404) {
@@ -83,6 +88,6 @@ export class AddRelationshipCompleteComponent extends AbstractPageComponent {
     };
 
     public goToRelationshipsPage() {
-        this.services.route.goToRelationshipsPage(this.idValue);
+        this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity));
     }
 }

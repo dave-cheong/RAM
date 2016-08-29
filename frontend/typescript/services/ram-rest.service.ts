@@ -192,7 +192,7 @@ export class RAMRestService {
                                          filter: string,
                                          page: number): Observable<ISearchResult<IHrefValue<IRelationship>>> {
         return this.http
-            .get(`/api/v1/relationships/identity/${idValue}?filter=${filter}&page=${page}`)
+            .get(new Href(`/api/v1/relationships/identity/${idValue}`).param('filter', filter).param('page', page).toString())
             .map(this.extractDataDeprecated);
     }
 

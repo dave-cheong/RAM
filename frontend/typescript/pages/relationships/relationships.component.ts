@@ -37,7 +37,7 @@ import {
 
 export class RelationshipsComponent extends AbstractPageComponent {
 
-    public idValue: string;
+    public identityHref: string;
     public filter: FilterParams;
     public page: number;
 
@@ -68,7 +68,7 @@ export class RelationshipsComponent extends AbstractPageComponent {
         this._isLoading = true;
 
         // extract path and query parameters
-        this.idValue = params.path['idValue'];
+        this.identityHref = params.path['identityHref'];
         this.filter = FilterParams.decode(params.query['filter']);
         this.page = params.query['page'] ? +params.query['page'] : 1;
 
@@ -88,8 +88,9 @@ export class RelationshipsComponent extends AbstractPageComponent {
         }
 
         // identity in focus
-        this.services.rest.findIdentityByValue(this.idValue).subscribe((identity) => {
-            this.identity = identity;
+        this.services.rest.findIdentityByHref(this.identityHref).subscribe({
+            next: this.onFindIdentity.bind(this),
+            error: this.onServerError.bind(this)
         });
 
         // party types
@@ -114,9 +115,32 @@ export class RelationshipsComponent extends AbstractPageComponent {
             });
         });
 
+        // pagination delegate
+        this.paginationDelegate = {
+            goToPage: (page: number) => {
+                this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity), this.filter.encode(), page);
+            }
+        } as SearchResultPaginationDelegate;
+
+        // forms
+        this.form = this.fb.group({
+            partyType: this.filter.get('partyType', '-'),
+            relationshipType: this.filter.get('relationshipType', '-'),
+            profileProvider: this.filter.get('profileProvider', '-'),
+            status: this.filter.get('status', '-'),
+            text: this.filter.get('text', ''),
+            sort: this.filter.get('sort', '-')
+        });
+
+    }
+
+    public onFindIdentity(identity: IIdentity) {
+
+        this.identity = identity;
+
         // relationships
         this.subjectGroupsWithRelationships = [];
-        this.relationships$ = this.services.rest.searchRelationshipsByIdentity(this.idValue, this.filter.encode(), this.page);
+        this.relationships$ = this.services.rest.searchRelationshipsByIdentity(this.identity.idValue, this.filter.encode(), this.page);
         this.relationships$.subscribe((relationshipRefs) => {
             this._isLoading = false;
             for (const relationshipRef of relationshipRefs.list) {
@@ -137,23 +161,6 @@ export class RelationshipsComponent extends AbstractPageComponent {
         }, (err) => {
             this.addGlobalErrorMessages(err);
             this._isLoading = false;
-        });
-
-        // pagination delegate
-        this.paginationDelegate = {
-            goToPage: (page: number) => {
-                this.services.route.goToRelationshipsPage(this.idValue, this.filter.encode(), page);
-            }
-        } as SearchResultPaginationDelegate;
-
-        // forms
-        this.form = this.fb.group({
-            partyType: this.filter.get('partyType', '-'),
-            relationshipType: this.filter.get('relationshipType', '-'),
-            profileProvider: this.filter.get('profileProvider', '-'),
-            status: this.filter.get('status', '-'),
-            text: this.filter.get('text', ''),
-            sort: this.filter.get('sort', '-')
         });
 
     }
@@ -189,22 +196,26 @@ export class RelationshipsComponent extends AbstractPageComponent {
             .encode();
         //console.log('Filter (encoded): ' + filterString);
         //console.log('Filter (decoded): ' + JSON.stringify(FilterParams.decode(filterString), null, 4));
-        this.services.route.goToRelationshipsPage(this.idValue, filterString);
+        this.services.route.goToRelationshipsPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+            filterString
+        );
     }
 
     public goToRelationshipAddPage() {
-        this.services.route.goToAddRelationshipPage(this.idValue);
+        // todo refactor to href
+        this.services.route.goToAddRelationshipPage(this.identity.idValue);
     };
 
     public goToRelationshipEnterCodePage() {
-        this.services.route.goToRelationshipEnterCodePage(this.idValue);
+        // todo refactor to href
+        this.services.route.goToRelationshipEnterCodePage(this.identity.idValue);
     };
 
     public goToRelationshipsContext(partyResource: IHrefValue<IParty>) {
         const defaultIdentityResource = this.services.model.getDefaultIdentityResource(partyResource.value);
         if (defaultIdentityResource) {
-            const identityIdValue = defaultIdentityResource.value.idValue;
-            this.services.route.goToRelationshipsPage(identityIdValue);
+            this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, defaultIdentityResource.value));
         }
     }
 
