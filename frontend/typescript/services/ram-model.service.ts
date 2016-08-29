@@ -188,6 +188,17 @@ export class RAMModelService {
         return null;
     }
 
+    public getRelationshipTypeByCode(relationshipTypeRefs: IHrefValue<IRelationshipType>[], code:string): IHrefValue<IRelationshipType> {
+        if (relationshipTypeRefs && code) {
+            for (let ref of relationshipTypeRefs) {
+                if (ref.value.code === code) {
+                    return ref;
+                }
+            }
+        }
+        return null;
+    }
+
     public getRoleType(roleTypeRefs: IHrefValue<IRoleType>[], role: IRole): IRoleType {
         if (roleTypeRefs && role) {
             let href = role.roleType.href;

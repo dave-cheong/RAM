@@ -6,12 +6,17 @@ import {IRelationshipAttributeNameUsage} from '../../../../commons/RamAPI';
     templateUrl: 'authorisation-management.component.html'
 })
 export class AuthorisationManagementComponent {
+    @Input('disabled') public disabled:boolean;
     @Input('title') public title:string;
     @Input('data') public data:AuthorisationManagementComponentData;
     @Input('attributeNameUsage') public attributeNameUsage:IRelationshipAttributeNameUsage;
 
     public setCanManagePermissions(value:string) {
         this.data.value = value;
+    }
+
+    public isCanManagePermissionsSet() {
+        return this.data.value;
     }
 }
 

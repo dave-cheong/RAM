@@ -37,6 +37,10 @@ export const RAMConstants = {
         OSP: 'OSP'
     },
 
+    RelationshipAttributeNameClassifier: {
+        PERMISSION: 'PERMISSION'
+    },
+
     RelationshipTypeAttributeCode: {
         SSID: 'SSID',
         SELECTED_GOVERNMENT_SERVICES_LIST: 'SELECTED_GOVERNMENT_SERVICES_LIST',

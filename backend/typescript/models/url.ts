@@ -153,7 +153,7 @@ export class Url {
 
     // role attribute name ............................................................................................
 
-    public static async forRoleAttributeName(model: roleAttributeName.IRoleAttributeName): Promise<string> {
+    public static async forRoleAttributeName(model: roleAttributeName.IRoleAttributeNameInstanceContract): Promise<string> {
         return '/api/v1/roleAttributeName/' + encodeURIComponent(model.code);
     }
 

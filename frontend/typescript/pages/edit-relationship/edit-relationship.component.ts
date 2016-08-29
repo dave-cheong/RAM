@@ -65,6 +65,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public manageAuthAttribute: IRelationshipAttributeNameUsage;
 
     public authType: string = 'choose';
+    public disableAuthMgmt: boolean = true;
 
     public newRelationship: AddRelationshipComponentData = {
         accessPeriod: {
@@ -87,7 +88,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             }
         },
         authorisationManagement: {
-            value: ''
+            value: 'false'
         },
         declaration: {
             accepted: false,
@@ -113,13 +114,12 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         // relationship types
         this.relationshipTypes$ = this.services.rest.listRelationshipTypes();
         this.relationshipTypes$.subscribe((relationshipTypeRefs) => {
+            // filter the relationship types to those that can be chosen here
             this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
                 return relationshipType.value.managedExternallyInd === false
                     && relationshipType.value.category === RAMConstants.RelationshipTypeCategory.AUTHORISATION;
             });
 
-            // delegate managed attribute
-            this.resolveManageAuthAttribute('UNIVERSAL_REPRESENTATIVE', 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND');
             this.resolveAttributeUsages();
         });
     }
@@ -194,24 +194,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     };
 
-    public resolveManageAuthAttribute(relationshipTypeCode: string, attributeNameCode: string) {
-        // find the relationship type
-        const relationshipTypeRef = this.relationshipTypeRefs.filter((relationshipTypeRef) => {
-            return relationshipTypeRef.value.code === relationshipTypeCode;
-        });
-
-        // find the attribute name
-        let manageAuthAttributes = relationshipTypeRef[0].value.relationshipAttributeNames
-            .filter((attributeName) => attributeName.attributeNameDef.value.code === attributeNameCode);
-        if (manageAuthAttributes.length === 1) {
-            this.manageAuthAttribute = manageAuthAttributes[0];
-        }
-    }
-
     public resolveAttributeUsages() {
         for (let relTypeRef of this.relationshipTypeRefs) {
             const attributeNames = relTypeRef.value.relationshipAttributeNames;
-            this.permissionAttributeUsages[relTypeRef.value.code] = attributeNames.filter((attName) => { return attName.attributeNameDef.value.classifier === 'PERMISSION'; });
+            this.permissionAttributeUsages[relTypeRef.value.code] = attributeNames.filter((attName) => { return attName.attributeNameDef.value.classifier === RAMConstants.RelationshipAttributeNameClassifier.PERMISSION; });
         }
     }
 
@@ -227,7 +213,25 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         // TODO calculate declaration markdown based on relationship type and services selected
         // TODO update declaration component to show new text
         this.newRelationship.declaration.markdown = 'TODO '+data.authType;
-    }
+
+        // find the selected relationship type by code
+        let selectedRelationshipType = this.services.model.getRelationshipTypeByCode(this.relationshipTypeRefs, data.authType);
+        if(selectedRelationshipType) {
+            const allowManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND');
+            const canChangeManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, 'DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND');
+
+            this.manageAuthAttribute = allowManageAuthorisationUsage;
+
+            // get the default value for the relationship type
+            this.newRelationship.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
+            // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
+            this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage===null : true;
+        } else {
+            this.disableAuthMgmt = true;
+        }
+
+    };
+
 }
 
 export interface AddRelationshipComponentData {

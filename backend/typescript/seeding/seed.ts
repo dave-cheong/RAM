@@ -141,6 +141,7 @@ export class Seeder {
     // relationship attribute names (other)
     public static permissionCustomisationAllowedInd_relAttributeName:IRelationshipAttributeName;
     public static delegateManageAuthorisationAllowedInd_relAttributeName:IRelationshipAttributeName;
+    public static delegateManageAuthorisationUserConfigurableInd_relAttributeName:IRelationshipAttributeName;
     public static delegateRelationshipTypeDeclaration_relAttributeName:IRelationshipAttributeName;
     public static subjectRelationshipTypeDeclaration_relAttributeName:IRelationshipAttributeName;
     public static selectedGovernmentServicesList_relAttributeName:IRelationshipAttributeName; // for storing the selected services on an OSP relationship
@@ -587,6 +588,17 @@ export class Seeder {
                 purposeText: 'Indicator of whether a relationship allows the delegate to manage authorisations'
             } as any);
 
+            Seeder.delegateManageAuthorisationUserConfigurableInd_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND',
+                shortDecodeText: 'System indicator of whether the user can change the manage authorisations value',
+                longDecodeText: 'System indicator of whether the user can change the manage authorisations value',
+                startDate: now,
+                domain: RelationshipAttributeNameDomain.Null.code,
+                classifier: RelationshipAttributeNameClassifier.Other.code,
+                category: null,
+                purposeText: 'Indicator of whether the user can change the manage authorisations value (DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND)'
+            } as any);
+
             Seeder.delegateRelationshipTypeDeclaration_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
                 code: 'DELEGATE_RELATIONSHIP_TYPE_DECLARATION',
                 shortDecodeText: 'Delegate Relationship Type Declaration',
@@ -882,6 +894,7 @@ export class Seeder {
             } as any, [
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 2},
+                {attribute: Seeder.delegateManageAuthorisationUserConfigurableInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: -1},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: 'Markdown for Delegate Custom Representative Declaration', sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
