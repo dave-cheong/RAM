@@ -21,7 +21,7 @@ export let RoleAttributeNameUsageModel: IRoleAttributeNameUsageModel;
 
 // schema .............................................................................................................
 
-const RoleAttributeNameUsageSchema = new mongoose.Schema({
+const RoleAttributeNameUsageSchema = CodeDecodeSchema({
     optionalInd: {
         type: Boolean,
         default: false,
