@@ -88,7 +88,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             }
         },
         authorisationManagement: {
-            value: ''
+            value: 'false'
         },
         declaration: {
             accepted: false,
@@ -225,10 +225,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             // get the default value for the relationship type
             this.newRelationship.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
             // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
-            this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage===null : true
+            this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage===null : true;
         } else {
             this.disableAuthMgmt = true;
         }
+
     };
 
 }

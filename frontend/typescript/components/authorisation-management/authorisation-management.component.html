@@ -12,11 +12,11 @@
                 <div class="radio">
                     <div class="row">
                         <div class="col-md-6">
-                            <label><h4><input type="radio" name="canManagePermissions" [disabled]="disabled" value="true" (change)="setCanManagePermissions('true')">{{'yes' | translate}}</h4></label>
+                            <label><h4><input type="radio" name="canManagePermissions" [disabled]="disabled" value="true" [checked]='isCanManagePermissionsSet()==="true"' (change)="setCanManagePermissions('true')">{{'yes' | translate}}</h4></label>
                         </div>
                         <div class="col-md-6">
                             <!-- TODO data drive the checked field -->
-                            <label><h4><input type="radio" name="canManagePermissions" [disabled]="disabled" value="false" checked (change)="setCanManagePermissions('false')">{{'no' | translate}}</h4></label>
+                            <label><h4><input type="radio" name="canManagePermissions" [disabled]="disabled" value="false" [checked]='isCanManagePermissionsSet()==="false"' (change)="setCanManagePermissions('false')">{{'no' | translate}}</h4></label>
                         </div>
                     </div>
                 </div>

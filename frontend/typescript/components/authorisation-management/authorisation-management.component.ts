@@ -14,6 +14,10 @@ export class AuthorisationManagementComponent {
     public setCanManagePermissions(value:string) {
         this.data.value = value;
     }
+
+    public isCanManagePermissionsSet() {
+        return this.data.value;
+    }
 }
 
 export interface AuthorisationManagementComponentData {
