@@ -1,3 +1,4 @@
+import {logger} from '../logger';
 import * as mongoose from 'mongoose';
 import {RAMEnum, IRAMObject, RAMSchema, Query, Assert} from './base';
 import {Url} from './url';
@@ -17,7 +18,6 @@ import {
     RelationshipAttribute as RelationshipAttributeDTO,
     SearchResult
 } from '../../../commons/RamAPI';
-import {logger} from '../logger';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
