@@ -8,6 +8,7 @@ import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
 import {RelationshipAttributeNameModel} from './relationshipAttributeName.model';
 import {IdentityModel, IIdentity, IdentityType, IdentityInvitationCodeStatus} from './identity.model';
+import {IdentityPublicIdentifierScheme} from './identity.model';
 import {context} from '../providers/context.provider';
 import {
     HrefValue,
@@ -16,8 +17,6 @@ import {
     RelationshipAttribute as RelationshipAttributeDTO,
     SearchResult
 } from '../../../commons/RamAPI';
-// import {logger} from '../logger';
-import {IdentityPublicIdentifierScheme} from './identity.model';
 import {logger} from '../logger';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
