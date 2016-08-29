@@ -54,7 +54,7 @@ class SharedSecretInstanceContractImpl implements ISharedSecretInstanceContract 
     public value: string;
     public sharedSecretType: ISharedSecretType;
 
-    public matchesValue(candidateValue: string) {
+    public matchesValue(candidateValue: string): boolean {
         if (candidateValue && this.value) {
             return bcrypt.compareSync(candidateValue, this.value);
         }
