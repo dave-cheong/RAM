@@ -1150,6 +1150,9 @@ declare module "mongoose" {
    */
   class Query<T> extends DocumentQuery<T, any> {}
   class DocumentQuery<T, DocType extends Document> extends mquery {
+
+    deepPopulate(paths: string[]): this;
+
     /**
      * Specifies a javascript function or expression to pass to MongoDBs query system.
      * Only use $where when you have a condition that cannot be met using other MongoDB
