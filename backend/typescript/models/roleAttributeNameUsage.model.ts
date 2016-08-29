@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {ICodeDecode, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
+import {RAMSchema, IRAMObject, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
 import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.model';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -9,7 +9,7 @@ const _RoleAttributeNameModel = RoleAttributeNameModel;
 
 // exports ............................................................................................................
 
-export interface IRoleAttributeNameUsage extends ICodeDecode, IRoleAttributeNameUsageInstanceContract {
+export interface IRoleAttributeNameUsage extends IRAMObject, IRoleAttributeNameUsageInstanceContract {
 }
 
 export interface IRoleAttributeNameUsageModel extends mongoose.Model<IRoleAttributeNameUsage>, IRoleAttributeNameUsageStaticContract {
@@ -21,7 +21,7 @@ export let RoleAttributeNameUsageModel: IRoleAttributeNameUsageModel;
 
 // schema .............................................................................................................
 
-const RoleAttributeNameUsageSchema = CodeDecodeSchema({
+const RoleAttributeNameUsageSchema = RAMSchema({
     optionalInd: {
         type: Boolean,
         default: false,
@@ -40,13 +40,13 @@ const RoleAttributeNameUsageSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-interface IRoleAttributeNameUsageInstanceContract extends ICodeDecodeContract {
+interface IRoleAttributeNameUsageInstanceContract extends IRAMObjectContract {
     optionalInd: boolean;
     defaultValue?: string;
     attributeName: IRoleAttributeName;
 }
 
-class RoleAttributeNameUsageInstanceContractImpl extends CodeDecodeContractImpl implements IRoleAttributeNameUsageInstanceContract {
+class RoleAttributeNameUsageInstanceContractImpl extends RAMObjectContractImpl implements IRoleAttributeNameUsageInstanceContract {
 
     public optionalInd: boolean;
     public defaultValue: string;
