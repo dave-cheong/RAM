@@ -91,7 +91,7 @@ const RoleAttributeNameSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-interface IRoleAttributeNameInstanceContract extends ICodeDecodeContract {
+export interface IRoleAttributeNameInstanceContract extends ICodeDecodeContract {
     domain: string;
     classifier: string;
     category?: string;
@@ -122,7 +122,7 @@ class RoleAttributeNameInstanceContractImpl extends CodeDecodeContractImpl imple
 
     public async toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>> {
         return new HrefValue(
-            await Url.forRoleAttributeName(this as IRoleAttributeName),
+            await Url.forRoleAttributeName(this),
             includeValue ? await this.toDTO() : undefined
         );
     }
