@@ -8,8 +8,6 @@ import {ISharedSecretType, SharedSecretTypeModel} from './sharedSecretType.model
 /* tslint:disable:no-unused-variable */
 const _SharedSecretTypeModel = SharedSecretTypeModel;
 
-// enums, utilities, helpers ..........................................................................................
-
 // exports ............................................................................................................
 
 export interface ISharedSecret extends IRAMObject, ISharedSecretInstanceContract {
@@ -19,6 +17,8 @@ export interface ISharedSecretModel extends mongoose.Model<ISharedSecret>, IShar
 }
 
 export let SharedSecretModel: ISharedSecretModel;
+
+// enums, utilities, helpers ..........................................................................................
 
 // schema .............................................................................................................
 

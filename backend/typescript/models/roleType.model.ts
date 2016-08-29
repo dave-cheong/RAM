@@ -17,8 +17,6 @@ const _RoleAttributeNameModel = RoleAttributeNameModel;
 /* tslint:disable:no-unused-variable */
 const _RoleAttributeNameUsageModel = RoleAttributeNameUsageModel;
 
-// enums, utilities, helpers ..........................................................................................
-
 // exports ............................................................................................................
 
 export interface IRoleType extends ICodeDecode, IRoleTypeInstanceContract {
@@ -28,6 +26,8 @@ export interface IRoleTypeModel extends mongoose.Model<IRoleType>, IRoleTypeStat
 }
 
 export let RoleTypeModel: IRoleTypeModel;
+
+// enums, utilities, helpers ..........................................................................................
 
 // schema .............................................................................................................
 

@@ -5,8 +5,6 @@ import {
     Name as DTO
 } from '../../../commons/RamAPI';
 
-// enums, utilities, helpers ..........................................................................................
-
 // exports ............................................................................................................
 
 export interface IName extends IRAMObject, INameInstanceContract {
@@ -16,6 +14,8 @@ export interface INameModel extends mongoose.Model<IName>, INameStaticContract {
 }
 
 export let NameModel: INameModel;
+
+// enums, utilities, helpers ..........................................................................................
 
 // schema .............................................................................................................
 

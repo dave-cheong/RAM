@@ -1,10 +1,6 @@
 import * as mongoose from 'mongoose';
 import {ICodeDecode, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
 
-// enums, utilities, helpers ..........................................................................................
-
-export const DOB_SHARED_SECRET_TYPE_CODE = 'DATE_OF_BIRTH';
-
 // exports ............................................................................................................
 
 export interface ISharedSecretType extends ICodeDecode, ISharedSecretTypeInstanceContract {
@@ -14,6 +10,10 @@ export interface ISharedSecretTypeModel extends mongoose.Model<ISharedSecretType
 }
 
 export let SharedSecretTypeModel: ISharedSecretTypeModel;
+
+// enums, utilities, helpers ..........................................................................................
+
+export const DOB_SHARED_SECRET_TYPE_CODE = 'DATE_OF_BIRTH';
 
 // schema .............................................................................................................
 

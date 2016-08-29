@@ -17,6 +17,16 @@ const _NameModel = NameModel;
 /* tslint:disable:no-unused-variable */
 const _SharedSecretModel = SharedSecretModel;
 
+// exports ............................................................................................................
+
+export interface IProfile extends IRAMObject, IProfileInstanceContract {
+}
+
+export interface IProfileModel extends mongoose.Model<IProfile>, IProfileStaticContract {
+}
+
+export let ProfileModel: IProfileModel;
+
 // enums, utilities, helpers ..........................................................................................
 
 export class ProfileProvider extends RAMEnum {
@@ -54,16 +64,6 @@ export class ProfileProvider extends RAMEnum {
         return new ProfileProviderDTO(this.code, this.shortDecodeText);
     }
 }
-
-// exports ............................................................................................................
-
-export interface IProfile extends IRAMObject, IProfileInstanceContract {
-}
-
-export interface IProfileModel extends mongoose.Model<IProfile>, IProfileStaticContract {
-}
-
-export let ProfileModel: IProfileModel;
 
 // schema .............................................................................................................
 
