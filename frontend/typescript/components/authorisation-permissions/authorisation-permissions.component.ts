@@ -6,3 +6,7 @@ import { Component } from '@angular/core';
 })
 export class AuthorisationPermissionsComponent {
 }
+
+export interface AuthorisationPermissionsComponentData {
+    value: string;
+}

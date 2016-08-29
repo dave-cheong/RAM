@@ -58,6 +58,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     public relationshipTypes$: Observable<IHrefValue<IRelationshipType>[]>;
     public relationshipTypeRefs: IHrefValue<IRelationshipType>[];
+    public permissionAttributeUsages: { [relationshipTypeCode: string]: IRelationshipAttributeNameUsage[] } = {};
 
     public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public identity: IIdentity;
@@ -116,11 +117,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 return relationshipType.value.managedExternallyInd === false
                     && relationshipType.value.category === RAMConstants.RelationshipTypeCategory.AUTHORISATION;
             });
+
+            // delegate managed attribute
+            this.resolveManageAuthAttribute('UNIVERSAL_REPRESENTATIVE', 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND');
+            this.resolveAttributeUsages();
         });
-
-        // delegate managed attribute
-        this.resolveManageAuthAttribute('UNIVERSAL_REPRESENTATIVE', 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND');
-
     }
 
     public back = () => {
@@ -194,20 +195,24 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     };
 
     public resolveManageAuthAttribute(relationshipTypeCode: string, attributeNameCode: string) {
-        this.relationshipTypes$
-            .subscribe(relationshipTypeHrefValues => {
-                // find the relationship type
-                const relationshipTypeHrefValue = relationshipTypeHrefValues.filter((relationshipTypeHrefValue) => {
-                    return relationshipTypeHrefValue.value.code === relationshipTypeCode;
-                });
+        // find the relationship type
+        const relationshipTypeRef = this.relationshipTypeRefs.filter((relationshipTypeRef) => {
+            return relationshipTypeRef.value.code === relationshipTypeCode;
+        });
 
-                // find the attribute name
-                let manageAuthAttributes = relationshipTypeHrefValue[0].value.relationshipAttributeNames
-                    .filter((attributeName) => attributeName.attributeNameDef.value.code === attributeNameCode);
-                if (manageAuthAttributes.length === 1) {
-                    this.manageAuthAttribute = manageAuthAttributes[0];
-                }
-            });
+        // find the attribute name
+        let manageAuthAttributes = relationshipTypeRef[0].value.relationshipAttributeNames
+            .filter((attributeName) => attributeName.attributeNameDef.value.code === attributeNameCode);
+        if (manageAuthAttributes.length === 1) {
+            this.manageAuthAttribute = manageAuthAttributes[0];
+        }
+    }
+
+    public resolveAttributeUsages() {
+        for (let relTypeRef of this.relationshipTypeRefs) {
+            const attributeNames = relTypeRef.value.relationshipAttributeNames;
+            this.permissionAttributeUsages[relTypeRef.value.code] = attributeNames.filter((attName) => { return attName.attributeNameDef.value.classifier === 'PERMISSION'; });
+        }
     }
 
     public displayName(repDetails: RepresentativeDetailsComponentData) {
