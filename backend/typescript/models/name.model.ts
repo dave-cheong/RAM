@@ -110,4 +110,3 @@ NameModel = Model(
     NameInstanceContractImpl,
     NameStaticContractImpl
 ) as INameModel;
-
