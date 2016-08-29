@@ -37,7 +37,7 @@ export const routes: RouterConfig = [
         component: WelcomeHomeComponent,
     },
     {
-        path: 'relationships/:idValue',
+        path: 'relationships/:identityHref',
         component: RelationshipsComponent
     },
     {

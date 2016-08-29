@@ -13,6 +13,7 @@ import {PageHeaderAgencyComponent} from '../../components/page-header/page-heade
 import {RAMServices} from '../../services/ram-services';
 import { BusinessSelectComponent } from '../../components/business-select/business-select.component';
 import {ABRentry} from '../../../../commons/abr';
+import {RAMConstants} from '../../services/ram-constants.service';
 
 @Component({
     selector: 'agency-select-business',
@@ -70,7 +71,9 @@ export class AgencySelectBusinessComponent extends AbstractPageComponent {
     public acceptBusiness() {
         this.services.rest.registerABRCompany(this.business).subscribe((identity) => {
             if (this.dashboard === 'auth') {
-                this.services.route.goToRelationshipsPage(identity.idValue);
+                this.services.route.goToRelationshipsPage(
+                    this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, identity)
+                );
             } else {
                 let href = this.services.model.getLinkHrefByType('self', identity);
                 this.services.route.goToNotificationsPage(href);

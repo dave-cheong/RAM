@@ -239,7 +239,8 @@ export class CodeDecode implements ICodeDecode {
 
 // principal ..........................................................................................................
 
-export interface IPrincipal {
+export interface IPrincipal extends IHasLinks {
+    _links: ILink[];
     id: string;
     displayName: string;
     agencyUserInd: boolean;
@@ -248,7 +249,8 @@ export interface IPrincipal {
 }
 
 export class Principal implements IPrincipal {
-    constructor(public id: string,
+    constructor(public _links: ILink[],
+                public id: string,
                 public displayName: string,
                 public agencyUserInd: boolean,
                 public agencyUser?: IAgencyUser,

@@ -67,7 +67,7 @@ export class Url {
     }
 
     public static async forIdentityRelationshipList(model: identity.IIdentity): Promise<string> {
-        return '/api/v1/relationships/identity/' + encodeURIComponent(model.idValue);
+        return '/api/v1/relationships/identity/' + encodeURIComponent(model ? model.idValue : 'undefined');
     }
 
     public static async forIdentityRelationshipCreate(model: identity.IIdentity): Promise<string> {

@@ -2,6 +2,7 @@ import {Component, Input} from '@angular/core';
 import {Router} from '@angular/router';
 
 import {RAMServices} from '../../services/ram-services';
+import {RAMConstants} from '../../services/ram-constants.service';
 
 import {IIdentity} from '../../../../commons/RamAPI';
 
@@ -40,7 +41,9 @@ export class PageHeaderAuthComponent {
 
     public goToRelationshipsPage() {
         if (this.identity) {
-            this.services.route.goToRelationshipsPage(this.identity.idValue);
+            this.services.route.goToRelationshipsPage(
+                this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+            );
         }
     };
 

@@ -23,7 +23,7 @@ export class RAMRouteService {
         this.router.navigate(['/home/sps']);
     }
 
-    public goToRelationshipsPage(idValue: string, filter?: string, page?: number, msg?: string) {
+    public goToRelationshipsPage(identityHref: string, filter?: string, page?: number, msg?: string) {
         const queryParams = {};
         if (filter) {
             queryParams['filter'] = filter;
@@ -35,7 +35,7 @@ export class RAMRouteService {
             queryParams['msg'] = msg;
         }
         this.router.navigate(['/relationships',
-                this.encodeURIComponent(idValue, false)],
+                this.encodeURIComponent(identityHref, true)],
             {queryParams: queryParams}
         );
     }
