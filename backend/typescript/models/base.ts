@@ -88,6 +88,26 @@ export interface IRAMObject extends mongoose.Document {
     delete(): void;
 }
 
+export interface IRAMObjectContract {
+    createdAt: Date;
+    updatedAt: Date;
+    deleteInd: boolean;
+    resourceVersion: string;
+    save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this>;
+}
+
+// exists for type safety only
+export class RAMObjectContractImpl implements IRAMObjectContract {
+    constructor(public createdAt: Date,
+                public updatedAt: Date,
+                public deleteInd: boolean,
+                public resourceVersion: string) {
+    }
+    public save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this> {
+        return null;
+    }
+}
+
 export const RAMSchema = (schema: Object) => {
 
     //noinspection ReservedWordAsName
@@ -128,6 +148,7 @@ export interface ICodeDecodeContract {
     code: string;
 }
 
+// exists for type safety only
 export class CodeDecodeContractImpl implements ICodeDecodeContract {
     constructor(public shortDecodeText: string,
                 public longDecodeText: string,
