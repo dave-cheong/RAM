@@ -432,6 +432,7 @@ case "$1" in
     echo "$(tput setaf 3)    deps:frontend                        $(tput sgr0)      Downloads frontend dependencies"
     echo "$(tput setaf 3)    deps:backend                         $(tput sgr0)      Downloads backend dependencies"
     echo "$(tput setaf 3)    deps:test                            $(tput sgr0)      Downloads api test dependencies"
+    echo "$(tput setaf 3)    deps:clean                           $(tput sgr0)      Removes node_modules and typings folders"
     echo "$(tput setaf 3)    jspm                                 $(tput sgr0)      Builds the jspm dist file"
     echo ""
     echo "$(tput setaf 3)    feature:start                        $(tput sgr0)      Creates local and remote feature branch"
