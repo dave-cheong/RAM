@@ -9,7 +9,7 @@
 <authorisation-type [data]='newRelationship.authType' [options]='relationshipTypeRefs' (dataChange)="authTypeChange($event)" (isValid)='authTypeIsValid=$event'>
 </authorisation-type>
 
-<authorisation-management [(data)]='newRelationship.authorisationManagement' [attributeNameUsage]='manageAuthAttribute'></authorisation-management>
+<authorisation-management [(data)]='newRelationship.authorisationManagement' [attributeNameUsage]='manageAuthAttribute' [disabled]="disableAuthMgmt"></authorisation-management>
 
 <authorisation-permissions (validationErrors)='authorisationPermissionErrors=$event'></authorisation-permissions>
 
