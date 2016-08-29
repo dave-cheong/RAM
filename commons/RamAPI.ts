@@ -169,6 +169,12 @@ export interface ISearchResult<T> {
 
 export class SearchResult<T> implements ISearchResult<T> {
 
+    public static build(sourceObject: any, targetClass: any): ILink {
+        return new Builder<ILink>(sourceObject, this)
+            .mapArray('list', HrefValue, targetClass)
+            .build();
+    }
+
     constructor(public page: number, public totalCount: number, public pageSize: number, public list: T[]) {
     }
 
@@ -208,6 +214,11 @@ export interface ILink {
 }
 
 export class Link implements ILink {
+    public static build(sourceObject: any): ILink {
+        return new Builder<ILink>(sourceObject, this)
+            .build();
+    }
+
     constructor(public type: string,
                 public method: string,
                 public href: string) {
@@ -229,6 +240,11 @@ export interface ICodeDecode {
 }
 
 export class CodeDecode implements ICodeDecode {
+    public static build(sourceObject: any): ICodeDecode {
+        return new Builder<ICodeDecode>(sourceObject, this)
+            .build();
+    }
+
     constructor(public code: string,
                 public shortDecodeText: string,
                 public longDecodeText: string,
@@ -248,6 +264,13 @@ export interface IPrincipal {
 }
 
 export class Principal implements IPrincipal {
+    public static build(sourceObject: any): IPrincipal {
+        return new Builder<IPrincipal>(sourceObject, this)
+            .map('agencyUser', AgencyUser)
+            .map('identity', Identity)
+            .build();
+    }
+
     constructor(public id: string,
                 public displayName: string,
                 public agencyUserInd: boolean,
@@ -267,6 +290,12 @@ export interface IAgencyUser {
 }
 
 export class AgencyUser implements IAgencyUser {
+    public static build(sourceObject: any): IAgencyUser {
+        return new Builder<IAgencyUser>(sourceObject, this)
+            .mapArray('programRoles', AgencyUserProgramRole)
+            .build();
+    }
+
     constructor(public id: string,
                 public givenName: string,
                 public familyName: string,
@@ -284,6 +313,11 @@ export interface IAgencyUserProgramRole {
 }
 
 export class AgencyUserProgramRole implements IAgencyUserProgramRole {
+    public static build(sourceObject: any): IAgencyUserProgramRole {
+        return new Builder<IAgencyUserProgramRole>(sourceObject, this)
+            .build();
+    }
+
     constructor(public program: string,
                 public role: string) {
     }
@@ -297,6 +331,11 @@ export interface IAUSkey {
 }
 
 export class AUSkey implements IAUSkey {
+    public static build(sourceObject: any): IAUSkey {
+        return new Builder<IAUSkey>(sourceObject, this)
+            .build();
+    }
+
     constructor(public id: string,
                 public auskeyType: string) {
     }
@@ -307,10 +346,17 @@ export class AUSkey implements IAUSkey {
 export interface IParty extends IHasLinks {
     _links: ILink[];
     partyType: string;
-    identities: Array<IHrefValue<IIdentity>>;
+    identities: IHrefValue<IIdentity>[];
 }
 
 export class Party implements IParty {
+    public static build(sourceObject: any): IParty {
+        return new Builder<IParty>(sourceObject, this)
+            .mapArray('_links', Link)
+            .mapArray('identities', HrefValue, Identity)
+            .build();
+    }
+
     constructor(public _links: ILink[],
                 public partyType: string,
                 public identities: HrefValue<Identity>[]) {
@@ -325,6 +371,11 @@ export interface IPartyType {
 }
 
 export class PartyType implements IPartyType {
+    public static build(sourceObject: any): IPartyType {
+        return new Builder<IPartyType>(sourceObject, this)
+            .build();
+    }
+
     constructor(public code: string,
                 public shortDecodeText: string) {
     }
@@ -340,6 +391,14 @@ export interface IName {
 }
 
 export class Name implements IName {
+    public static build(sourceObject: any): IName {
+        return new Builder<IName>(sourceObject, this)
+            .mapHref('delegate', Party)
+            .map('subjectNickName', Name)
+            .map('delegateNickName', Name)
+            .mapArray('attributes', RelationshipAttribute)
+    }
+
     constructor(public givenName: string,
                 public familyName: string,
                 public unstructuredName: string,
@@ -368,6 +427,17 @@ export interface IRelationship extends IHasLinks {
 }
 
 export class Relationship implements IRelationship {
+    public static build(sourceObject: any): IRelationship {
+        return new Builder<IRelationship>(sourceObject, this)
+            .mapHref('relationshipType', RelationshipType)
+            .mapHref('subject', Party)
+            .mapHref('delegate', Party)
+            .map('subjectNickName', Name)
+            .map('delegateNickName', Name)
+            .mapArray('attributes', RelationshipAttribute)
+            .build();
+    }
+
     constructor(public _links: ILink[],
                 public relationshipType: IHrefValue<IRelationshipType>,
                 public subject: IHrefValue<IParty>,
@@ -391,6 +461,11 @@ export interface IRelationshipStatus {
 }
 
 export class RelationshipStatus implements IRelationshipStatus {
+    public static build(sourceObject: any): IRelationshipStatus {
+        return new Builder<IRelationshipStatus>(sourceObject, this)
+            .build();
+    }
+
     constructor(public code: string,
                 public shortDecodeText: string) {
     }
@@ -405,7 +480,7 @@ export interface IRelationshipType extends ICodeDecode {
     category: string;
 }
 
-export class RelationshipType extends CodeDecode implements RelationshipType {
+export class RelationshipType extends CodeDecode implements IRelationshipType {
     public static build(sourceObject: any): IRelationshipType {
         return new Builder<IRelationshipType>(sourceObject, this)
             .mapArray('relationshipAttributeNames', RelationshipAttributeNameUsage)
@@ -485,6 +560,12 @@ interface ISharedSecret {
 }
 
 export class SharedSecret implements ISharedSecret {
+    public static build(sourceObject: any): ISharedSecret {
+        return new Builder<ISharedSecret>(sourceObject, this)
+            .map('sharedSecretType', SharedSecretType)
+            .build();
+    }
+
     constructor(public value: string,
                 public sharedSecretType: SharedSecretType) {
     }
@@ -497,6 +578,11 @@ export interface ISharedSecretType extends ICodeDecode {
 }
 
 export class SharedSecretType extends CodeDecode implements ISharedSecretType {
+    public static build(sourceObject: any): ISharedSecretType {
+        return new Builder<ISharedSecretType>(sourceObject, this)
+            .build();
+    }
+
     constructor(code: string,
                 shortDecodeText: string,
                 longDecodeText: string,
@@ -513,6 +599,11 @@ export interface ILegislativeProgram extends ICodeDecode {
 }
 
 export class LegislativeProgram extends CodeDecode implements ILegislativeProgram {
+    public static build(sourceObject: any): ILegislativeProgram {
+        return new Builder<ILegislativeProgram>(sourceObject, this)
+            .build();
+    }
+
     constructor(code: string,
                 shortDecodeText: string,
                 longDecodeText: string,
@@ -531,6 +622,13 @@ export interface IProfile {
 }
 
 export class Profile implements IProfile {
+    public static build(sourceObject: any): IProfile {
+        return new Builder<IProfile>(sourceObject, this)
+            .map('name', Name)
+            .mapArray('sharedSecrets', SharedSecret)
+            .build();
+    }
+
     constructor(public provider: string,
                 public name: Name,
                 public sharedSecrets: SharedSecret[]) {
@@ -545,6 +643,11 @@ export interface IProfileProvider {
 }
 
 export class ProfileProvider implements IProfileProvider {
+    public static build(sourceObject: any): IProfileProvider {
+        return new Builder<IProfileProvider>(sourceObject, this)
+            .build();
+    }
+
     constructor(public code: string,
                 public shortDecodeText: string) {
     }
@@ -571,6 +674,13 @@ export interface IIdentity extends IHasLinks {
 }
 
 export class Identity implements IIdentity {
+    public static build(sourceObject: any): IIdentity {
+        return new Builder<IIdentity>(sourceObject, this)
+            .map('profile', Profile)
+            .mapHref('party', Party)
+            .build();
+    }
+
     constructor(public _links: ILink[],
                 public idValue: string,
                 public rawIdValue: string,
@@ -598,6 +708,12 @@ export interface IRelationshipAttribute {
 }
 
 export class RelationshipAttribute implements IRelationshipAttribute {
+    public static build(sourceObject: any): IRelationshipAttribute {
+        return new Builder<IRelationshipAttribute>(sourceObject, this)
+            .mapHref('attributeName', RelationshipAttributeName)
+            .build();
+    }
+
     constructor(public value: string[],
                 public attributeName: IHrefValue<IRelationshipAttributeName>) {
     }
@@ -661,6 +777,14 @@ export interface IRole extends IHasLinks {
 }
 
 export class Role implements IRole {
+    public static build(sourceObject: any): IRole {
+        return new Builder<IRole>(sourceObject, this)
+            .mapHref('roleType', RoleType)
+            .mapHref('party', Party)
+            .mapArray('attributes', RoleAttribute)
+            .build();
+    }
+
     constructor(public _links: ILink[],
                 public code: string,
                 public roleType: IHrefValue<IRoleType>,
@@ -683,8 +807,8 @@ export interface IRoleStatus {
 
 export class RoleStatus implements IRoleStatus {
 
-    public static build(sourceObject: any): HrefValue<IRoleStatus> {
-        return new Builder<HrefValue<IRoleStatus>>(sourceObject, this)
+    public static build(sourceObject: any): IRoleStatus {
+        return new Builder<IRoleStatus>(sourceObject, this)
             .build();
     }
 
@@ -701,6 +825,12 @@ export interface IRoleType extends ICodeDecode {
 }
 
 export class RoleType extends CodeDecode implements IRoleType {
+    public static build(sourceObject: any): IRoleType {
+        return new Builder<IRoleType>(sourceObject, this)
+            .mapArray('roleAttributeNames', RoleAttributeNameUsage)
+            .build();
+    }
+
     constructor(code: string,
                 shortDecodeText: string,
                 longDecodeText: string,
@@ -719,6 +849,12 @@ export interface IRoleAttribute {
 }
 
 export class RoleAttribute implements IRoleAttribute {
+    public static build(sourceObject: any): IRoleAttribute {
+        return new Builder<IRoleAttribute>(sourceObject, this)
+            .mapHref('attributeName', RoleAttributeName)
+            .build();
+    }
+
     constructor(public value: string[],
                 public attributeName: IHrefValue<IRoleAttributeName>) {
     }
@@ -733,6 +869,12 @@ export interface IRoleAttributeNameUsage {
 }
 
 export class RoleAttributeNameUsage implements IRoleAttributeNameUsage {
+    public static build(sourceObject: any): IRoleAttributeNameUsage {
+        return new Builder<IRoleAttributeNameUsage>(sourceObject, this)
+            .mapHref('attributeNameDef', RoleAttributeName)
+            .build();
+    }
+
     constructor(public optionalInd: boolean,
                 public defaultValue: string,
                 public attributeNameDef: IHrefValue<IRoleAttributeName>) {
@@ -749,6 +891,11 @@ export interface IRoleAttributeName extends ICodeDecode {
 }
 
 export class RoleAttributeName extends CodeDecode implements IRoleAttributeName {
+    public static build(sourceObject: any): IRoleAttributeName {
+        return new Builder<IRoleAttributeName>(sourceObject, this)
+            .build();
+    }
+
     constructor(code: string,
                 shortDecodeText: string,
                 longDecodeText: string,
@@ -772,6 +919,11 @@ export interface ITransactRequest {
 }
 
 export class TransactRequest implements ITransactRequest {
+    public static build(sourceObject: any): ITransactRequest {
+        return new Builder<ITransactRequest>(sourceObject, this)
+            .build();
+    }
+
     constructor(public clientABN: string,
                 public ssid: string,
                 public agencyService: string) {
@@ -784,6 +936,12 @@ export interface ITransactResponse {
 }
 
 export class TransactResponse implements ITransactResponse {
+    public static build(sourceObject: any): ITransactResponse {
+        return new Builder<ITransactResponse>(sourceObject, this)
+            .map('request', TransactRequest)
+            .build();
+    }
+
     constructor(public request: ITransactRequest,
                 public allowed: boolean) {
     }
