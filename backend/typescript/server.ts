@@ -18,7 +18,6 @@ import {Translator} from './ram/translator';
 // DEVELOPMENT CONTROLLERS
 import {AuthenticatorSimulatorController} from './controllers/authenticator.simulator.controller';
 import {AgencyUserController} from './controllers/agencyUser.controller';
-import {ResetController} from './controllers/reset.server.controller';
 
 // PRODUCTION CONTROLLERS
 import {SystemController} from './controllers/system.controller';
@@ -102,9 +101,6 @@ if (conf.devMode) {
 server.use('/api/',
     new AgencyUserController()
         .assignRoutes(express.Router()));
-
-server.use('/api/reset',
-    new ResetController().assignRoutes(express.Router()));
 
 // setup route handlers (production) ..................................................................................
 
