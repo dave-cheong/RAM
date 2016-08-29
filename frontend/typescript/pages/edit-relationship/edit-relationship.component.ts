@@ -64,6 +64,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public manageAuthAttribute: IRelationshipAttributeNameUsage;
 
     public authType: string = 'choose';
+    public disableAuthMgmt: boolean = true;
 
     public newRelationship: AddRelationshipComponentData = {
         accessPeriod: {
@@ -112,14 +113,12 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         // relationship types
         this.relationshipTypes$ = this.services.rest.listRelationshipTypes();
         this.relationshipTypes$.subscribe((relationshipTypeRefs) => {
+            // filter the relationship types to those that can be chosen here
             this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
                 return relationshipType.value.managedExternallyInd === false
                     && relationshipType.value.category === RAMConstants.RelationshipTypeCategory.AUTHORISATION;
             });
         });
-
-        // delegate managed attribute
-        this.resolveManageAuthAttribute('UNIVERSAL_REPRESENTATIVE', 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND');
 
     }
 
@@ -193,23 +192,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     };
 
-    public resolveManageAuthAttribute(relationshipTypeCode: string, attributeNameCode: string) {
-        this.relationshipTypes$
-            .subscribe(relationshipTypeHrefValues => {
-                // find the relationship type
-                const relationshipTypeHrefValue = relationshipTypeHrefValues.filter((relationshipTypeHrefValue) => {
-                    return relationshipTypeHrefValue.value.code === relationshipTypeCode;
-                });
-
-                // find the attribute name
-                let manageAuthAttributes = relationshipTypeHrefValue[0].value.relationshipAttributeNames
-                    .filter((attributeName) => attributeName.attributeNameDef.value.code === attributeNameCode);
-                if (manageAuthAttributes.length === 1) {
-                    this.manageAuthAttribute = manageAuthAttributes[0];
-                }
-            });
-    }
-
     public displayName(repDetails: RepresentativeDetailsComponentData) {
         if (repDetails.organisation) {
             return repDetails.organisation.abn;
@@ -222,7 +204,24 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         // TODO calculate declaration markdown based on relationship type and services selected
         // TODO update declaration component to show new text
         this.newRelationship.declaration.markdown = 'TODO '+data.authType;
-    }
+
+        // find the selected relationship type by code
+        let selectedRelationshipType = this.services.model.getRelationshipTypeByCode(this.relationshipTypeRefs, data.authType);
+        if(selectedRelationshipType) {
+            const allowManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND');
+            const canChangeManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, 'DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND');
+
+            this.manageAuthAttribute = allowManageAuthorisationUsage;
+
+            // get the default value for the relationship type
+            this.newRelationship.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
+            // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
+            this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage===null : true
+        } else {
+            this.disableAuthMgmt = true;
+        }
+    };
+
 }
 
 export interface AddRelationshipComponentData {

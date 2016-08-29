@@ -2,7 +2,7 @@
     <div class="panel-heading">
         <h4><span class="badge square">3</span> {{'addRelationship.authMgmt.header' | translate}}</h4></div>
     <!-- TODO this might be better served as a BOOLEAN attribute name value component if that is the direction we want to take -->
-    <div class="panel-body">
+    <div *ngIf="attributeNameUsage" class="panel-body">
         <div class="col-md-10 padding-btn-20">
             <h4>{{ attributeNameUsage?.attributeNameDef?.value?.shortDecodeText}}</h4>
             <p>{{ attributeNameUsage?.attributeNameDef?.value?.longDecodeText}}</p>
@@ -12,11 +12,11 @@
                 <div class="radio">
                     <div class="row">
                         <div class="col-md-6">
-                            <label><h4><input type="radio" name="canManagePermissions" value="true" (change)="setCanManagePermissions('true')">{{'yes' | translate}}</h4></label>
+                            <label><h4><input type="radio" name="canManagePermissions" [disabled]="disabled" value="true" (change)="setCanManagePermissions('true')">{{'yes' | translate}}</h4></label>
                         </div>
                         <div class="col-md-6">
                             <!-- TODO data drive the checked field -->
-                            <label><h4><input type="radio" name="canManagePermissions" value="false" checked (change)="setCanManagePermissions('false')">{{'no' | translate}}</h4></label>
+                            <label><h4><input type="radio" name="canManagePermissions" [disabled]="disabled" value="false" checked (change)="setCanManagePermissions('false')">{{'no' | translate}}</h4></label>
                         </div>
                     </div>
                 </div>
