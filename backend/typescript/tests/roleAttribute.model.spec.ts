@@ -69,8 +69,8 @@ describe('RAM Role Attribute', () => {
                     });
 
                     roleAttribute1 = await RoleAttributeModel.create({
-                        value: 'true',
-                        attributeName: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName
+                        value: 'Preferred Name 1',
+                        attributeName: Seeder.preferredName_roleAttributeName
                     });
 
                     role1 = await RoleModel.create({

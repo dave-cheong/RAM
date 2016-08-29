@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import {IRAMObject, RAMSchema, Model} from './base';
 import {RoleModel} from './role.model';
 import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.model';
 import {
@@ -15,13 +16,23 @@ const _RoleAttributeNameModel = RoleAttributeNameModel;
 
 // enums, utilities, helpers ..........................................................................................
 
+// exports ............................................................................................................
+
+export interface IRoleAttribute extends IRAMObject, IRoleAttributeInstanceContract {
+}
+
+export interface IRoleAttributeModel extends mongoose.Model<IRoleAttribute>, IRoleAttributeStaticContract {
+}
+
+export let RoleAttributeModel: IRoleAttributeModel;
+
 // schema .............................................................................................................
 
-const RoleAttributeSchema = new mongoose.Schema({
+const RoleAttributeSchema = RAMSchema({
     value: {
-      type: [String],
-      required: false,
-      trim: true
+        type: [String],
+        required: false,
+        trim: true
     },
     attributeName: {
         type: mongoose.Schema.Types.ObjectId,
@@ -30,32 +41,41 @@ const RoleAttributeSchema = new mongoose.Schema({
     }
 });
 
-// interfaces .........................................................................................................
+// instance ...........................................................................................................
 
-export interface IRoleAttribute extends mongoose.Document {
-    value?: string[];
+interface IRoleAttributeInstanceContract {
+    value: string[];
     attributeName: IRoleAttributeName;
-    toDTO():Promise<DTO>;
+    toDTO(): Promise<DTO>;
 }
 
-/* tslint:disable:no-empty-interfaces */
-export interface IRoleAttributeModel extends mongoose.Model<IRoleAttribute> {
+class RoleAttributeInstanceContractImpl implements IRoleAttributeInstanceContract {
+
+    public value: string[];
+    public attributeName: IRoleAttributeName;
+
+    public async toDTO(): Promise<DTO> {
+        return new DTO(
+            this.value,
+            await this.attributeName.toHrefValue(true)
+        );
+    }
 
 }
 
-// instance methods ...................................................................................................
+// static .............................................................................................................
 
-RoleAttributeSchema.method('toDTO', async function () {
-    return new DTO(
-        this.value,
-        await this.attributeName.toHrefValue(true)
-    );
-});
+interface IRoleAttributeStaticContract {
+}
 
-// static methods .....................................................................................................
+class RoleAttributeStaticContractImpl implements IRoleAttributeStaticContract {
+}
 
 // concrete model .....................................................................................................
 
-export const RoleAttributeModel = mongoose.model(
+RoleAttributeModel = Model(
     'RoleAttribute',
-    RoleAttributeSchema) as IRoleAttributeModel;
+    RoleAttributeSchema,
+    RoleAttributeInstanceContractImpl,
+    RoleAttributeStaticContractImpl
+) as IRoleAttributeModel;

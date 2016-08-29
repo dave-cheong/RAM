@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {ICodeDecode, CodeDecodeSchema, Model} from './base';
+import {ICodeDecode, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -27,11 +27,11 @@ const SharedSecretTypeSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-interface ISharedSecretTypeInstanceContract {
+interface ISharedSecretTypeInstanceContract extends ICodeDecodeContract {
     domain: string;
 }
 
-class SharedSecretTypeInstanceContractImpl implements ISharedSecretTypeInstanceContract {
+class SharedSecretTypeInstanceContractImpl extends CodeDecodeContractImpl implements ISharedSecretTypeInstanceContract {
 
     public domain: string;
 
