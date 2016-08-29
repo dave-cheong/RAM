@@ -8,8 +8,7 @@ import {IName, NameModel} from './name.model';
 import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model';
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
 import {RelationshipAttributeNameModel} from './relationshipAttributeName.model';
-import {IdentityModel, IIdentity, IdentityType, IdentityInvitationCodeStatus} from './identity.model';
-import {IdentityPublicIdentifierScheme} from './identity.model';
+import {IdentityModel, IIdentity, IdentityType, IdentityInvitationCodeStatus, IdentityPublicIdentifierScheme} from './identity.model';
 import {context} from '../providers/context.provider';
 import {
     HrefValue,
