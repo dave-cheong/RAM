@@ -58,6 +58,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     public relationshipTypes$: Observable<IHrefValue<IRelationshipType>[]>;
     public relationshipTypeRefs: IHrefValue<IRelationshipType>[];
+    public permissionAttributeUsages: { [relationshipTypeCode: string]: IRelationshipAttributeNameUsage[] } = {};
 
     public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public identity: IIdentity;
@@ -118,8 +119,9 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 return relationshipType.value.managedExternallyInd === false
                     && relationshipType.value.category === RAMConstants.RelationshipTypeCategory.AUTHORISATION;
             });
-        });
 
+            this.resolveAttributeUsages();
+        });
     }
 
     public back = () => {
@@ -191,6 +193,13 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         });
 
     };
+
+    public resolveAttributeUsages() {
+        for (let relTypeRef of this.relationshipTypeRefs) {
+            const attributeNames = relTypeRef.value.relationshipAttributeNames;
+            this.permissionAttributeUsages[relTypeRef.value.code] = attributeNames.filter((attName) => { return attName.attributeNameDef.value.classifier === 'PERMISSION'; });
+        }
+    }
 
     public displayName(repDetails: RepresentativeDetailsComponentData) {
         if (repDetails.organisation) {

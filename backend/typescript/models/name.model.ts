@@ -1,11 +1,9 @@
 import * as mongoose from 'mongoose';
-import {IRAMObject, RAMSchema, Model} from './base';
+import {IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
 import {
     HrefValue,
     Name as DTO
 } from '../../../commons/RamAPI';
-
-// enums, utilities, helpers ..........................................................................................
 
 // exports ............................................................................................................
 
@@ -16,6 +14,8 @@ export interface INameModel extends mongoose.Model<IName>, INameStaticContract {
 }
 
 export let NameModel: INameModel;
+
+// enums, utilities, helpers ..........................................................................................
 
 // schema .............................................................................................................
 
@@ -60,7 +60,7 @@ NameSchema.pre('validate', function (next: () => void) {
 
 // instance ...........................................................................................................
 
-interface INameInstanceContract {
+interface INameInstanceContract extends IRAMObjectContract {
     givenName?: string;
     familyName?: string;
     unstructuredName?: string;
@@ -69,7 +69,7 @@ interface INameInstanceContract {
     toDTO(): Promise<DTO>;
 }
 
-class NameInstanceContractImpl implements INameInstanceContract {
+class NameInstanceContractImpl extends RAMObjectContractImpl implements INameInstanceContract {
 
     public givenName: string;
     public familyName: string;
@@ -110,4 +110,3 @@ NameModel = Model(
     NameInstanceContractImpl,
     NameStaticContractImpl
 ) as INameModel;
-

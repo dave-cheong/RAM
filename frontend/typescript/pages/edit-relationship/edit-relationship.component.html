@@ -11,9 +11,11 @@
 
 <authorisation-management [(data)]='newRelationship.authorisationManagement' [attributeNameUsage]='manageAuthAttribute' [disabled]="disableAuthMgmt"></authorisation-management>
 
+<authorisation-permissions (validationErrors)='authorisationPermissionErrors=$event'></authorisation-permissions>
+
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h4><span class="badge square">4</span> {{'addRelationship.accessPeriod.header' | translate}}</h4>
+        <h4><span class="badge square">5</span> {{'addRelationship.accessPeriod.header' | translate}}</h4>
     </div>
     <div class="panel-body">
 
@@ -23,11 +25,9 @@
     </div>
 </div>
 
-<!--authorisation-permissions (validationErrors)='authorisationPermissionErrors=$event'></authorisation-permissions-->
-
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h4><span class="badge square">5</span> {{'addRelationship.declaration.header' | translate}}</h4>
+        <h4><span class="badge square">6</span> {{'addRelationship.declaration.header' | translate}}</h4>
     </div>
     <div class="panel-body">
 

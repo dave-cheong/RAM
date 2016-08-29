@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, IRAMObject, RAMSchema, Model} from './base';
+import {RAMEnum, IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
 import {Url} from './url';
 import {IName, NameModel} from './name.model';
 import {ISharedSecret, SharedSecretModel} from './sharedSecret.model';
@@ -16,6 +16,16 @@ const _NameModel = NameModel;
 
 /* tslint:disable:no-unused-variable */
 const _SharedSecretModel = SharedSecretModel;
+
+// exports ............................................................................................................
+
+export interface IProfile extends IRAMObject, IProfileInstanceContract {
+}
+
+export interface IProfileModel extends mongoose.Model<IProfile>, IProfileStaticContract {
+}
+
+export let ProfileModel: IProfileModel;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -55,16 +65,6 @@ export class ProfileProvider extends RAMEnum {
     }
 }
 
-// exports ............................................................................................................
-
-export interface IProfile extends IRAMObject, IProfileInstanceContract {
-}
-
-export interface IProfileModel extends mongoose.Model<IProfile>, IProfileStaticContract {
-}
-
-export let ProfileModel: IProfileModel;
-
 // schema .............................................................................................................
 
 const ProfileSchema = RAMSchema({
@@ -87,7 +87,7 @@ const ProfileSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-export interface IProfileInstanceContract {
+export interface IProfileInstanceContract extends IRAMObjectContract {
     provider: string;
     name: IName;
     sharedSecrets: [ISharedSecret];
@@ -97,7 +97,7 @@ export interface IProfileInstanceContract {
     toDTO(): Promise<DTO>;
 }
 
-class ProfileInstanceContractImpl implements IProfileInstanceContract {
+class ProfileInstanceContractImpl extends RAMObjectContractImpl implements IProfileInstanceContract {
 
     public provider: string;
     public name: IName;

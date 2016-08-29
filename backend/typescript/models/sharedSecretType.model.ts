@@ -1,9 +1,5 @@
 import * as mongoose from 'mongoose';
-import {ICodeDecode, CodeDecodeSchema, Model} from './base';
-
-// enums, utilities, helpers ..........................................................................................
-
-export const DOB_SHARED_SECRET_TYPE_CODE = 'DATE_OF_BIRTH';
+import {ICodeDecode, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
 
 // exports ............................................................................................................
 
@@ -14,6 +10,10 @@ export interface ISharedSecretTypeModel extends mongoose.Model<ISharedSecretType
 }
 
 export let SharedSecretTypeModel: ISharedSecretTypeModel;
+
+// enums, utilities, helpers ..........................................................................................
+
+export const DOB_SHARED_SECRET_TYPE_CODE = 'DATE_OF_BIRTH';
 
 // schema .............................................................................................................
 
@@ -27,11 +27,11 @@ const SharedSecretTypeSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-interface ISharedSecretTypeInstanceContract {
+interface ISharedSecretTypeInstanceContract extends ICodeDecodeContract {
     domain: string;
 }
 
-class SharedSecretTypeInstanceContractImpl implements ISharedSecretTypeInstanceContract {
+class SharedSecretTypeInstanceContractImpl extends CodeDecodeContractImpl implements ISharedSecretTypeInstanceContract {
 
     public domain: string;
 

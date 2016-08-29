@@ -1,14 +1,12 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import {IRAMObject, RAMSchema, Model} from './base';
+import {IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
 import {ISharedSecretType, SharedSecretTypeModel} from './sharedSecretType.model';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
 /* tslint:disable:no-unused-variable */
 const _SharedSecretTypeModel = SharedSecretTypeModel;
-
-// enums, utilities, helpers ..........................................................................................
 
 // exports ............................................................................................................
 
@@ -19,6 +17,8 @@ export interface ISharedSecretModel extends mongoose.Model<ISharedSecret>, IShar
 }
 
 export let SharedSecretModel: ISharedSecretModel;
+
+// enums, utilities, helpers ..........................................................................................
 
 // schema .............................................................................................................
 
@@ -43,13 +43,13 @@ const SharedSecretSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-interface ISharedSecretInstanceContract {
+interface ISharedSecretInstanceContract extends IRAMObjectContract {
     value: string;
     sharedSecretType: ISharedSecretType;
     matchesValue(candidateValue: string): boolean;
 }
 
-class SharedSecretInstanceContractImpl implements ISharedSecretInstanceContract {
+class SharedSecretInstanceContractImpl extends RAMObjectContractImpl implements ISharedSecretInstanceContract {
 
     public value: string;
     public sharedSecretType: ISharedSecretType;
