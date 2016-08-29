@@ -32,6 +32,11 @@ export class ExampleDataExport {
             'RelationshipType : UNIVERSAL_REPRESENTATIVE'
         );
 
+        this.add(
+            await RelationshipTypeModel.findByCodeIgnoringDateRange('CUSTOM_REPRESENTATIVE'),
+            'RelationshipType : CUSTOM_REPRESENTATIVE'
+        );
+
         // Relationship
         const associate:IRelationship = await RelationshipModel.findOne({
             '_delegateNickNameString' : 'Jennifer Maxims',

@@ -182,7 +182,7 @@ describe('RAM Role', () => {
             );
 
             // perform
-            role.deleteAttribute(roleAttribute.attributeName.code, roleAttribute.attributeName.classifier);
+            await role.deleteAttribute(roleAttribute.attributeName.code, roleAttribute.attributeName.classifier);
 
             // verify
             const actualRole = await RoleModel.findById(role.id).exec();
@@ -192,8 +192,6 @@ describe('RAM Role', () => {
             // attribute should no longer exist
             const actualRoleAttribute = await RoleAttributeModel.findById(roleAttribute.id);
             expect(actualRoleAttribute).toBe(null);
-
-            expect(role).not.toBeNull();
 
             done();
 

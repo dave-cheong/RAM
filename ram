@@ -279,13 +279,15 @@ case "$1" in
   #     ./ram test:backend --test relationshipType.model
   'test:backend')
     echo ""
+    echo "Dropping test database"
+    mongo ram-test --eval "db.dropDatabase()"
     echo "Starting backend tests"
     echo ""
     cd backend
     if [ -z "$3" ]; then
       RAM_CONF=$DIR/backend/conf/conf-test.js gulp test
     else
-      RAM_CONF=$DIR/backend/conf/conf-test.js gulp test "$2" "$3"
+      RAM_CONF=$DIR/backend/conf/conf-test.js gulp test "$2" "$3" --no-lint
     fi
     exit $?
     ;;
@@ -301,7 +303,7 @@ case "$1" in
     if [ -z "$3" ]; then
       gulp test
     else
-      gulp test "$2" "$3"
+      gulp test "$2" "$3" --no-lint
     fi
     exit $?
     ;;
