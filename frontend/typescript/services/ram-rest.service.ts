@@ -24,7 +24,7 @@ import {
     IRoleType,
     IRoleStatus,
     INotifyDelegateDTO,
-    IAUSkey, RoleStatus, HrefValue
+    IAUSkey, RoleStatus, HrefValue, RelationshipType
 } from '../../../commons/RamAPI';
 import {ABRentry} from '../../../commons/abr';
 
@@ -282,7 +282,7 @@ export class RAMRestService {
     public listRelationshipTypes(): Observable<IHrefValue<IRelationshipType>[]> {
         return this.http
             .get('/api/v1/relationshipTypes')
-            .map(this.extractDataDeprecated);
+            .map(this.extractDataHrefValue(RelationshipType));
     }
 
     // role ...........................................................................................................
@@ -397,14 +397,12 @@ export class RAMRestService {
             if (Array.isArray(payload)) {
                 const result: any[] = [];
                 for (let payloadElement of payload) {
-                    const hrefValueObject = Object.create(HrefValue.prototype);
-                    hrefValueObject.build(payloadElement, targetClass);
+                    const hrefValueObject = HrefValue.build(payloadElement, targetClass);
                     result.push(hrefValueObject);
                 }
                 return result;
             } else {
-                const hrefValueObject = Object.create(HrefValue.prototype);
-                hrefValueObject.build(payload, targetClass);
+                const hrefValueObject = HrefValue.build(payload, targetClass);
                 return hrefValueObject;
             }
         };
@@ -419,14 +417,12 @@ export class RAMRestService {
             if (Array.isArray(payload)) {
                 const result: any[] = [];
                 for (let payloadElement of payload) {
-                    const targetObject = Object.create(targetClass.prototype);
-                    targetObject.build(payloadElement);
+                    const targetObject = targetClass.build(payloadElement);
                     result.push(targetObject);
                 }
                 return result;
             } else {
-                const targetObject = Object.create(targetClass.prototype);
-                targetObject.build(payload);
+                const targetObject = targetClass.build(payload);
                 return targetObject;
             }
         };

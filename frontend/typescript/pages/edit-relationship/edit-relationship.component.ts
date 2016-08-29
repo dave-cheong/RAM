@@ -197,7 +197,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public resolveAttributeUsages() {
         for (let relTypeRef of this.relationshipTypeRefs) {
             const attributeNames = relTypeRef.value.relationshipAttributeNames;
-            this.permissionAttributeUsages[relTypeRef.value.code] = attributeNames.filter((attName) => { return attName.attributeNameDef.value.classifier === 'PERMISSION'; });
+            this.permissionAttributeUsages[relTypeRef.value.code] = attributeNames.filter((attName) => { return attName.attributeNameDef.value.classifier === RAMConstants.RelationshipAttributeNameClassifier.PERMISSION; });
         }
     }
 

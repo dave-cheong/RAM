@@ -3,13 +3,19 @@
 export class Builder<T> {
 
     private targetObject: any;
+    private knownKeys: string[] = [];
 
     constructor(public sourceObject: any, public targetClass: any) {
         this.targetObject = Object.create(targetClass.prototype);
     }
 
+    public mapHref(key: string, targetClass: any): Builder<T> {
+        return this.map(key, HrefValue, targetClass);
+    }
+
     public map(key: string, targetClass: any, targetGenericClass?: any): Builder<T> {
         if (key !== null && key !== undefined) {
+            this.knownKeys.push(key);
             const newSourceObject = this.sourceObject[key];
             if (newSourceObject !== null && newSourceObject !== undefined && typeof newSourceObject === 'object') {
                 //noinspection UnnecessaryLocalVariableJS
@@ -22,6 +28,7 @@ export class Builder<T> {
 
     public mapArray(key: string, targetClass: any, targetGenericClass?: any): Builder<T> {
         if (key !== null && key !== undefined) {
+            this.knownKeys.push(key);
             const newTargetObjectArray: any[] = [];
             const newSourceObjectArray = this.sourceObject[key];
             if (newSourceObjectArray !== null && newSourceObjectArray !== undefined) {
@@ -39,14 +46,16 @@ export class Builder<T> {
 
     private mapPrimitives(sourceObject: any, targetObject: any) {
         for (let key of Object.keys(sourceObject)) {
-            let value = sourceObject[key];
-            if (value !== undefined && value !== null) {
-                if (key === 'timestamp' || key.indexOf('Timestamp') !== -1 || key.endsWith('At')) {
-                    if (value) {
-                        targetObject[key] = new Date(value);
+            if (this.knownKeys.indexOf(key) === -1) {
+                let value = sourceObject[key];
+                if (value !== undefined && value !== null) {
+                    if (key === 'timestamp' || key.indexOf('Timestamp') !== -1 || key.endsWith('At')) {
+                        if (value) {
+                            targetObject[key] = new Date(value);
+                        }
+                    } else {
+                        targetObject[key] = value;
                     }
-                } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-                    targetObject[key] = value;
                 }
             }
         }
@@ -397,6 +406,12 @@ export interface IRelationshipType extends ICodeDecode {
 }
 
 export class RelationshipType extends CodeDecode implements RelationshipType {
+    public static build(sourceObject: any): IRelationshipType {
+        return new Builder<IRelationshipType>(sourceObject, this)
+            .mapArray('relationshipAttributeNames', RelationshipAttributeNameUsage)
+            .build();
+    }
+
     constructor(code: string,
                 shortDecodeText: string,
                 longDecodeText: string,
@@ -420,6 +435,12 @@ export interface IRelationshipAttributeNameUsage {
 }
 
 export class RelationshipAttributeNameUsage implements IRelationshipAttributeNameUsage {
+    public static build(sourceObject: any): IRelationshipAttributeNameUsage {
+        return new Builder<IRelationshipAttributeNameUsage>(sourceObject, this)
+            .mapHref('attributeNameDef', RelationshipAttributeName)
+            .build();
+    }
+
     constructor(public optionalInd: boolean,
                 public defaultValue: string,
                 public attributeNameDef: HrefValue<RelationshipAttributeName>,
@@ -437,6 +458,11 @@ export interface IRelationshipAttributeName extends ICodeDecode {
 }
 
 export class RelationshipAttributeName extends CodeDecode implements IRelationshipAttributeName {
+    public static build(sourceObject: any): IRelationshipAttributeName {
+        return new Builder<IRelationshipAttributeName>(sourceObject, this)
+            .build();
+    }
+
     constructor(code: string,
                 shortDecodeText: string,
                 longDecodeText: string,
