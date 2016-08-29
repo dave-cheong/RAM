@@ -198,6 +198,7 @@ export const Model = (name: string, schema: mongoose.Schema, instanceContract: a
 
     // console.log('model: ', name);
 
+    // loop through all immediately declared functions and add to the schema
     Object.getOwnPropertyNames(instanceContract.prototype).forEach((key, index) => {
         // console.log('  method: ' + key);
         let value = instanceContract.prototype[key];
@@ -207,6 +208,7 @@ export const Model = (name: string, schema: mongoose.Schema, instanceContract: a
         }
     });
 
+    // loop through all immediately declared functions and add to the schema
     Object.getOwnPropertyNames(staticContract.prototype).forEach((key, index) => {
         // console.log('  static: ' + key);
         let value = staticContract.prototype[key];
