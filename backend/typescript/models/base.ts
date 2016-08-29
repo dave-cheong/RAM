@@ -120,6 +120,23 @@ export interface ICodeDecode extends mongoose.Document {
 
 }
 
+export interface ICodeDecodeContract {
+    shortDecodeText: string;
+    longDecodeText: string;
+    startDate: Date;
+    endDate: Date;
+    code: string;
+}
+
+export class CodeDecodeContractImpl implements ICodeDecodeContract {
+    constructor(public shortDecodeText: string,
+                public longDecodeText: string,
+                public startDate: Date,
+                public endDate: Date,
+                public code: string) {
+    }
+}
+
 /* tslint:disable:max-func-body-length */
 export const CodeDecodeSchema = (schema: Object) => {
 
