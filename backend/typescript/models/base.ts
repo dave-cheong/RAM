@@ -96,7 +96,7 @@ export interface IRAMObjectContract {
     save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this>;
 }
 
-// exists for type safety only
+// exists for type safety only, do not add functions here
 export class RAMObjectContractImpl implements IRAMObjectContract {
     constructor(public createdAt: Date,
                 public updatedAt: Date,
@@ -127,6 +127,7 @@ export const RAMSchema = (schema: Object) => {
     });
 
     return result;
+
 };
 
 export interface ICodeDecode extends mongoose.Document {
@@ -135,9 +136,6 @@ export interface ICodeDecode extends mongoose.Document {
     startDate: Date;
     endDate: Date;
     code: string;
-
-    /** Instance methods below */
-
 }
 
 export interface ICodeDecodeContract {
@@ -148,7 +146,7 @@ export interface ICodeDecodeContract {
     code: string;
 }
 
-// exists for type safety only
+// exists for type safety only, do not add functions here
 export class CodeDecodeContractImpl implements ICodeDecodeContract {
     constructor(public shortDecodeText: string,
                 public longDecodeText: string,
@@ -198,7 +196,10 @@ export const CodeDecodeSchema = (schema: Object) => {
 
 export const Model = (name: string, schema: mongoose.Schema, instanceContract: any, staticContract: any) => {
 
+    // console.log('model: ', name);
+
     Object.getOwnPropertyNames(instanceContract.prototype).forEach((key, index) => {
+        // console.log('  method: ' + key);
         let value = instanceContract.prototype[key];
         if (key !== 'constructor') {
             // console.log(key, value);
@@ -207,6 +208,7 @@ export const Model = (name: string, schema: mongoose.Schema, instanceContract: a
     });
 
     Object.getOwnPropertyNames(staticContract.prototype).forEach((key, index) => {
+        // console.log('  static: ' + key);
         let value = staticContract.prototype[key];
         if (key !== 'constructor') {
             // console.log(key, value);

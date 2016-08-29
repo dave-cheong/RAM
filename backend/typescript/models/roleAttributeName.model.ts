@@ -89,27 +89,6 @@ const RoleAttributeNameSchema = CodeDecodeSchema({
     }]
 });
 
-// interfaces .........................................................................................................
-
-export interface IRoleAttributeName extends ICodeDecode {
-    domain: string;
-    classifier: string;
-    category?: string;
-    purposeText: string;
-    permittedValues: string[];
-    domainEnum(): RoleAttributeNameDomain;
-    isInDateRange(): boolean;
-    toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>>;
-    toDTO(): Promise<DTO>;
-}
-
-export interface IRoleAttributeNameModel extends mongoose.Model<IRoleAttributeName> {
-    findByCodeIgnoringDateRange: (code:string) => Promise<IRoleAttributeName>;
-    findByCodeInDateRange: (code:string, date:Date) => Promise<IRoleAttributeName>;
-    listIgnoringDateRange: () => Promise<IRoleAttributeName[]>;
-    listInDateRange: (date:Date) => Promise<IRoleAttributeName[]>;
-}
-
 // instance ...........................................................................................................
 
 interface IRoleAttributeNameInstanceContract extends ICodeDecodeContract {
