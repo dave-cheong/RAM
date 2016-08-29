@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import * as mongooseAutoIncrement from 'mongoose-auto-increment';
 import {conf} from '../bootstrap';
 import * as Hashids from 'hashids';
-import {RAMEnum, IRAMObject, RAMSchema} from './base';
+import {RAMEnum, IRAMObject, RAMSchema, Model} from './base';
 import {Url} from './url';
 import {
     HrefValue,
@@ -16,13 +16,17 @@ import {IProfile, ProfileModel, ProfileProvider} from './profile.model';
 import {IParty, PartyModel, PartyType} from './party.model';
 import {SharedSecretTypeModel, DOB_SHARED_SECRET_TYPE_CODE} from './sharedSecretType.model';
 
-// force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
+// exports ............................................................................................................
 
-/* tslint:disable:no-unused-variable */
-const _ProfileModel = ProfileModel;
+export interface IIdentity extends IRAMObject, IIdentityInstanceContract {
+}
 
-/* tslint:disable:no-unused-variable */
-const _PartyModel = PartyModel;
+export interface IIdentityModel extends mongoose.Model<IIdentity>, IIdentityStaticContract {
+}
+
+export let IdentityModel: IIdentityModel;
+
+// enums, utilities, helpers ..........................................................................................
 
 const MAX_PAGE_SIZE = 100;
 const NEW_INVITATION_CODE_EXPIRY_DAYS = 7;
@@ -32,16 +36,14 @@ const NEW_INVITATION_CODE_EXPIRY_DAYS = 7;
  * company name already recorded in RAM. Add an additional identity to overcome
  * this limitation.
  */
-const addCompanyNameIfNeeded = async (identity:IIdentity, name:string):Promise<IIdentity> => {
+const addCompanyNameIfNeeded = async(identity: IIdentity, name: string): Promise<IIdentity> => {
     // TODO: implement if we want a total merge - not urgent
     return identity;
 };
 
-// enums, utilities, helpers ..........................................................................................
-
 const saltedHashids = new Hashids(conf.hashIdsSalt, 6, 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789');
 
-const getNewInvitationCodeExpiry = ():Date => {
+const getNewInvitationCodeExpiry = (): Date => {
     let date = new Date();
     date.setDate(date.getDate() + NEW_INVITATION_CODE_EXPIRY_DAYS);
     return date;
@@ -50,22 +52,22 @@ const getNewInvitationCodeExpiry = ():Date => {
 export class IdentityType extends RAMEnum {
 
     public static AgencyProvidedToken = new IdentityType('AGENCY_PROVIDED_TOKEN', 'Agency Provided Token')
-        .withIdValueBuilder((identity:IIdentity):String => {
+        .withIdValueBuilder((identity: IIdentity): String => {
             return identity.identityType + ':' + identity.agencyScheme + ':' + identity.rawIdValue;
         });
 
     public static InvitationCode = new IdentityType('INVITATION_CODE', 'Invitation Code')
-        .withIdValueBuilder((identity:IIdentity):String => {
+        .withIdValueBuilder((identity: IIdentity): String => {
             return identity.identityType + ':' + identity.rawIdValue;
         });
 
     public static LinkId = new IdentityType('LINK_ID', 'Link ID')
-        .withIdValueBuilder((identity:IIdentity):String => {
+        .withIdValueBuilder((identity: IIdentity): String => {
             return identity.identityType + ':' + identity.linkIdScheme + ':' + identity.rawIdValue;
         });
 
     public static PublicIdentifier = new IdentityType('PUBLIC_IDENTIFIER', 'Public Identifier')
-        .withIdValueBuilder((identity:IIdentity):String => {
+        .withIdValueBuilder((identity: IIdentity): String => {
             return identity.identityType + ':' + identity.publicIdentifierScheme + ':' + identity.rawIdValue;
         });
 
@@ -76,13 +78,13 @@ export class IdentityType extends RAMEnum {
         IdentityType.PublicIdentifier
     ];
 
-    public buildIdValue:(identity:IIdentity) => String;
+    public buildIdValue: (identity: IIdentity) => String;
 
-    constructor(code:string, shortDecodeText:string) {
+    constructor(code: string, shortDecodeText: string) {
         super(code, shortDecodeText);
     }
 
-    public withIdValueBuilder(builder:(identity:IIdentity) => String):IdentityType {
+    public withIdValueBuilder(builder: (identity: IIdentity) => String): IdentityType {
         this.buildIdValue = builder;
         return this;
     }
@@ -100,7 +102,7 @@ export class IdentityInvitationCodeStatus extends RAMEnum {
         IdentityInvitationCodeStatus.Rejected
     ];
 
-    constructor(code:string, shortDecodeText:string) {
+    constructor(code: string, shortDecodeText: string) {
         super(code, shortDecodeText);
     }
 }
@@ -113,7 +115,7 @@ export class IdentityAgencyScheme extends RAMEnum {
         IdentityAgencyScheme.Medicare
     ];
 
-    constructor(code:string, shortDecodeText:string) {
+    constructor(code: string, shortDecodeText: string) {
         super(code, shortDecodeText);
     }
 }
@@ -126,7 +128,7 @@ export class IdentityPublicIdentifierScheme extends RAMEnum {
         IdentityPublicIdentifierScheme.ABN
     ];
 
-    constructor(code:string, shortDecodeText:string) {
+    constructor(code: string, shortDecodeText: string) {
         super(code, shortDecodeText);
     }
 }
@@ -143,7 +145,7 @@ export class IdentityLinkIdScheme extends RAMEnum {
         IdentityLinkIdScheme.MyGov
     ];
 
-    constructor(code:string, shortDecodeText:string) {
+    constructor(code: string, shortDecodeText: string) {
         super(code, shortDecodeText);
     }
 }
@@ -247,10 +249,10 @@ const IdentitySchema = RAMSchema({
 mongooseAutoIncrement.initialize(mongoose.connection);
 IdentitySchema.plugin(mongooseAutoIncrement.plugin, {model: 'Identity', field: 'seq'});
 
-IdentitySchema.pre('validate', function (next:() => void) {
+IdentitySchema.pre('validate', function (next: () => void) {
     const identityType = IdentityType.valueOf(this.identityType) as IdentityType;
     if (identityType === IdentityType.InvitationCode && !this.rawIdValue) {
-        this.nextCount((err:Error, count:number) => {
+        this.nextCount((err: Error, count: number) => {
             this.rawIdValue = saltedHashids.encode(count);
             this.idValue = identityType ? identityType.buildIdValue(this) : null;
             next();
@@ -261,239 +263,178 @@ IdentitySchema.pre('validate', function (next:() => void) {
     }
 });
 
-// interfaces .........................................................................................................
+// instance ...........................................................................................................
 
-export interface IIdentity extends IRAMObject {
-    idValue:string;
-    rawIdValue:string;
-    identityType:string;
-    defaultInd:boolean;
-    agencyScheme:string;
-    agencyToken:string;
-    invitationCodeStatus:string;
-    invitationCodeExpiryTimestamp:Date;
-    invitationCodeClaimedTimestamp:Date;
-    invitationCodeTemporaryEmailAddress:string;
-    linkIdScheme:string;
-    linkIdConsumer:string;
-    publicIdentifierScheme:string;
-    profile:IProfile;
-    party:IParty;
-    identityTypeEnum():IdentityType;
-    agencySchemeEnum():IdentityAgencyScheme;
-    invitationCodeStatusEnum():IdentityInvitationCodeStatus;
-    publicIdentifierSchemeEnum():IdentityPublicIdentifierScheme;
-    linkIdSchemeEnum():IdentityLinkIdScheme;
-    toHrefValue(includeValue:boolean):Promise<HrefValue<DTO>>;
-    toDTO():Promise<DTO>;
+export interface IIdentityInstanceContract {
+    idValue: string;
+    rawIdValue: string;
+    identityType: string;
+    defaultInd: boolean;
+    agencyScheme: string;
+    agencyToken: string;
+    invitationCodeStatus: string;
+    invitationCodeExpiryTimestamp: Date;
+    invitationCodeClaimedTimestamp: Date;
+    invitationCodeTemporaryEmailAddress: string;
+    linkIdScheme: string;
+    linkIdConsumer: string;
+    publicIdentifierScheme: string;
+    profile: IProfile;
+    party: IParty;
+    identityTypeEnum(): IdentityType;
+    agencySchemeEnum(): IdentityAgencyScheme;
+    invitationCodeStatusEnum(): IdentityInvitationCodeStatus;
+    publicIdentifierSchemeEnum(): IdentityPublicIdentifierScheme;
+    linkIdSchemeEnum(): IdentityLinkIdScheme;
+    toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
+    toDTO(): Promise<DTO>;
 }
 
-export interface IIdentityModel extends mongoose.Model<IIdentity> {
-    createFromDTO:(dto:ICreateIdentityDTO) => Promise<IIdentity>;
-    createInvitationCodeIdentity:(givenName:string, familyName:string, dateOfBirth:string) => Promise<IIdentity>;
-    addCompany:(abn:string,name:string) => Promise<IIdentity>;
-    findByIdValue:(idValue:string) => Promise<IIdentity>;
-    findByInvitationCode:(invitationCode:string) => Promise<IIdentity>;
-    findPendingByInvitationCodeInDateRange:(invitationCode:string, date:Date) => Promise<IIdentity>;
-    findDefaultByPartyId:(partyId:string) => Promise<IIdentity>;
-    listByPartyId:(partyId:string) => Promise<IIdentity[]>;
-    searchLinkIds:(page:number, pageSize:number) => Promise<SearchResult<IIdentity>>;
-}
+class IdentityInstanceContractImpl implements IIdentityInstanceContract {
 
-// instance methods ...................................................................................................
+    public idValue: string;
+    public rawIdValue: string;
+    public identityType: string;
+    public defaultInd: boolean;
+    public agencyScheme: string;
+    public agencyToken: string;
+    public invitationCodeStatus: string;
+    public invitationCodeExpiryTimestamp: Date;
+    public invitationCodeClaimedTimestamp: Date;
+    public invitationCodeTemporaryEmailAddress: string;
+    public linkIdScheme: string;
+    public linkIdConsumer: string;
+    public publicIdentifierScheme: string;
+    public profile: IProfile;
+    public party: IParty;
 
-IdentitySchema.method('identityTypeEnum', function () {
-    return IdentityType.valueOf(this.identityType);
-});
+    public identityTypeEnum(): IdentityType {
+        return IdentityType.valueOf(this.identityType) as IdentityType;
+    }
 
-IdentitySchema.method('agencySchemeEnum', function () {
-    return IdentityAgencyScheme.valueOf(this.agencyScheme);
-});
+    public agencySchemeEnum(): IdentityAgencyScheme {
+        return IdentityAgencyScheme.valueOf(this.agencyScheme);
+    }
 
-IdentitySchema.method('invitationCodeStatusEnum', function () {
-    return IdentityInvitationCodeStatus.valueOf(this.invitationCodeStatus);
-});
+    public invitationCodeStatusEnum(): IdentityInvitationCodeStatus {
+        return IdentityInvitationCodeStatus.valueOf(this.invitationCodeStatus);
+    }
 
-IdentitySchema.method('publicIdentifierSchemeEnum', function () {
-    return IdentityPublicIdentifierScheme.valueOf(this.publicIdentifierScheme);
-});
+    public publicIdentifierSchemeEnum(): IdentityPublicIdentifierScheme {
+        return IdentityPublicIdentifierScheme.valueOf(this.publicIdentifierScheme);
+    }
 
-IdentitySchema.method('linkIdSchemeEnum', function () {
-    return IdentityLinkIdScheme.valueOf(this.linkIdScheme);
-});
+    public linkIdSchemeEnum(): IdentityLinkIdScheme {
+        return IdentityLinkIdScheme.valueOf(this.linkIdScheme);
+    }
 
-IdentitySchema.method('toHrefValue', async function (includeValue:boolean) {
-    return new HrefValue(
-        await Url.forIdentity(this),
-        includeValue ? await this.toDTO() : undefined
-    );
-});
+    public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
+        return new HrefValue(
+            await Url.forIdentity(this),
+            includeValue ? await this.toDTO() : undefined
+        );
+    }
 
-// todo need to use security context to drive the links
-IdentitySchema.method('toDTO', async function () {
-    return new DTO(
-        Url.links()
+    public async toDTO(): Promise<DTO> {
+        const links = Url.links()
             .push('self', Url.GET, await Url.forIdentity(this))
             .push('relationship-list', Url.GET, await Url.forIdentityRelationshipList(this))
             .push('relationship-create', Url.POST, await Url.forIdentityRelationshipCreate(this))
             .push('role-list', Url.GET, await Url.forIdentityRoleList(this))
             .push('role-create', Url.POST, await Url.forIdentityRoleCreate(this))
             .push('auskey-list', Url.GET, await Url.forIdentityAUSkeyList(this), this.publicIdentifierScheme === 'ABN')
-            .toArray(),
-        this.idValue,
-        this.rawIdValue,
-        this.identityType,
-        this.defaultInd,
-        this.agencyScheme,
-        this.agencyToken,
-        this.invitationCodeStatus,
-        this.invitationCodeExpiryTimestamp,
-        this.invitationCodeClaimedTimestamp,
-        this.invitationCodeTemporaryEmailAddress,
-        this.publicIdentifierScheme,
-        this.linkIdScheme,
-        this.linkIdConsumer,
-        await this.profile.toDTO(),
-        await this.party.toHrefValue()
-    );
-});
-
-// static methods .....................................................................................................
-
-IdentitySchema.static('findByIdValue', (idValue:string) => {
-    return this.IdentityModel
-        .findOne({
-            idValue: idValue
-        })
-        .deepPopulate([
-            'profile.name',
-            'profile.sharedSecrets.sharedSecretType',
-            'party',
-            'partyType'
-        ])
-        .exec();
-});
-
-IdentitySchema.static('findByInvitationCode', (invitationCode:string) => {
-    return this.IdentityModel
-        .findOne({
-            rawIdValue: invitationCode,
-            identityType: IdentityType.InvitationCode.code
-        })
-        .deepPopulate([
-            'profile.name',
-            'profile.sharedSecrets.sharedSecretType',
-            'party'
-        ])
-        .exec();
-});
-
-IdentitySchema.static('findPendingByInvitationCodeInDateRange', (invitationCode:string, date:Date) => {
-    return this.IdentityModel
-        .findOne({
-            rawIdValue: invitationCode,
-            identityType: IdentityType.InvitationCode.code,
-            invitationCodeStatus: IdentityInvitationCodeStatus.Pending.code,
-            invitationCodeExpiryTimestamp: {$gte: date}
-        })
-        .deepPopulate([
-            'profile.name',
-            'profile.sharedSecrets.sharedSecretType',
-            'party'
-        ])
-        .exec();
-});
-
-IdentitySchema.static('findDefaultByPartyId', (partyId:string) => {
-    return this.IdentityModel
-        .findOne({
-            'party': partyId,
-            defaultInd: true
-        })
-        .deepPopulate([
-            'profile.name',
-            'profile.sharedSecrets.sharedSecretType',
-            'party'
-        ])
-        .sort({createdAt: 1})
-        .exec();
-});
-
-IdentitySchema.static('listByPartyId', (partyId:string) => {
-    return this.IdentityModel
-        .find({
-            'party': partyId
-        })
-        .deepPopulate([
-            'profile.name',
-            'profile.sharedSecrets.sharedSecretType',
-            'party'
-        ])
-        .sort({idValue: 1})
-        .exec();
-});
-
-IdentitySchema.static('searchLinkIds', (page:number, reqPageSize:number) => {
-    return new Promise<SearchResult<IIdentity>>(async (resolve, reject) => {
-        const pageSize:number = reqPageSize ? Math.min(reqPageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
-        try {
-            const query = {
-                identityType: IdentityType.LinkId.code
-            };
-            const count = await this.IdentityModel
-                .count(query)
-                .exec();
-            const list = await this.IdentityModel
-                .find(query)
-                .deepPopulate([
-                    'profile.name',
-                    'party'
-                ])
-                .sort({'profile.name._displayName': -1})
-                .skip((page - 1) * pageSize)
-                .limit(pageSize)
-                .exec();
-            resolve(new SearchResult<IIdentity>(page, count, pageSize, list));
-        } catch (e) {
-            reject(e);
-        }
-    });
-});
-
-/*
- * Used when looking for a company in the ABR. If the ABN already exists in RAM
- * then only the name needs be checked and/or added (TBD). Otherwise a new identity and associated party are created. In either case the party idValue is returned (PUBLIC_IDENTIFIER:ABN:nnnnnnnnnnn).
- */
-IdentitySchema.static('addCompany', async (abn: string, name: string):Promise<IIdentity> => {
-    const identity = await this.IdentityModel.findByIdValue(abn);
-    if (identity) {
-        return addCompanyNameIfNeeded(identity, name);
-    } else {
-        const identity = (await this.IdentityModel.createFromDTO({
-            rawIdValue: abn,
-            partyType: PartyType.ABN.code,
-            givenName: undefined,
-            familyName: undefined,
-            unstructuredName: name,
-            // fun - company has to have a date of birth!!!
-            sharedSecretTypeCode: DOB_SHARED_SECRET_TYPE_CODE,
-            sharedSecretValue: '01/07/1984',
-            identityType: IdentityType.PublicIdentifier.code,
-            agencyScheme: undefined,
-            agencyToken: undefined,
-            linkIdScheme: undefined,
-            linkIdConsumer: undefined,
-            publicIdentifierScheme: IdentityPublicIdentifierScheme.ABN.code,
-            profileProvider: ProfileProvider.ABR.code
-        }));
-        return identity;
+            .toArray();
+        return new DTO(
+            links,
+            this.idValue,
+            this.rawIdValue,
+            this.identityType,
+            this.defaultInd,
+            this.agencyScheme,
+            this.agencyToken,
+            this.invitationCodeStatus,
+            this.invitationCodeExpiryTimestamp,
+            this.invitationCodeClaimedTimestamp,
+            this.invitationCodeTemporaryEmailAddress,
+            this.publicIdentifierScheme,
+            this.linkIdScheme,
+            this.linkIdConsumer,
+            await this.profile.toDTO(),
+            await this.party.toHrefValue(false)
+        );
     }
-});
 
-IdentitySchema.static('createInvitationCodeIdentity',
-    async (givenName:string, familyName:string, dateOfBirth:string):Promise<IIdentity> => {
+}
 
-        return await this.IdentityModel.createFromDTO(
+// static .............................................................................................................
+
+export interface IIdentityStaticContract extends mongoose.Model<IIdentity> {
+    createFromDTO: (dto: ICreateIdentityDTO) => Promise<IIdentity>;
+    createInvitationCodeIdentity: (givenName: string, familyName: string, dateOfBirth: string) => Promise<IIdentity>;
+    addCompany: (abn: string, name: string) => Promise<IIdentity>;
+    findByIdValue: (idValue: string) => Promise<IIdentity>;
+    findByInvitationCode: (invitationCode: string) => Promise<IIdentity>;
+    findPendingByInvitationCodeInDateRange: (invitationCode: string, date: Date) => Promise<IIdentity>;
+    findDefaultByPartyId: (partyId: string) => Promise<IIdentity>;
+    listByPartyId: (partyId: string) => Promise<IIdentity[]>;
+    searchLinkIds: (page: number, pageSize: number) => Promise<SearchResult<IIdentity>>;
+}
+
+class IdentityStaticContractImpl implements IIdentityStaticContract {
+
+    /**
+     * Creates an InvitationCode identity required when creating a new relationship. This identity is temporary and will
+     * only be associated with the relationship until the relationship is accepted, whereby the relationship will be
+     * transferred to the authorised identity.
+     */
+    /* tslint:disable:max-func-body-length */
+    public async createFromDTO(dto: ICreateIdentityDTO): Promise<IIdentity> {
+        const name = await NameModel.create({
+            givenName: dto.givenName,
+            familyName: dto.familyName,
+            unstructuredName: dto.unstructuredName
+        });
+
+        const sharedSecret = await SharedSecretModel.create({
+            value: dto.sharedSecretValue,
+            sharedSecretType: await SharedSecretTypeModel.findByCodeInDateRange(dto.sharedSecretTypeCode, new Date())
+        });
+
+        const profile = await ProfileModel.create({
+            provider: dto.profileProvider,
+            name: name,
+            sharedSecrets: [sharedSecret]
+        });
+
+        const party = await PartyModel.create({
+            partyType: dto.partyType,
+            name: name
+        });
+
+        const identity = await IdentityModel.create({
+            rawIdValue: dto.rawIdValue,
+            identityType: dto.identityType,
+            defaultInd: true,
+            agencyScheme: dto.agencyScheme,
+            agencyToken: dto.agencyToken,
+            invitationCodeStatus: dto.identityType === IdentityType.InvitationCode.code ?
+                IdentityInvitationCodeStatus.Pending.code : undefined,
+            invitationCodeExpiryTimestamp: dto.identityType === IdentityType.InvitationCode.code ?
+                getNewInvitationCodeExpiry() : undefined,
+            invitationCodeClaimedTimestamp: undefined,
+            publicIdentifierScheme: dto.publicIdentifierScheme,
+            linkIdScheme: dto.linkIdScheme,
+            linkIdConsumer: dto.linkIdConsumer,
+            profile: profile,
+            party: party
+        });
+
+        return identity;
+
+    }
+
+    public async createInvitationCodeIdentity(givenName: string, familyName: string, dateOfBirth: string): Promise<IIdentity> {
+        return await IdentityModel.createFromDTO(
             {
                 rawIdValue: undefined,
                 partyType: PartyType.Individual.code,
@@ -511,62 +452,145 @@ IdentitySchema.static('createInvitationCodeIdentity',
                 profileProvider: ProfileProvider.Invitation.code
             }
         );
-});
+    }
 
-/**
- * Creates an InvitationCode identity required when creating a new relationship. This identity is temporary and will
- * only be associated with the relationship until the relationship is accepted, whereby the relationship will be
- * transferred to the authorised identity.
- */
-/* tslint:disable:max-func-body-length */
-IdentitySchema.static('createFromDTO', async(dto:ICreateIdentityDTO):Promise<IIdentity> => {
+    /*
+     * Used when looking for a company in the ABR. If the ABN already exists in RAM
+     * then only the name needs be checked and/or added (TBD). Otherwise a new identity and associated party are created. In either case the party idValue is returned (PUBLIC_IDENTIFIER:ABN:nnnnnnnnnnn).
+     */
+    public async addCompany(abn: string, name: string): Promise<IIdentity> {
+        const identity = await IdentityModel.findByIdValue(abn);
+        if (identity) {
+            return addCompanyNameIfNeeded(identity, name);
+        } else {
+            const identity = (await IdentityModel.createFromDTO({
+                rawIdValue: abn,
+                partyType: PartyType.ABN.code,
+                givenName: undefined,
+                familyName: undefined,
+                unstructuredName: name,
+                // fun - company has to have a date of birth!!!
+                sharedSecretTypeCode: DOB_SHARED_SECRET_TYPE_CODE,
+                sharedSecretValue: '01/07/1984',
+                identityType: IdentityType.PublicIdentifier.code,
+                agencyScheme: undefined,
+                agencyToken: undefined,
+                linkIdScheme: undefined,
+                linkIdConsumer: undefined,
+                publicIdentifierScheme: IdentityPublicIdentifierScheme.ABN.code,
+                profileProvider: ProfileProvider.ABR.code
+            }));
+            return identity;
+        }
+    }
 
-    const name = await NameModel.create({
-        givenName: dto.givenName,
-        familyName: dto.familyName,
-        unstructuredName: dto.unstructuredName
-    });
+    public findByIdValue(idValue: string): Promise<IIdentity> {
+        return IdentityModel
+            .findOne({
+                idValue: idValue
+            })
+            .deepPopulate([
+                'profile.name',
+                'profile.sharedSecrets.sharedSecretType',
+                'party',
+                'partyType'
+            ])
+            .exec();
+    }
 
-    const sharedSecret = await SharedSecretModel.create({
-        value: dto.sharedSecretValue,
-        sharedSecretType: await SharedSecretTypeModel.findByCodeInDateRange(dto.sharedSecretTypeCode, new Date())
-    });
+    public findByInvitationCode(invitationCode: string): Promise<IIdentity> {
+        return IdentityModel
+            .findOne({
+                rawIdValue: invitationCode,
+                identityType: IdentityType.InvitationCode.code
+            })
+            .deepPopulate([
+                'profile.name',
+                'profile.sharedSecrets.sharedSecretType',
+                'party'
+            ])
+            .exec();
+    }
 
-    const profile = await ProfileModel.create({
-        provider: dto.profileProvider,
-        name: name,
-        sharedSecrets: [sharedSecret]
-    });
+    public findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IIdentity> {
+        return IdentityModel
+            .findOne({
+                rawIdValue: invitationCode,
+                identityType: IdentityType.InvitationCode.code,
+                invitationCodeStatus: IdentityInvitationCodeStatus.Pending.code,
+                invitationCodeExpiryTimestamp: {$gte: date}
+            })
+            .deepPopulate([
+                'profile.name',
+                'profile.sharedSecrets.sharedSecretType',
+                'party'
+            ])
+            .exec();
+    }
 
-    const party = await PartyModel.create({
-        partyType: dto.partyType,
-        name: name
-    });
+    public findDefaultByPartyId(partyId: string): Promise<IIdentity> {
+        return IdentityModel
+            .findOne({
+                'party': partyId,
+                defaultInd: true
+            })
+            .deepPopulate([
+                'profile.name',
+                'profile.sharedSecrets.sharedSecretType',
+                'party'
+            ])
+            .sort({createdAt: 1})
+            .exec();
+    }
 
-    const identity = await this.IdentityModel.create({
-        rawIdValue: dto.rawIdValue,
-        identityType: dto.identityType,
-        defaultInd: true,
-        agencyScheme: dto.agencyScheme,
-        agencyToken: dto.agencyToken,
-        invitationCodeStatus: dto.identityType === IdentityType.InvitationCode.code ?
-            IdentityInvitationCodeStatus.Pending.code : undefined,
-        invitationCodeExpiryTimestamp: dto.identityType === IdentityType.InvitationCode.code ?
-            getNewInvitationCodeExpiry() : undefined,
-        invitationCodeClaimedTimestamp: undefined,
-        publicIdentifierScheme: dto.publicIdentifierScheme,
-        linkIdScheme: dto.linkIdScheme,
-        linkIdConsumer: dto.linkIdConsumer,
-        profile: profile,
-        party: party
-    });
+    public listByPartyId(partyId: string): Promise<IIdentity[]> {
+        return IdentityModel
+            .find({
+                'party': partyId
+            })
+            .deepPopulate([
+                'profile.name',
+                'profile.sharedSecrets.sharedSecretType',
+                'party'
+            ])
+            .sort({idValue: 1})
+            .exec();
+    }
 
-    return identity;
+    public searchLinkIds(page: number, reqPageSize: number): Promise<SearchResult<IIdentity>> {
+        return new Promise<SearchResult<IIdentity>>(async(resolve, reject) => {
+            const pageSize: number = reqPageSize ? Math.min(reqPageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
+            try {
+                const query = {
+                    identityType: IdentityType.LinkId.code
+                };
+                const count = await IdentityModel
+                    .count(query)
+                    .exec();
+                const list = await IdentityModel
+                    .find(query)
+                    .deepPopulate([
+                        'profile.name',
+                        'party'
+                    ])
+                    .sort({'profile.name._displayName': -1})
+                    .skip((page - 1) * pageSize)
+                    .limit(pageSize)
+                    .exec();
+                resolve(new SearchResult<IIdentity>(page, count, pageSize, list));
+            } catch (e) {
+                reject(e);
+            }
+        });
+    }
 
-});
+}
 
 // concrete model .....................................................................................................
 
-export const IdentityModel = mongoose.model(
+IdentityModel = Model(
     'Identity',
-    IdentitySchema) as IIdentityModel;
+    IdentitySchema,
+    IdentityInstanceContractImpl,
+    IdentityStaticContractImpl
+) as IIdentityModel;
