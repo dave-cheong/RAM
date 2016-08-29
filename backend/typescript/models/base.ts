@@ -89,6 +89,7 @@ export interface IRAMObject extends mongoose.Document {
 }
 
 export interface IRAMObjectContract {
+    _id: any;
     createdAt: Date;
     updatedAt: Date;
     deleteInd: boolean;
@@ -98,7 +99,8 @@ export interface IRAMObjectContract {
 
 // exists for type safety only, do not add functions here
 export class RAMObjectContractImpl implements IRAMObjectContract {
-    constructor(public createdAt: Date,
+    constructor(public _id: string,
+                public createdAt: Date,
                 public updatedAt: Date,
                 public deleteInd: boolean,
                 public resourceVersion: string) {
