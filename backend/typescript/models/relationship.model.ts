@@ -622,6 +622,9 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         const initiatedBy = RelationshipInitiatedBy.valueOf(dto.initiatedBy);
         let subjectIdentity: IIdentity;
         let delegateIdentity: IIdentity;
+        let invitationIdentity: IIdentity;
+        let startTimestamp = dto.startTimestamp;
+        let endTimestamp = dto.endTimestamp;
         let attributes: IRelationshipAttribute[] = [];
 
         const subjectIdValue = Url.lastPathElement(dto.subject.href);
@@ -632,6 +635,11 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         const delegateIdValue = Url.lastPathElement(dto.delegate.href);
         if (delegateIdValue) {
             delegateIdentity = await IdentityModel.findByIdValue(delegateIdValue);
+        }
+
+        startTimestamp.setHours(0, 0, 0);
+        if (endTimestamp) {
+            endTimestamp.setHours(0, 0, 0);
         }
 
         const isRelationshipInvitationFromSubjectCreateRequest =
@@ -653,6 +661,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 dto.delegate.value.identities[0].value.profile.name.familyName,
                 hasSharedSecretValue ? dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value : null
             );
+            invitationIdentity = delegateIdentity;
         }
 
         const isRelationshipInvitationFromSubjectUpdateRequest =
@@ -683,6 +692,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 });
                 delegateIdentity.profile.sharedSecrets.push(sharedSecret);
             }
+            invitationIdentity = delegateIdentity;
         }
 
         Assert.assertNotNull(subjectIdentity, 'Subject identity not found');
@@ -710,10 +720,10 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 subjectIdentity.profile.name,
                 delegateIdentity.party,
                 delegateIdentity.profile.name,
-                dto.startTimestamp,
-                dto.endTimestamp,
+                startTimestamp,
+                endTimestamp,
                 initiatedBy,
-                delegateIdentity,
+                invitationIdentity,
                 attributes
             );
         } else {
@@ -722,12 +732,15 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             const relationship = await RelationshipModel.findByIdentifier(identifier);
             Assert.assertNotNull(relationship, 'Relationship not found');
 
-            // todo
             relationship.relationshipType = relationshipType;
             relationship.subject = subjectIdentity.party;
             relationship.delegate = delegateIdentity.party;
+            relationship.startTimestamp = startTimestamp;
+            relationship.endTimestamp = endTimestamp;
+            relationship.invitationIdentity = invitationIdentity;
+            relationship.attributes = attributes;
 
-            return relationship;
+            return await relationship.save();
         }
     }
 
