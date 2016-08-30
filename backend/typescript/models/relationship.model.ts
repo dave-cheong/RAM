@@ -608,6 +608,7 @@ interface IRelationshipStaticContract {
 
 class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
+    /* tslint:disable:max-func-body-length */
     public async addOrModify(identifier: string, dto: DTO) : Promise<IRelationship> {
 
         const myPrincipal = context.getAuthenticatedPrincipal();
