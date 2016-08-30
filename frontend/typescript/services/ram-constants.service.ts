@@ -23,6 +23,14 @@ export const RAMConstants = {
         DEVICE_TYPE: 'DEVICE'
     },
 
+    PartyTypeCode: {
+        INDIVIDUAL: 'INDIVIDUAL'
+    },
+
+    IdentityTypeCode: {
+        INVITATION_CODE: 'INVITATION_CODE'
+    },
+
     RelationshipTypeCategory: {
         AUTHORISATION: 'AUTHORISATION',
         NOTIFICATION: 'NOTIFICATION'
@@ -66,6 +74,10 @@ export const RAMConstants = {
     RoleAttributeNameCode: {
         PREFERRED_NAME: 'PREFERRED_NAME',
         DEVICE_AUSKEYS: 'DEVICE_AUSKEYS'
+    },
+
+    SharedSecretCode: {
+        DATE_OF_BIRTH: 'DATE_OF_BIRTH'
     }
 
 };

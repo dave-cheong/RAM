@@ -240,9 +240,21 @@ export interface ICodeDecode {
 }
 
 export class CodeDecode implements ICodeDecode {
+
     public static build(sourceObject: any): ICodeDecode {
         return new Builder<ICodeDecode>(sourceObject, this)
             .build();
+    }
+
+    public static getRefByCode(refs: IHrefValue<ICodeDecode>[], code: string): IHrefValue<ICodeDecode> {
+        if (refs) {
+            for (let ref of refs) {
+                if (ref.value.code === code) {
+                    return ref;
+                }
+            }
+        }
+        return undefined;
     }
 
     constructor(public code: string,
@@ -251,6 +263,7 @@ export class CodeDecode implements ICodeDecode {
                 public startTimestamp: Date,
                 public endTimestamp: Date) {
     }
+
 }
 
 // principal ..........................................................................................................
@@ -479,9 +492,13 @@ export interface IRelationshipType extends ICodeDecode {
     relationshipAttributeNames: IRelationshipAttributeNameUsage[];
     managedExternallyInd: boolean;
     category: string;
+    getAttributeNameUsage(code: string): IRelationshipAttributeNameUsage;
+    getAttributeNameRef(code: string): IHrefValue<IRelationshipAttributeName>;
+    getAttributeName(code: string): IRelationshipAttributeName;
 }
 
 export class RelationshipType extends CodeDecode implements IRelationshipType {
+
     public static build(sourceObject: any): IRelationshipType {
         return new Builder<IRelationshipType>(sourceObject, this)
             .mapArray('relationshipAttributeNames', RelationshipAttributeNameUsage)
@@ -499,6 +516,26 @@ export class RelationshipType extends CodeDecode implements IRelationshipType {
                 public relationshipAttributeNames: RelationshipAttributeNameUsage[]) {
         super(code, shortDecodeText, longDecodeText, startTimestamp, endTimestamp);
     }
+
+    public getAttributeNameUsage(code: string): IRelationshipAttributeNameUsage {
+        for (let usage of this.relationshipAttributeNames) {
+            if (usage.attributeNameDef.value.code === code) {
+                return usage;
+            }
+        }
+        return null;
+    }
+
+    public getAttributeNameRef(code: string): IHrefValue<IRelationshipAttributeName> {
+        let usage = this.getAttributeNameUsage(code);
+        return usage ? usage.attributeNameDef : null;
+    }
+
+    public getAttributeName(code: string): IRelationshipAttributeName {
+        let ref = this.getAttributeNameRef(code);
+        return ref ? ref.value : null;
+    }
+
 }
 
 // relationship attribute name usage ..................................................................................

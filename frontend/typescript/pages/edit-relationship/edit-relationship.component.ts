@@ -1,4 +1,3 @@
-import {Observable} from 'rxjs/Observable';
 import {Component} from '@angular/core';
 import {ROUTER_DIRECTIVES, Router, ActivatedRoute, Params} from '@angular/router';
 import {FormBuilder} from '@angular/forms';
@@ -34,7 +33,10 @@ import {
     IRelationshipAttributeNameUsage,
     IRelationshipType,
     IRelationship,
-    IHrefValue
+    IHrefValue,
+    IRelationshipAttribute,
+    RelationshipAttribute,
+    CodeDecode
 } from '../../../../commons/RamAPI';
 
 @Component({
@@ -58,7 +60,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public relationshipHref: string;
 
     public relationshipTypeRefs: IHrefValue<IRelationshipType>[];
-    public permissionAttributeUsages: { [relationshipTypeCode: string]: IRelationshipAttributeNameUsage[] } = {};
+    public permissionAttributeUsagesByType: { [relationshipTypeCode: string]: IRelationshipAttributeNameUsage[] } = {};
+    public permissionAttributeUsages: IRelationshipAttributeNameUsage[];
 
     public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public identity: IIdentity;
@@ -68,7 +71,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public authType: string = 'choose';
     public disableAuthMgmt: boolean = true;
 
-    public newRelationship: AddRelationshipComponentData = {
+    public relationshipComponentData: EditRelationshipComponentData = {
         accessPeriod: {
             startDateEnabled: true,
             startDate: new Date(),
@@ -91,6 +94,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         authorisationManagement: {
             value: 'false'
         },
+        permissionAttributes: [],
         declaration: {
             accepted: false,
             markdown: 'TODO'
@@ -166,15 +170,15 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         let delegate: ICreateIdentityDTO;
 
-        if (this.newRelationship.representativeDetails.individual) {
-            const dob = this.newRelationship.representativeDetails.individual.dob;
+        if (this.relationshipComponentData.representativeDetails.individual) {
+            const dob = this.relationshipComponentData.representativeDetails.individual.dob;
             delegate = {
-                partyType: 'INDIVIDUAL',
-                givenName: this.newRelationship.representativeDetails.individual.givenName,
-                familyName: this.newRelationship.representativeDetails.individual.familyName,
-                sharedSecretTypeCode: 'DATE_OF_BIRTH', // TODO: set to date of birth code
+                partyType: RAMConstants.PartyTypeCode.INDIVIDUAL,
+                givenName: this.relationshipComponentData.representativeDetails.individual.givenName,
+                familyName: this.relationshipComponentData.representativeDetails.individual.familyName,
+                sharedSecretTypeCode: RAMConstants.SharedSecretCode.DATE_OF_BIRTH,
                 sharedSecretValue: dob ? dob.toString() : ' ' /* TODO check format of date, currently sending x for space */,
-                identityType: 'INVITATION_CODE',
+                identityType: RAMConstants.IdentityTypeCode.INVITATION_CODE,
                 agencyScheme: undefined,
                 agencyToken: undefined,
                 linkIdScheme: undefined,
@@ -190,21 +194,21 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             //    unstructuredName: '' ,
             //    identityType: 'PUBLIC_IDENTIFIER',
             //    publicIdentifierScheme: 'ABN',
-            //    agencyToken: this.newRelationship.representativeDetails.organisation.abn // // TODO: where does the ABN value go?
+            //    agencyToken: this.relationshipComponentData.representativeDetails.organisation.abn // // TODO: where does the ABN value go?
             //};
         }
 
         const authorisationManagement: IAttributeDTO = {
             code: RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND,
-            value: this.newRelationship.authorisationManagement.value
+            value: this.relationshipComponentData.authorisationManagement.value
         };
 
         const relationship: IInvitationCodeRelationshipAddDTO = {
-            relationshipType: this.newRelationship.authType.authType,
+            relationshipType: this.relationshipComponentData.authType.authType,
             subjectIdValue: this.identity.idValue,
             delegate: delegate,
-            startTimestamp: this.newRelationship.accessPeriod.startDate,
-            endTimestamp: this.newRelationship.accessPeriod.endDate,
+            startTimestamp: this.relationshipComponentData.accessPeriod.startDate,
+            endTimestamp: this.relationshipComponentData.accessPeriod.endDate,
             attributes: [
                 authorisationManagement
             ] /* TODO setting the attributes */
@@ -217,7 +221,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 this.services.route.goToRelationshipAddCompletePage(
                     this.identity.idValue,
                     identity.rawIdValue,
-                    this.displayName(this.newRelationship.representativeDetails));
+                    this.displayName(this.relationshipComponentData.representativeDetails));
             }, (err) => {
                 this.addGlobalErrorMessages(err);
             });
@@ -230,7 +234,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public resolveAttributeUsages() {
         for (let relTypeRef of this.relationshipTypeRefs) {
             const attributeNames = relTypeRef.value.relationshipAttributeNames;
-            this.permissionAttributeUsages[relTypeRef.value.code] = attributeNames.filter((attName) => {
+            this.permissionAttributeUsagesByType[relTypeRef.value.code] = attributeNames.filter((attName) => {
                 return attName.attributeNameDef.value.classifier === RAMConstants.RelationshipAttributeNameClassifier.PERMISSION;
             });
         }
@@ -245,22 +249,32 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     }
 
     public authTypeChange = (data:AuthorisationTypeComponentData) => {
+
         // TODO calculate declaration markdown based on relationship type and services selected
         // TODO update declaration component to show new text
-        this.newRelationship.declaration.markdown = 'TODO '+data.authType;
+        this.relationshipComponentData.declaration.markdown = 'TODO ' + data.authType;
 
         // find the selected relationship type by code
-        let selectedRelationshipType = this.services.model.getRelationshipTypeByCode(this.relationshipTypeRefs, data.authType);
-        if(selectedRelationshipType) {
-            const allowManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
-            const canChangeManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND);
+        let selectedRelationshipTypeRef = CodeDecode.getRefByCode(this.relationshipTypeRefs, data.authType) as IHrefValue<IRelationshipType>;
+
+        if (selectedRelationshipTypeRef) {
+
+            const allowManageAuthorisationUsage = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            const canChangeManageAuthorisationUsage = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND);
 
             this.manageAuthAttribute = allowManageAuthorisationUsage;
 
             // get the default value for the relationship type
-            this.newRelationship.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
+            this.relationshipComponentData.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
             // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
-            this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage===null : true;
+            this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage === null : true;
+            this.permissionAttributeUsages = this.permissionAttributeUsagesByType[selectedRelationshipTypeRef.value.code];
+            this.relationshipComponentData.permissionAttributes = [];
+            for (let usage of this.permissionAttributeUsages) {
+                let relationshipAttribute = new RelationshipAttribute([usage.defaultValue], usage.attributeNameDef);
+                this.relationshipComponentData.permissionAttributes.push(relationshipAttribute);
+            }
+
         } else {
             this.disableAuthMgmt = true;
         }
@@ -269,10 +283,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
 }
 
-export interface AddRelationshipComponentData {
+export interface EditRelationshipComponentData {
     accessPeriod: AccessPeriodComponentData;
     authType: AuthorisationTypeComponentData;
     representativeDetails: RepresentativeDetailsComponentData;
     authorisationManagement: AuthorisationManagementComponentData;
+    permissionAttributes: IRelationshipAttribute[];
     declaration: DeclarationComponentData;
 }

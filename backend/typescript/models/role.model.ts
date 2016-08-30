@@ -144,10 +144,11 @@ export interface IRoleInstanceContract extends IRAMObjectContract {
     startTimestamp: Date;
     endTimestamp?: Date;
     endEventTimestamp?: Date;
-    roleStatus: RoleStatus;
+    status: string;
     attributes: IRoleAttribute[];
     _roleTypeCode: string;
 
+    statusEnum(): RoleStatus;
     updateOrCreateAttribute(roleAttributeNameCode: string, value: string): Promise<IRoleAttribute>;
     saveAttributes(): Promise<IRole>;
     findAttribute(roleAttributeNameCode: string, roleAttributeNameClassifier?: string): IRoleAttribute;
@@ -163,10 +164,13 @@ class RoleInstanceContractImpl extends RAMObjectContractImpl implements IRoleIns
     public startTimestamp: Date;
     public endTimestamp: Date;
     public endEventTimestamp: Date;
-    public roleStatus: RoleStatus;
+    public status: string;
     public attributes: IRoleAttribute[];
     public _roleTypeCode: string;
-    public _id: string;
+
+    public statusEnum(): RoleStatus {
+        return RoleStatus.valueOf(this.status) as RoleStatus;
+    }
 
     public async updateOrCreateAttribute(roleAttributeNameCode: string, value: string): Promise<IRoleAttribute> {
 
@@ -257,7 +261,7 @@ class RoleInstanceContractImpl extends RAMObjectContractImpl implements IRoleIns
             this.endTimestamp,
             this.endEventTimestamp,
             this.createdAt,
-            this.roleStatus.code,
+            this.status,
             await Promise.all<RoleAttributeDTO>(this.attributes.map(
                 async(attribute: IRoleAttribute) => {
                     return await attribute.toDTO();

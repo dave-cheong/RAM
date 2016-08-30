@@ -65,6 +65,7 @@ export class AddRelationshipCompleteComponent extends AbstractPageComponent {
     }
 
     public onSubmitEmail() {
+
         const notifyDelegateDTO: INotifyDelegateDTO = {
             email: this.form.value.email
         };
@@ -84,10 +85,13 @@ export class AddRelationshipCompleteComponent extends AbstractPageComponent {
                 this.addGlobalErrorMessages(err);
             }
         });
+
         return false;
+
     };
 
     public goToRelationshipsPage() {
         this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity));
     }
+
 }
