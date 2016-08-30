@@ -1,4 +1,3 @@
-import {Observable} from 'rxjs/Observable';
 import {Component} from '@angular/core';
 import {ROUTER_DIRECTIVES, Router, ActivatedRoute, Params} from '@angular/router';
 import {FormBuilder} from '@angular/forms';
@@ -34,7 +33,11 @@ import {
     IRelationshipAttributeNameUsage,
     IRelationshipType,
     IRelationship,
-    IHrefValue, IRelationshipAttribute, RelationshipAttribute, HrefValue
+    IHrefValue,
+    IRelationshipAttribute,
+    RelationshipAttribute,
+    HrefValue,
+    CodeDecode
 } from '../../../../commons/RamAPI';
 
 @Component({
@@ -252,10 +255,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         this.newRelationship.declaration.markdown = 'TODO '+data.authType;
 
         // find the selected relationship type by code
-        let selectedRelationshipType = this.services.model.getRelationshipTypeByCode(this.relationshipTypeRefs, data.authType);
-        if(selectedRelationshipType) {
-            const allowManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
-            const canChangeManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND);
+        let selectedRelationshipTypeRef = CodeDecode.getRefByCode(this.relationshipTypeRefs, data.authType) as IHrefValue<IRelationshipType>;
+        if (selectedRelationshipTypeRef) {
+            const allowManageAuthorisationUsage = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            const canChangeManageAuthorisationUsage = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND);
 
             this.manageAuthAttribute = allowManageAuthorisationUsage;
 
@@ -263,10 +266,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.newRelationship.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
             // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
             this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage===null : true;
-            this.permissionAttributeUsages = this.permissionAttributeUsagesByType[selectedRelationshipType.value.code];
+            this.permissionAttributeUsages = this.permissionAttributeUsagesByType[selectedRelationshipTypeRef.value.code];
             this.newRelationship.permissionAttributes = [];
             for (let usage of this.permissionAttributeUsages) {
-                let relationshipAttribute = new RelationshipAttribute([usage.defaultValue], new HrefValue(null, usage));
+                let relationshipAttribute = new RelationshipAttribute([usage.defaultValue], usage.attributeNameDef);
                 this.newRelationship.permissionAttributes.push(relationshipAttribute);
             }
         } else {
