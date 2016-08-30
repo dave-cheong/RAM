@@ -38,10 +38,11 @@ export const RAMConstants = {
     },
 
     RelationshipAttributeNameClassifier: {
-        PERMISSION: 'PERMISSION'
+        PERMISSION: 'PERMISSION',
+        OTHER: 'OTHER'
     },
 
-    RelationshipTypeAttributeCode: {
+    RelationshipAttributeNameCode: {
         SSID: 'SSID',
         SELECTED_GOVERNMENT_SERVICES_LIST: 'SELECTED_GOVERNMENT_SERVICES_LIST',
         SUBJECT_RELATIONSHIP_TYPE_DECLARATION: 'SUBJECT_RELATIONSHIP_TYPE_DECLARATION',
@@ -55,6 +56,16 @@ export const RAMConstants = {
 
     RoleTypeCode: {
         OSP: 'OSP'
+    },
+
+    RoleAttributeNameClassifier: {
+        AGENCY_SERVICE: 'AGENCY_SERVICE',
+        OTHER: 'OTHER'
+    },
+
+    RoleAttributeNameCode: {
+        PREFERRED_NAME: 'PREFERRED_NAME',
+        DEVICE_AUSKEYS: 'DEVICE_AUSKEYS'
     }
 
 };
