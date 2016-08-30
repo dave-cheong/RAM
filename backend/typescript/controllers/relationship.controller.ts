@@ -406,24 +406,24 @@ export class RelationshipController {
                     errorMessage: 'Subject identity id value not valid'
                 }
             },
-            'delegate.href': {
-                in: 'body',
-                matches: {
-                    options: ['^/api/v1/party/identity/'],
-                    errorMessage: 'Delegate identity id value not valid'
-                }
-            },
-            'startTimestamp': {
-                in: 'body',
-                notEmpty: true,
-                isDate: {
-                    errorMessage: 'Start timestamp is not valid'
-                },
-                errorMessage: 'Start timestamp is not valid'
-            },
-            'endTimestamp': {
-                in: 'body'
-            }
+            // 'delegate.href': {
+            //     in: 'body',
+            //     matches: {
+            //         options: ['^/api/v1/party/identity/'],
+            //         errorMessage: 'Delegate identity id value not valid'
+            //     }
+            // },
+            // 'startTimestamp': {
+            //     in: 'body',
+            //     notEmpty: true,
+            //     isDate: {
+            //         errorMessage: 'Start timestamp is not valid'
+            //     },
+            //     errorMessage: 'Start timestamp is not valid'
+            // },
+            // 'endTimestamp': {
+            //     in: 'body'
+            // }
         };
         const subjectIdValue = Url.lastPathElement(req.body.subject.href); // todo may need to change as it could be initiated from a delegate
         validateReqSchema(req, schema)
@@ -437,9 +437,7 @@ export class RelationshipController {
                 return req;
             })
             .then(async (req: Request) => {
-                const subjectParty = await PartyModel.findByIdentityIdValue(subjectIdValue);
-                Assert.assertNotNull(subjectParty, 'Subject party not found');
-                return await subjectParty.addRelationship2(req.body);
+                return await RelationshipModel.addOrModify(req.body);
             })
             .then((model) => model ? model.toDTO(null) : null)
             .then(sendResource(res))

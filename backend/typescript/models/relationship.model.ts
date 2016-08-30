@@ -3,11 +3,12 @@ import * as mongoose from 'mongoose';
 import {Model, RAMEnum, IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Query, Assert} from './base';
 import {Url} from './url';
 import {DOB_SHARED_SECRET_TYPE_CODE} from './sharedSecretType.model';
-import {IParty, PartyModel, IPartyInstanceContract} from './party.model';
+import {IParty, PartyModel, IPartyInstanceContract, PartyType} from './party.model';
 import {IName, NameModel} from './name.model';
 import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model';
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
 import {RelationshipAttributeNameModel} from './relationshipAttributeName.model';
+import {ProfileProvider} from './profile.model';
 import {
     IdentityModel,
     IIdentity,
@@ -566,6 +567,7 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
 // static ..............................................................................................................
 
 interface IRelationshipStaticContract {
+    addOrModify(dto: DTO) : Promise<IRelationship>;
     add(relationshipType: IRelationshipType,
         subject: IPartyInstanceContract,
         subjectNickName: IName,
@@ -604,6 +606,55 @@ interface IRelationshipStaticContract {
 }
 
 class RelationshipStaticContractImpl implements IRelationshipStaticContract {
+
+    public async addOrModify(dto: DTO) : Promise<IRelationship> {
+
+        const isRelationshipInvitationFromDelegateCreateRequest =
+            dto.delegate.value
+            && dto.delegate.value.partyType === PartyType.Individual.code
+            && dto.delegate.value.identities.length === 1
+            && dto.delegate.value.identities[0].value
+            && dto.delegate.value.identities[0].value.identityType === IdentityType.InvitationCode.code
+            && dto.delegate.value.identities[0].value.profile.provider === ProfileProvider.Invitation.code;
+
+        if (isRelationshipInvitationFromDelegateCreateRequest) {
+            const subjectIdValue = Url.lastPathElement(dto.subject.href);
+            const subjectIdentity = await IdentityModel.findByIdValue(subjectIdValue);
+            Assert.assertNotNull(subjectIdentity, 'Subject identity not found');
+
+            const relationshipTypeCode = Url.lastPathElement(dto.relationshipType.href);
+            const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(relationshipTypeCode);
+            Assert.assertNotNull(relationshipType, 'Relationship type not found');
+
+            const hasSharedSecretValue = dto.delegate.value.identities[0].value.profile.sharedSecrets
+                && dto.delegate.value.identities[0].value.profile.sharedSecrets.length === 1
+                && dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value;
+            Assert.assertTrue(hasSharedSecretValue, 'Shared secret not found');
+
+            const temporaryDelegateIdentity = await IdentityModel.createInvitationCodeIdentity(
+                dto.delegate.value.identities[0].value.profile.name.givenName,
+                dto.delegate.value.identities[0].value.profile.name.familyName,
+                dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value
+            );
+
+            const attributes: IRelationshipAttribute[] = [];
+
+            return await RelationshipModel.add(
+                relationshipType,
+                subjectIdentity.party,
+                subjectIdentity.profile.name,
+                temporaryDelegateIdentity.party,
+                temporaryDelegateIdentity.profile.name,
+                new Date(),
+                null,
+                RelationshipInitiatedBy.Subject,
+                temporaryDelegateIdentity,
+                attributes
+            );
+        }
+
+        return null;
+    }
 
     public async add(relationshipType: IRelationshipType,
                      subject: IParty,
