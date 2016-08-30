@@ -1061,6 +1061,9 @@ definitions:
       defaultInd:
         type: boolean
         description: The default indicator
+      strength:
+        type: number
+        description: The strength
       agencyScheme:
         type: string
         description: The agency scheme
