@@ -29,7 +29,6 @@ import {
     IAttributeDTO,
     IIdentity,
     Identity,
-    ICreateIdentityDTO,
     IInvitationCodeRelationshipAddDTO,
     IRelationshipAttributeNameUsage,
     IRelationshipType,
@@ -230,6 +229,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 null,
                 RAMConstants.IdentityTypeCode.INVITATION_CODE,
                 true,
+                0,
                 null,
                 null,
                 null,
@@ -333,73 +333,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     public onUpdate(relationship: IRelationship) {
         this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
-    }
-
-    /* tslint:disable:max-func-body-length */
-    // todo remove this deprecated submit handler
-    public submit__deprecated() {
-
-        let delegate: ICreateIdentityDTO;
-
-        if (this.relationshipComponentData.representativeDetails.individual) {
-            const dob = this.relationshipComponentData.representativeDetails.individual.dob;
-            delegate = {
-                partyType: RAMConstants.PartyTypeCode.INDIVIDUAL,
-                givenName: this.relationshipComponentData.representativeDetails.individual.givenName,
-                familyName: this.relationshipComponentData.representativeDetails.individual.familyName,
-                sharedSecretTypeCode: RAMConstants.SharedSecretCode.DATE_OF_BIRTH,
-                sharedSecretValue: dob ? dob.toString() : ' ' /* TODO check format of date, currently sending x for space */,
-                identityType: RAMConstants.IdentityTypeCode.INVITATION_CODE,
-                agencyScheme: undefined,
-                agencyToken: undefined,
-                linkIdScheme: undefined,
-                linkIdConsumer: undefined,
-                publicIdentifierScheme: undefined,
-                profileProvider: undefined,
-            };
-        } else {
-            /* TODO handle organisation delegate */
-            alert('NOT YET IMPLEMENTED!');
-            //delegate = {
-            //    partyType: 'ABN',
-            //    unstructuredName: '' ,
-            //    identityType: 'PUBLIC_IDENTIFIER',
-            //    publicIdentifierScheme: 'ABN',
-            //    agencyToken: this.relationshipComponentData.representativeDetails.organisation.abn // // TODO: where does the ABN value go?
-            //};
-        }
-
-        const authorisationManagement: IAttributeDTO = {
-            code: RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND,
-            value: this.relationshipComponentData.authorisationManagement.value
-        };
-
-        const relationship: IInvitationCodeRelationshipAddDTO = {
-            relationshipType: this.relationshipComponentData.authType.authType,
-            subjectIdValue: this.identity.idValue,
-            delegate: delegate,
-            startTimestamp: this.relationshipComponentData.accessPeriod.startDate,
-            endTimestamp: this.relationshipComponentData.accessPeriod.endDate,
-            attributes: [
-                authorisationManagement
-            ] /* TODO setting the attributes */
-        };
-
-        this.services.rest.createRelationship(relationship).subscribe((relationship) => {
-            //console.log(JSON.stringify(relationship, null, 4));
-            this.services.rest.findIdentityByHref(relationship.delegate.value.identities[0].href).subscribe((identity) => {
-                //console.log(JSON.stringify(identity, null, 4));
-                this.services.route.goToRelationshipAddCompletePage(
-                    this.identity.idValue,
-                    identity.rawIdValue,
-                    this.displayName(this.relationshipComponentData.representativeDetails));
-            }, (err) => {
-                this.addGlobalErrorMessages(err);
-            });
-        }, (err) => {
-            this.addGlobalErrorMessages(err);
-        });
-
     }
 
     public resolveAttributeUsages() {
