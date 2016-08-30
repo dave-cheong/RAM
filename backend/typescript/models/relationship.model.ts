@@ -647,10 +647,10 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             delegateIdentity = await IdentityModel.findByIdValue(delegateIdValue);
         }
 
-        startTimestamp.setHours(0, 0, 0);
-        if (endTimestamp) {
-            endTimestamp.setHours(0, 0, 0);
-        }
+        // startTimestamp.setHours(0, 0, 0);
+        // if (endTimestamp) {
+        //     endTimestamp.setHours(0, 0, 0);
+        // }
 
         const isRelationshipInvitationFromSubjectCreateRequest =
             dto.initiatedBy === RelationshipInitiatedBy.Subject.code
