@@ -202,6 +202,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             let partyType = this.relationshipComponentData.representativeDetails.isOrganisation ? RAMConstants.PartyTypeCode.ORGANISATION : RAMConstants.PartyTypeCode.INDIVIDUAL;
             let relationshipType = CodeDecode.getRefByCode(this.relationshipTypeRefs, this.relationshipComponentData.authType.authType) as IHrefValue<IRelationshipType>;
 
+            // name
             let name = new Name(
                 this.relationshipComponentData.representativeDetails.individual ? this.relationshipComponentData.representativeDetails.individual.givenName : undefined,
                 this.relationshipComponentData.representativeDetails.individual ? this.relationshipComponentData.representativeDetails.individual.familyName : undefined,
@@ -209,6 +210,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 null
             );
 
+            // dob
             let sharedSecrets: SharedSecret[] = [];
             if (this.relationshipComponentData.representativeDetails.individual) {
                 let dob = this.relationshipComponentData.representativeDetails.individual.dob;
@@ -218,8 +220,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 }
             }
 
+            // profile
             let profile = new Profile(RAMConstants.ProfileProviderCode.INVITATION, name, sharedSecrets);
 
+            // identity
             let identityRef = new HrefValue<Identity>(null, new Identity(
                 [],
                 null,
@@ -239,17 +243,21 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 null
             ));
 
+            // delegate
             let delegateRef = new HrefValue(null, new Party(
                 [],
                 partyType,
                 [identityRef]
             ));
 
+            // meta
             this.relationship.relationshipType = relationshipType;
             this.relationship.delegate = delegateRef;
             this.relationship.startTimestamp = this.relationshipComponentData.accessPeriod.startDate;
             this.relationship.endTimestamp = this.relationshipComponentData.accessPeriod.endDate;
+            this.relationship.endEventTimestamp = this.relationshipComponentData.accessPeriod.endDate;
 
+            // delegate manage authorisation allowed attribute
             this.relationship.attributes = [
                 new RelationshipAttribute(
                     [this.relationshipComponentData.authorisationManagement.value],
@@ -257,9 +265,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 )
             ];
 
+            // invoke api
             let saveHref = this.services.model.getLinkHrefByType(RAMConstants.Link.RELATIONSHIP_CREATE, this.identity);
             this.services.rest.insertRelationshipByHref(saveHref, this.relationship).subscribe({
-                next: this.onSave.bind(this),
+                next: this.onInsert.bind(this),
                 error: this.onServerError.bind(this)
             });
 
@@ -267,25 +276,63 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // update relationship
 
-            // todo ...
+            let relationshipType = CodeDecode.getRefByCode(this.relationshipTypeRefs, this.relationshipComponentData.authType.authType) as IHrefValue<IRelationshipType>;
+            let firstIdentityForDelegate = this.relationship.delegate.value.identities[0];
+            let profile = firstIdentityForDelegate.value.profile;
+            let name = profile.name;
+
+            // meta
+            this.relationship.relationshipType = relationshipType;
+            this.relationship.startTimestamp = this.relationshipComponentData.accessPeriod.startDate;
+            this.relationship.endTimestamp = this.relationshipComponentData.accessPeriod.endDate;
+            this.relationship.endEventTimestamp = this.relationshipComponentData.accessPeriod.endDate;
+
+            // name
+            name.givenName = this.relationshipComponentData.representativeDetails.individual ? this.relationshipComponentData.representativeDetails.individual.givenName : undefined;
+            name.familyName = this.relationshipComponentData.representativeDetails.individual ? this.relationshipComponentData.representativeDetails.individual.familyName : undefined;
+            name.unstructuredName = this.relationshipComponentData.representativeDetails.organisation ? this.relationshipComponentData.representativeDetails.organisation.organisationName : undefined;
+
+            // dob
+            if (this.relationshipComponentData.representativeDetails.individual) {
+                let dob = this.relationshipComponentData.representativeDetails.individual.dob;
+                if (dob) {
+                    let dobSharedSecretType = new SharedSecretType(RAMConstants.SharedSecretCode.DATE_OF_BIRTH, null, null, null, null, null);
+                    profile.insertOrUpdateSharedSecret(new SharedSecret(dob.toString(), dobSharedSecretType));
+                } else {
+                    profile.deleteSharedSecret(RAMConstants.SharedSecretCode.DATE_OF_BIRTH);
+                }
+            }
+
+            // delegate manage authorisation allowed attribute
+            this.relationship.deleteAttribute(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            this.relationship.attributes.push(new RelationshipAttribute(
+                [this.relationshipComponentData.authorisationManagement.value],
+                relationshipType.value.getAttributeNameRef(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND)
+            ));
+
+            // invoke api
+            let saveHref = this.services.model.getLinkHrefByType(RAMConstants.Link.MODIFY, this.relationship);
+            this.services.rest.updateRelationshipByHref(saveHref, this.relationship).subscribe({
+                next: this.onUpdate.bind(this),
+                error: this.onServerError.bind(this)
+            });
 
         }
 
     }
 
-    public onSave(relationship: IRelationship) {
-        this.services.rest.findIdentityByHref(relationship.delegate.value.identities[0].href).subscribe({
-            next: (identity) => {
-                //console.log(JSON.stringify(identity, null, 4));
-                this.services.route.goToRelationshipAddCompletePage(
-                    this.identity.idValue,
-                    identity.rawIdValue,
-                    this.displayName(this.relationshipComponentData.representativeDetails));
-            },
-            error: (err) => {
-                this.addGlobalErrorMessages(err);
-            }
-        });
+    // todo change this to use href hateoas instead of the id value
+    public onInsert(relationship: IRelationship) {
+        let delegateIdentity = relationship.delegate.value.identities[0].value;
+        this.services.route.goToRelationshipAddCompletePage(
+            this.identity.idValue,
+            delegateIdentity.rawIdValue,
+            this.displayName(this.relationshipComponentData.representativeDetails)
+        );
+    }
+
+    public onUpdate(relationship: IRelationship) {
+        this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
     }
 
     /* tslint:disable:max-func-body-length */
