@@ -493,9 +493,12 @@ export interface IRelationshipType extends ICodeDecode {
     managedExternallyInd: boolean;
     category: string;
     getAttributeNameUsage(code: string): IRelationshipAttributeNameUsage;
+    getAttributeNameRef(code: string): IHrefValue<IRelationshipAttributeName>;
+    getAttributeName(code: string): IRelationshipAttributeName;
 }
 
 export class RelationshipType extends CodeDecode implements IRelationshipType {
+
     public static build(sourceObject: any): IRelationshipType {
         return new Builder<IRelationshipType>(sourceObject, this)
             .mapArray('relationshipAttributeNames', RelationshipAttributeNameUsage)
@@ -516,13 +519,23 @@ export class RelationshipType extends CodeDecode implements IRelationshipType {
 
     public getAttributeNameUsage(code: string): IRelationshipAttributeNameUsage {
         for (let usage of this.relationshipAttributeNames) {
-            const attributeNameRef = usage.attributeNameDef;
-            if (attributeNameRef.value.code === code) {
+            if (usage.attributeNameDef.value.code === code) {
                 return usage;
             }
         }
         return null;
     }
+
+    public getAttributeNameRef(code: string): IHrefValue<IRelationshipAttributeName> {
+        let usage = this.getAttributeNameUsage(code);
+        return usage ? usage.attributeNameDef : null;
+    }
+
+    public getAttributeName(code: string): IRelationshipAttributeName {
+        let ref = this.getAttributeNameRef(code);
+        return ref ? ref.value : null;
+    }
+
 }
 
 // relationship attribute name usage ..................................................................................
