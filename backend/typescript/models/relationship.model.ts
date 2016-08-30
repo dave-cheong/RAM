@@ -643,11 +643,6 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             && dto.delegate.value.identities[0].value.profile.provider === ProfileProvider.Invitation.code;
 
         if (isRelationshipInvitationFromSubjectCreateRequest) {
-            const hasAccess = await PartyModel.hasAccess(subjectIdentity.idValue, myPrincipal, myIdentity);
-            if (!hasAccess) {
-                throw new Error('403');
-            }
-
             const hasSharedSecretValue = dto.delegate.value.identities[0].value.profile.sharedSecrets
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets.length === 1
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value;
@@ -661,6 +656,19 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
         Assert.assertNotNull(subjectIdentity, 'Subject identity not found');
         Assert.assertNotNull(delegateIdentity, 'Delegate identity not found');
+
+        if (dto.initiatedBy === RelationshipInitiatedBy.Subject.code) {
+            const hasAccess = await PartyModel.hasAccess(subjectIdentity.idValue, myPrincipal, myIdentity);
+            if (!hasAccess) {
+                throw new Error('403');
+            }
+        }
+        if (dto.initiatedBy === RelationshipInitiatedBy.Delegate.code) {
+            const hasAccess = await PartyModel.hasAccess(delegateIdentity.idValue, myPrincipal, myIdentity);
+            if (!hasAccess) {
+                throw new Error('403');
+            }
+        }
 
         // todo process attributes here
 
