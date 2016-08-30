@@ -22,7 +22,7 @@ import {
     Relationship as DTO,
     RelationshipStatus as RelationshipStatusDTO,
     RelationshipAttribute as RelationshipAttributeDTO,
-    SearchResult
+    SearchResult, SharedSecret
 } from '../../../commons/RamAPI';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -652,6 +652,30 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 dto.delegate.value.identities[0].value.profile.name.familyName,
                 hasSharedSecretValue ? dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value : null
             );
+        }
+
+        const isRelationshipInvitationFromSubjectUpdateRequest =
+            dto.initiatedBy === RelationshipInitiatedBy.Subject.code
+            && dto.delegate.href
+            && dto.delegate.value
+            && dto.delegate.value.partyType === PartyType.Individual.code
+            && dto.delegate.value.identities.length === 1
+            && dto.delegate.value.identities[0].value
+            && dto.delegate.value.identities[0].value.identityType === IdentityType.InvitationCode.code
+            && dto.delegate.value.identities[0].value.profile.provider === ProfileProvider.Invitation.code;
+
+        if (isRelationshipInvitationFromSubjectUpdateRequest) {
+            delegateIdentity.profile.name.givenName = dto.delegate.value.identities[0].value.profile.name.givenName;
+            delegateIdentity.profile.name.familyName = dto.delegate.value.identities[0].value.profile.name.familyName;
+
+            const hasSharedSecretValue = dto.delegate.value.identities[0].value.profile.sharedSecrets
+                && dto.delegate.value.identities[0].value.profile.sharedSecrets.length === 1
+                && dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value;
+
+            delegateIdentity.profile.sharedSecrets.clear();
+            if (hasSharedSecretValue) {
+                // delegateIdentity.profile.sharedSecrets.push(new SharedSecret(dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value, await SharedSecretTypeModel.findByCodeInDateRange(DOB, new Date())));
+            }
         }
 
         Assert.assertNotNull(subjectIdentity, 'Subject identity not found');
