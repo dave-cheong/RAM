@@ -50,7 +50,9 @@ export class PageHeaderAuthComponent {
     public goToGiveAuthorisationPage() {
         if (this.isGiveAuthorisationsPageEnabled()) {
             if (this.identity) {
-                this.services.route.goToAddRelationshipPage(this.identity.idValue);
+                this.services.route.goToAddRelationshipPage(
+                    this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+                );
             }
         }
     };

@@ -40,16 +40,16 @@ export class RAMRouteService {
         );
     }
 
-    public goToAddRelationshipPage(idValue: string) {
+    public goToAddRelationshipPage(identityHref: string) {
         this.router.navigate(['/relationships/add',
-            this.encodeURIComponent(idValue, false)
+            this.encodeURIComponent(identityHref, true)
         ]);
     }
 
-    public goToEditRelationshipPage(idValue: string, key: string) {
+    public goToEditRelationshipPage(identityHref: string, relationshipHref: string) {
         this.router.navigate(['/relationships/edit',
-            this.encodeURIComponent(idValue, false),
-            this.encodeURIComponent(key, false)
+            this.encodeURIComponent(identityHref, true),
+            this.encodeURIComponent(relationshipHref, true)
         ]);
     }
 
