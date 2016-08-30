@@ -421,7 +421,7 @@ export interface IRelationship extends IHasLinks {
     delegateNickName?: IName;
     startTimestamp: Date;
     endTimestamp?: Date;
-    endEventTimestamp?: Date,
+    endEventTimestamp?: Date;
     status: string;
     initiatedBy: string;
     attributes: IRelationshipAttribute[];
