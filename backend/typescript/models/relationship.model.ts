@@ -712,6 +712,19 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         }
 
         // todo process attributes here
+        for (let attr of dto.attributes) {
+            Assert.assertNotNull(attr.attributeName, 'Attribute did not have an attribute name');
+            Assert.assertNotNull(attr.attributeName.href, 'Attribute did not have an attribute name href');
+
+            const attributeNameCode = decodeURIComponent(Url.lastPathElement(attr.attributeName.href));
+            Assert.assertNotNull(attributeNameCode, 'Attribute name code not found', `Unexpected attribute name href last element: ${attr.attributeName.href}`);
+
+            const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(attributeNameCode);
+            Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribuet name with code: ${attributeNameCode}`);
+
+            let attribute: IRelationshipAttribute = await RelationshipAttributeModel.add(attr.value, attributeName);
+            attributes.push(attribute);
+        }
 
         if (isNewRelationship) {
             return await RelationshipModel.add(
