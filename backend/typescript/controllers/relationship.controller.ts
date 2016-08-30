@@ -392,6 +392,9 @@ export class RelationshipController {
     private create = async(req:Request, res:Response) => {
 
         const schema = {
+            'identifier': {
+                in: 'params'
+            },
             'relationshipType.href': {
                 in: 'body',
                 matches: {
@@ -399,13 +402,13 @@ export class RelationshipController {
                     errorMessage: 'Relationship type is not valid'
                 }
             },
-            'subject.href': {
-                in: 'body',
-                matches: {
-                    options: ['^/api/v1/party/identity/'],
-                    errorMessage: 'Subject identity id value not valid'
-                }
-            },
+            // 'subject.href': {
+            //     in: 'body',
+            //     matches: {
+            //         options: ['^/api/v1/party/identity/'],
+            //         errorMessage: 'Subject identity id value not valid'
+            //     }
+            // },
             // 'delegate.href': {
             //     in: 'body',
             //     matches: {
@@ -425,20 +428,8 @@ export class RelationshipController {
             //     in: 'body'
             // }
         };
-        const subjectIdValue = Url.lastPathElement(req.body.subject.href); // todo may need to change as it could be initiated from a delegate
         validateReqSchema(req, schema)
-            .then(async (req:Request) => {
-                const myPrincipal = context.getAuthenticatedPrincipal();
-                const myIdentity = context.getAuthenticatedIdentity();
-                const hasAccess = await this.partyModel.hasAccess(subjectIdValue, myPrincipal, myIdentity);
-                if (!hasAccess) {
-                    throw new Error('403');
-                }
-                return req;
-            })
-            .then(async (req: Request) => {
-                return await RelationshipModel.addOrModify(req.body);
-            })
+            .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, req.body))
             .then((model) => model ? model.toDTO(null) : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
