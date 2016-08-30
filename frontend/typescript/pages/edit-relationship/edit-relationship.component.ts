@@ -36,7 +36,6 @@ import {
     IHrefValue,
     IRelationshipAttribute,
     RelationshipAttribute,
-    HrefValue,
     CodeDecode
 } from '../../../../commons/RamAPI';
 
@@ -72,7 +71,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public authType: string = 'choose';
     public disableAuthMgmt: boolean = true;
 
-    public newRelationship: AddRelationshipComponentData = {
+    public newRelationship: EditRelationshipComponentData = {
         accessPeriod: {
             startDateEnabled: true,
             startDate: new Date(),
@@ -284,7 +283,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
 }
 
-export interface AddRelationshipComponentData {
+export interface EditRelationshipComponentData {
     accessPeriod: AccessPeriodComponentData;
     authType: AuthorisationTypeComponentData;
     representativeDetails: RepresentativeDetailsComponentData;
