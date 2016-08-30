@@ -57,7 +57,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public identityHref: string;
     public relationshipHref: string;
 
-    public relationshipTypes$: Observable<IHrefValue<IRelationshipType>[]>;
     public relationshipTypeRefs: IHrefValue<IRelationshipType>[];
     public permissionAttributeUsages: { [relationshipTypeCode: string]: IRelationshipAttributeNameUsage[] } = {};
 
