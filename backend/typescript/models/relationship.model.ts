@@ -296,7 +296,6 @@ export interface IRelationshipInstanceContract extends IRAMObjectContract {
     acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship>;
     rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship>;
     notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship>;
-    modify(dto: DTO): Promise<IRelationship>;
 
 }
 
@@ -514,55 +513,6 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
         return Promise.resolve(this);
     }
 
-    public async modify(dto: DTO): Promise<IRelationship> {
-        const relationshipTypeCode = decodeURIComponent(Url.lastPathElement(dto.relationshipType.href));
-        Assert.assertNotNull(relationshipTypeCode, 'Relationship type code was empty', `Expected relationshipType href last element to be the code: ${dto.relationshipType.href}`);
-
-        const relationshipType = await RelationshipTypeModel.findByCodeInDateRange(relationshipTypeCode, new Date());
-        Assert.assertNotNull(relationshipType, 'Relationship type not found', `Expected relationship type with code with valid date: ${relationshipTypeCode}`);
-
-        const delegateIdValue = decodeURIComponent(Url.lastPathElement(dto.delegate.href));
-        Assert.assertNotNull(delegateIdValue, 'Delegate identity id value was empty', `Expected delegate href last element to have an id value: ${dto.delegate.href}`);
-
-        const delegateIdentity = await IdentityModel.findByIdValue(delegateIdValue);
-        Assert.assertNotNull(delegateIdentity, 'Delegate identity not found', `Expected to find delegate by id value: ${delegateIdValue}`);
-
-        const subjectIdValue = decodeURIComponent(Url.lastPathElement(dto.subject.href));
-        Assert.assertNotNull(subjectIdValue, 'Subject identity id value was empty', `Expected subject href last element to have an id value: ${dto.subject.href}`);
-
-        const subjectIdentity = await IdentityModel.findByIdValue(subjectIdValue);
-        Assert.assertNotNull(subjectIdentity, 'Subject identity not found', `Expected to find subject by id: ${this._id}`);
-
-        // future story to change the below to be configuration based and not hard coded
-        let attributes: IRelationshipAttribute[] = [];
-        for (let attr of dto.attributes) {
-            Assert.assertNotNull(attr.attributeName, 'Attribute did not have an attribute name');
-            Assert.assertNotNull(attr.attributeName.href, 'Attribute did not have an attribute name href');
-
-            const attributeNameCode = decodeURIComponent(Url.lastPathElement(attr.attributeName.href));
-            Assert.assertNotNull(attributeNameCode, 'Attribute name code not found', `Unexpected attribute name href last element: ${attr.attributeName.href}`);
-
-            const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(attributeNameCode);
-            Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribuet name with code: ${attributeNameCode}`);
-
-            let attribute: IRelationshipAttribute = await RelationshipAttributeModel.add(attr.value, attributeName);
-            attributes.push(attribute);
-        }
-
-        this.startTimestamp = dto.startTimestamp;
-        this.endTimestamp = dto.endTimestamp;
-        this.attributes = attributes;
-
-        this.startTimestamp.setHours(0, 0, 0);
-        if (this.endTimestamp) {
-            this.endTimestamp.setHours(0, 0, 0);
-        }
-
-        await this.save();
-
-        return this as IRelationship;
-    }
-
 }
 
 // static ..............................................................................................................
@@ -617,8 +567,10 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         const isNewRelationship = !dto.subject.href || !dto.delegate.href;
 
         const relationshipTypeCode = Url.lastPathElement(dto.relationshipType.href);
+        Assert.assertNotNull(relationshipTypeCode, 'Relationship type code was empty', `Expected relationshipType href last element to be the code: ${dto.relationshipType.href}`);
+
         const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(relationshipTypeCode);
-        Assert.assertNotNull(relationshipType, 'Relationship type not found');
+        Assert.assertNotNull(relationshipType, 'Relationship type not found', `Expected relationship type with code with valid date: ${relationshipTypeCode}`);
 
         const initiatedBy = RelationshipInitiatedBy.valueOf(dto.initiatedBy);
         let subjectIdentity: IIdentity;
