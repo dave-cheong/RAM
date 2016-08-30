@@ -11,7 +11,6 @@ import {
 } from './helpers';
 import {IPartyModel, PartyModel} from '../models/party.model';
 import {IRelationshipModel, RelationshipStatus, RelationshipModel} from '../models/relationship.model';
-import {Url} from '../models/url';
 import {
     FilterParams,
     IInvitationCodeRelationshipAddDTO,
@@ -19,7 +18,6 @@ import {
     IAttributeDTO
 } from '../../../commons/RamAPI';
 import {Headers} from './headers';
-import {Assert} from '../models/base';
 
 // todo add data security
 export class RelationshipController {
@@ -477,22 +475,8 @@ export class RelationshipController {
                 in: 'body'
             }
         };
-        const subjectIdValue = Url.lastPathElement(req.body.subject.href);
         validateReqSchema(req, schema)
-            .then(async (req:Request) => {
-                const myPrincipal = context.getAuthenticatedPrincipal();
-                const myIdentity = context.getAuthenticatedIdentity();
-                const hasAccess = await this.partyModel.hasAccess(subjectIdValue, myPrincipal, myIdentity);
-                if (!hasAccess) {
-                    throw new Error('403');
-                }
-                return req;
-            })
-            .then(async (req: Request) => {
-                let relationship = await RelationshipModel.findByIdentifier(req.params.identifier);
-                Assert.assertNotNull(relationship, 'Relationship not found', 'Could not relationship by param');
-                return await relationship.modify(req.body);
-            })
+            .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, req.body))
             .then((model) => model ? model.toDTO(null) : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))

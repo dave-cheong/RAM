@@ -296,7 +296,6 @@ export interface IRelationshipInstanceContract extends IRAMObjectContract {
     acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship>;
     rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship>;
     notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship>;
-    modify(dto: DTO): Promise<IRelationship>;
 
 }
 
@@ -514,55 +513,6 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
         return Promise.resolve(this);
     }
 
-    public async modify(dto: DTO): Promise<IRelationship> {
-        const relationshipTypeCode = decodeURIComponent(Url.lastPathElement(dto.relationshipType.href));
-        Assert.assertNotNull(relationshipTypeCode, 'Relationship type code was empty', `Expected relationshipType href last element to be the code: ${dto.relationshipType.href}`);
-
-        const relationshipType = await RelationshipTypeModel.findByCodeInDateRange(relationshipTypeCode, new Date());
-        Assert.assertNotNull(relationshipType, 'Relationship type not found', `Expected relationship type with code with valid date: ${relationshipTypeCode}`);
-
-        const delegateIdValue = decodeURIComponent(Url.lastPathElement(dto.delegate.href));
-        Assert.assertNotNull(delegateIdValue, 'Delegate identity id value was empty', `Expected delegate href last element to have an id value: ${dto.delegate.href}`);
-
-        const delegateIdentity = await IdentityModel.findByIdValue(delegateIdValue);
-        Assert.assertNotNull(delegateIdentity, 'Delegate identity not found', `Expected to find delegate by id value: ${delegateIdValue}`);
-
-        const subjectIdValue = decodeURIComponent(Url.lastPathElement(dto.subject.href));
-        Assert.assertNotNull(subjectIdValue, 'Subject identity id value was empty', `Expected subject href last element to have an id value: ${dto.subject.href}`);
-
-        const subjectIdentity = await IdentityModel.findByIdValue(subjectIdValue);
-        Assert.assertNotNull(subjectIdentity, 'Subject identity not found', `Expected to find subject by id: ${this._id}`);
-
-        // future story to change the below to be configuration based and not hard coded
-        let attributes: IRelationshipAttribute[] = [];
-        for (let attr of dto.attributes) {
-            Assert.assertNotNull(attr.attributeName, 'Attribute did not have an attribute name');
-            Assert.assertNotNull(attr.attributeName.href, 'Attribute did not have an attribute name href');
-
-            const attributeNameCode = decodeURIComponent(Url.lastPathElement(attr.attributeName.href));
-            Assert.assertNotNull(attributeNameCode, 'Attribute name code not found', `Unexpected attribute name href last element: ${attr.attributeName.href}`);
-
-            const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(attributeNameCode);
-            Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribuet name with code: ${attributeNameCode}`);
-
-            let attribute: IRelationshipAttribute = await RelationshipAttributeModel.add(attr.value, attributeName);
-            attributes.push(attribute);
-        }
-
-        this.startTimestamp = dto.startTimestamp;
-        this.endTimestamp = dto.endTimestamp;
-        this.attributes = attributes;
-
-        this.startTimestamp.setHours(0, 0, 0);
-        if (this.endTimestamp) {
-            this.endTimestamp.setHours(0, 0, 0);
-        }
-
-        await this.save();
-
-        return this as IRelationship;
-    }
-
 }
 
 // static ..............................................................................................................
@@ -617,15 +567,17 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         const isNewRelationship = !dto.subject.href || !dto.delegate.href;
 
         const relationshipTypeCode = Url.lastPathElement(dto.relationshipType.href);
+        Assert.assertNotNull(relationshipTypeCode, 'Relationship type code was empty', `Expected relationshipType href last element to be the code: ${dto.relationshipType.href}`);
+
         const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(relationshipTypeCode);
-        Assert.assertNotNull(relationshipType, 'Relationship type not found');
+        Assert.assertNotNull(relationshipType, 'Relationship type not found', `Expected relationship type with code with valid date: ${relationshipTypeCode}`);
 
         const initiatedBy = RelationshipInitiatedBy.valueOf(dto.initiatedBy);
         let subjectIdentity: IIdentity;
         let delegateIdentity: IIdentity;
         let invitationIdentity: IIdentity;
-        let startTimestamp = dto.startTimestamp;
-        let endTimestamp = dto.endTimestamp;
+        let startTimestamp;
+        let endTimestamp;
         let attributes: IRelationshipAttribute[] = [];
 
         let relationship;
@@ -648,12 +600,20 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             delegateIdentity = await IdentityModel.findByIdValue(delegateIdValue);
         }
 
+        // todo if new, start date can not be past only today and future
+        // todo if edit, start date can be future and past.
+        startTimestamp = dto.startTimestamp;
+
+        // todo end must be after start
+        endTimestamp = dto.endTimestamp;
+
+        // todo zero hours
         // startTimestamp.setHours(0, 0, 0);
         // if (endTimestamp) {
         //     endTimestamp.setHours(0, 0, 0);
         // }
 
-        const isRelationshipInvitationFromSubjectCreateRequest =
+        const isSubjectCreatingRelationshipInvitation =
             dto.initiatedBy === RelationshipInitiatedBy.Subject.code
             && dto.delegate.value
             && dto.delegate.value.partyType === PartyType.Individual.code
@@ -662,7 +622,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             && dto.delegate.value.identities[0].value.identityType === IdentityType.InvitationCode.code
             && dto.delegate.value.identities[0].value.profile.provider === ProfileProvider.Invitation.code;
 
-        if (isRelationshipInvitationFromSubjectCreateRequest) {
+        if (isSubjectCreatingRelationshipInvitation) {
             const hasSharedSecretValue = dto.delegate.value.identities[0].value.profile.sharedSecrets
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets.length === 1
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value;
@@ -675,7 +635,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             invitationIdentity = delegateIdentity;
         }
 
-        const isRelationshipInvitationFromSubjectUpdateRequest =
+        const isSubjectUpdatingRelationshipInvitation =
             dto.initiatedBy === RelationshipInitiatedBy.Subject.code
             && dto.delegate.href
             && dto.delegate.value
@@ -685,7 +645,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             && dto.delegate.value.identities[0].value.identityType === IdentityType.InvitationCode.code
             && dto.delegate.value.identities[0].value.profile.provider === ProfileProvider.Invitation.code;
 
-        if (isRelationshipInvitationFromSubjectUpdateRequest) {
+        if (isSubjectUpdatingRelationshipInvitation) {
             delegateIdentity.profile.name.givenName = dto.delegate.value.identities[0].value.profile.name.givenName;
             delegateIdentity.profile.name.familyName = dto.delegate.value.identities[0].value.profile.name.familyName;
 
@@ -735,11 +695,14 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(attributeNameCode);
             Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribute name with code: ${attributeNameCode}`);
 
+            const attributeValue = dtoAttribute.value;
+
             const isPermissionClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.Permission.code;
             const isOtherClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.Other.code;
             const isAgencyServiceClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.AgencyService.code;
 
             if (isPermissionClassifier) {
+
                 if (!isPermissionAttributeAllowed) {
                     logger.warn('Found relationship attribute with classifier permission but permission customisation not allowed');
                     throw new Error('400');
@@ -751,22 +714,24 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                         let foundAttribute = false;
                         for (let attribute of attributes) {
                             if (attribute.attributeName.code === attributeName.code) {
-                                attribute.value = dtoAttribute.value;
+                                attribute.value = attributeValue;
+                                await attribute.save();
                                 foundAttribute = true;
                                 break;
                             }
                         }
                         if (!foundAttribute) {
-                            attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, attributeName));
+                            attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
                         }
-                        // attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, relationshipAttributeNameUsage.attributeName));
 
                     } else {
-                        // todo do we want to fail ???
+                        logger.warn('Relationship attribute not associated with relationship type');
+                        throw new Error('400');
                     }
-
                 }
+
             } else if (isOtherClassifier) {
+
                 const relationshipAttributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
                 const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
                 if (relationshipAttributeNameUsage !== null) {
@@ -774,31 +739,43 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                     let foundAttribute = false;
                     for (let attribute of attributes) {
                         if (attribute.attributeName.code === attributeName.code) {
-                            attribute.value = dtoAttribute.value;
+                            attribute.value = attributeValue;
+                            await attribute.save();
                             foundAttribute = true;
                             break;
                         }
                     }
                     if (!foundAttribute) {
-                        attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, attributeName));
+                        attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
                     }
-                    // attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, relationshipAttributeNameUsage.attributeName));
 
                 } else {
-                    // todo do we want to fail ???
+                    logger.warn('Relationship attribute not associated with relationship type');
+                    throw new Error('400');
                 }
+
             } else if (isAgencyServiceClassifier) {
 
-                let foundAttribute = false;
-                for (let attribute of attributes) {
-                    if (attribute.attributeName.code === attributeName.code) {
-                        attribute.value = dtoAttribute.value;
-                        foundAttribute = true;
-                        break;
+                const relationshipAttributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
+                const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
+                if (relationshipAttributeNameUsage !== null) {
+
+                    let foundAttribute = false;
+                    for (let attribute of attributes) {
+                        if (attribute.attributeName.code === attributeName.code) {
+                            attribute.value = attributeValue;
+                            await attribute.save();
+                            foundAttribute = true;
+                            break;
+                        }
                     }
-                }
-                if (!foundAttribute) {
-                    attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, attributeName));
+                    if (!foundAttribute) {
+                        attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
+                    }
+
+                } else {
+                    logger.warn('Relationship attribute not associated with relationship type');
+                    throw new Error('400');
                 }
 
             }
@@ -818,9 +795,6 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 attributes
             );
         } else {
-            Assert.assertNotNull(identifier, 'Identifier not found');
-
-            const relationship = await RelationshipModel.findByIdentifier(identifier);
             Assert.assertNotNull(relationship, 'Relationship not found');
 
             relationship.subject = subjectIdentity.party;
