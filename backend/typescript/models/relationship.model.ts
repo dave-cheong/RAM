@@ -745,7 +745,6 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             const relationship = await RelationshipModel.findByIdentifier(identifier);
             Assert.assertNotNull(relationship, 'Relationship not found');
 
-            relationship.relationshipType = relationshipType;
             relationship.subject = subjectIdentity.party;
             relationship.delegate = delegateIdentity.party;
             relationship.startTimestamp = startTimestamp;
