@@ -51,19 +51,15 @@ describe('Javascript', () => {
     });
 
     it('getOwnPropertyNames', async(done) => {
-            try {
+        try {
+            expect(Object.getOwnPropertyNames(PersonDTO.prototype).length).toBe(2);
 
-                {
-                    const person = Object.create(PersonDTO.prototype);
-                    expect(Object.getOwnPropertyNames(PersonDTO.prototype).length).toBe(2);
-                }
+            done();
 
-                done();
-
-            } catch (e) {
-                fail('Because ' + e);
-                done();
-            }
-        });
+        } catch (e) {
+            fail('Because ' + e);
+            done();
+        }
+    });
 
 });
