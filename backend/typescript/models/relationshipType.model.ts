@@ -102,7 +102,7 @@ export interface IRelationshipTypeInstanceContract extends ICodeDecodeContract {
     attributeNameUsages: IRelationshipAttributeNameUsage[];
     categoryEnum(): RelationshipTypeCategory;
     findAttributeNameUsageByCode(code: string): IRelationshipAttributeNameUsage;
-    toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>>;
+    toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
     toDTO(): Promise<DTO>;
 }
 
@@ -115,43 +115,47 @@ class RelationshipTypeInstanceContractImpl extends CodeDecodeContractImpl implem
     public autoAcceptIfInitiatedFromSubject: boolean;
     public category: string;
     public attributeNameUsages: IRelationshipAttributeNameUsage[];
+
     public categoryEnum(): RelationshipTypeCategory {
         return RelationshipTypeCategory.valueOf(this.category);
     }
+
     public findAttributeNameUsageByCode(code: string): IRelationshipAttributeNameUsage {
         for (let attributeNameUsage of this.attributeNameUsages) {
-                if (attributeNameUsage.attributeName.code === code) {
-                    return attributeNameUsage;
-                }
+            if (attributeNameUsage.attributeName.code === code) {
+                return attributeNameUsage;
             }
-            return null;
+        }
+        return null;
     }
-    public async toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>> {
+
+    public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
         return new HrefValue(
-         await Url.forRelationshipType(this),
-         includeValue ? await this.toDTO() : undefined
-     );
+            await Url.forRelationshipType(this),
+            includeValue ? await this.toDTO() : undefined
+        );
     }
+
     public async toDTO(): Promise<DTO> {
         return new DTO(
-                this.code,
-                this.shortDecodeText,
-                this.longDecodeText,
-                this.startDate,
-                this.endDate,
-                this.voluntaryInd,
-                this.managedExternallyInd,
-                this.category,
-                await Promise.all<RelationshipAttributeNameUsageDTO>(this.attributeNameUsages.map(
-                    async (attributeNameUsage:IRelationshipAttributeNameUsage) => {
-                        return new RelationshipAttributeNameUsageDTO(
-                            attributeNameUsage.optionalInd,
-                            attributeNameUsage.defaultValue,
-                            await attributeNameUsage.attributeName.toHrefValue(true),
-                            attributeNameUsage.sortOrder
-                        );
-                    }))
-            );
+            this.code,
+            this.shortDecodeText,
+            this.longDecodeText,
+            this.startDate,
+            this.endDate,
+            this.voluntaryInd,
+            this.managedExternallyInd,
+            this.category,
+            await Promise.all<RelationshipAttributeNameUsageDTO>(this.attributeNameUsages.map(
+                async(attributeNameUsage: IRelationshipAttributeNameUsage) => {
+                    return new RelationshipAttributeNameUsageDTO(
+                        attributeNameUsage.optionalInd,
+                        attributeNameUsage.defaultValue,
+                        await attributeNameUsage.attributeName.toHrefValue(true),
+                        attributeNameUsage.sortOrder
+                    );
+                }))
+        );
     }
 
 }
@@ -159,56 +163,58 @@ class RelationshipTypeInstanceContractImpl extends CodeDecodeContractImpl implem
 // static .............................................................................................................
 
 interface IRelationshipTypeStaticContract {
-    findByCodeIgnoringDateRange(code:String) : Promise<IRelationshipType>;
-    findByCodeInDateRange(code:String, date:Date) : Promise<IRelationshipType>;
-    listIgnoringDateRange() : Promise<IRelationshipType[]>;
-    listInDateRange(date:Date) : Promise<IRelationshipType[]>;
+    findByCodeIgnoringDateRange(code: String): Promise<IRelationshipType>;
+    findByCodeInDateRange(code: String, date: Date): Promise<IRelationshipType>;
+    listIgnoringDateRange(): Promise<IRelationshipType[]>;
+    listInDateRange(date: Date): Promise<IRelationshipType[]>;
 }
 
 class RelationshipTypeStaticContractImpl implements IRelationshipTypeStaticContract {
-    public findByCodeIgnoringDateRange(code:String) : Promise<IRelationshipType> {
+    public findByCodeIgnoringDateRange(code: String): Promise<IRelationshipType> {
         return RelationshipTypeModel
-                .findOne({
-                    code: code
-                })
-                .deepPopulate([
-                    'attributeNameUsages.attributeName'
-                ])
-                .exec();
+            .findOne({
+                code: code
+            })
+            .deepPopulate([
+                'attributeNameUsages.attributeName'
+            ])
+            .exec();
     }
-    public findByCodeInDateRange(code:String, date:Date) : Promise<IRelationshipType>{
+
+    public findByCodeInDateRange(code: String, date: Date): Promise<IRelationshipType> {
         return RelationshipTypeModel
-                .findOne({
-                    code: code,
-                    startDate: {$lte: date},
-                    $or: [{endDate: null}, {endDate: {$gte: date}}]
-                })
-                .deepPopulate([
-                    'attributeNameUsages.attributeName'
-                ])
-                .exec();
+            .findOne({
+                code: code,
+                startDate: {$lte: date},
+                $or: [{endDate: null}, {endDate: {$gte: date}}]
+            })
+            .deepPopulate([
+                'attributeNameUsages.attributeName'
+            ])
+            .exec();
     }
-    public listIgnoringDateRange() : Promise<IRelationshipType[]> {
+
+    public listIgnoringDateRange(): Promise<IRelationshipType[]> {
         return RelationshipTypeModel
-               .find({
-               })
-               .deepPopulate([
-                   'attributeNameUsages.attributeName'
-               ])
-               .sort({shortDecodeText: 1})
-               .exec();
+            .find({})
+            .deepPopulate([
+                'attributeNameUsages.attributeName'
+            ])
+            .sort({shortDecodeText: 1})
+            .exec();
     }
-    public listInDateRange(date:Date) : Promise<IRelationshipType[]> {
+
+    public listInDateRange(date: Date): Promise<IRelationshipType[]> {
         return RelationshipTypeModel
-                .find({
-                    startDate: {$lte: date},
-                    $or: [{endDate: null}, {endDate: {$gte: date}}]
-                })
-                .deepPopulate([
-                    'attributeNameUsages.attributeName'
-                ])
-                .sort({shortDecodeText: 1})
-                .exec();
+            .find({
+                startDate: {$lte: date},
+                $or: [{endDate: null}, {endDate: {$gte: date}}]
+            })
+            .deepPopulate([
+                'attributeNameUsages.attributeName'
+            ])
+            .sort({shortDecodeText: 1})
+            .exec();
     }
 
 }
