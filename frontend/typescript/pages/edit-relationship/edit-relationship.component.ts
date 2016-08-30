@@ -34,7 +34,7 @@ import {
     IRelationshipAttributeNameUsage,
     IRelationshipType,
     IRelationship,
-    IHrefValue
+    IHrefValue, IRelationshipAttribute, RelationshipAttribute, HrefValue
 } from '../../../../commons/RamAPI';
 
 @Component({
@@ -58,7 +58,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public relationshipHref: string;
 
     public relationshipTypeRefs: IHrefValue<IRelationshipType>[];
-    public permissionAttributeUsages: { [relationshipTypeCode: string]: IRelationshipAttributeNameUsage[] } = {};
+    public permissionAttributeUsagesByType: { [relationshipTypeCode: string]: IRelationshipAttributeNameUsage[] } = {};
+    public permissionAttributeUsages: IRelationshipAttributeNameUsage[];
 
     public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public identity: IIdentity;
@@ -91,6 +92,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         authorisationManagement: {
             value: 'false'
         },
+        permissionAttributes: [],
         declaration: {
             accepted: false,
             markdown: 'TODO'
@@ -230,7 +232,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public resolveAttributeUsages() {
         for (let relTypeRef of this.relationshipTypeRefs) {
             const attributeNames = relTypeRef.value.relationshipAttributeNames;
-            this.permissionAttributeUsages[relTypeRef.value.code] = attributeNames.filter((attName) => {
+            this.permissionAttributeUsagesByType[relTypeRef.value.code] = attributeNames.filter((attName) => {
                 return attName.attributeNameDef.value.classifier === RAMConstants.RelationshipAttributeNameClassifier.PERMISSION;
             });
         }
@@ -261,6 +263,12 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.newRelationship.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
             // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
             this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage===null : true;
+            this.permissionAttributeUsages = this.permissionAttributeUsagesByType[selectedRelationshipType.value.code];
+            this.newRelationship.permissionAttributes = [];
+            for (let usage of this.permissionAttributeUsages) {
+                let relationshipAttribute = new RelationshipAttribute([usage.defaultValue], new HrefValue(null, usage));
+                this.newRelationship.permissionAttributes.push(relationshipAttribute);
+            }
         } else {
             this.disableAuthMgmt = true;
         }
@@ -274,5 +282,6 @@ export interface AddRelationshipComponentData {
     authType: AuthorisationTypeComponentData;
     representativeDetails: RepresentativeDetailsComponentData;
     authorisationManagement: AuthorisationManagementComponentData;
+    permissionAttributes: IRelationshipAttribute[];
     declaration: DeclarationComponentData;
 }

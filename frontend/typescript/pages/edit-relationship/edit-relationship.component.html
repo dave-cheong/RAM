@@ -11,7 +11,7 @@
 
 <authorisation-management [(data)]='newRelationship.authorisationManagement' [attributeNameUsage]='manageAuthAttribute' [disabled]="disableAuthMgmt"></authorisation-management>
 
-<authorisation-permissions (validationErrors)='authorisationPermissionErrors=$event'></authorisation-permissions>
+<authorisation-permissions [(attributes)]='newRelationship.permissionAttributes' [attributeNameUsages]='permissionAttributeUsages' (validationErrors)='authorisationPermissionErrors=$event'></authorisation-permissions>
 
 <div class="panel panel-default">
     <div class="panel-heading">
