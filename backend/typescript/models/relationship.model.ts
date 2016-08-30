@@ -653,7 +653,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         //     endTimestamp.setHours(0, 0, 0);
         // }
 
-        const isRelationshipInvitationFromSubjectCreateRequest =
+        const isSubjectCreatingRelationshipInvitation =
             dto.initiatedBy === RelationshipInitiatedBy.Subject.code
             && dto.delegate.value
             && dto.delegate.value.partyType === PartyType.Individual.code
@@ -662,7 +662,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             && dto.delegate.value.identities[0].value.identityType === IdentityType.InvitationCode.code
             && dto.delegate.value.identities[0].value.profile.provider === ProfileProvider.Invitation.code;
 
-        if (isRelationshipInvitationFromSubjectCreateRequest) {
+        if (isSubjectCreatingRelationshipInvitation) {
             const hasSharedSecretValue = dto.delegate.value.identities[0].value.profile.sharedSecrets
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets.length === 1
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value;
@@ -675,7 +675,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             invitationIdentity = delegateIdentity;
         }
 
-        const isRelationshipInvitationFromSubjectUpdateRequest =
+        const isSubjectUpdatingRelationshipInvitation =
             dto.initiatedBy === RelationshipInitiatedBy.Subject.code
             && dto.delegate.href
             && dto.delegate.value
@@ -685,7 +685,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             && dto.delegate.value.identities[0].value.identityType === IdentityType.InvitationCode.code
             && dto.delegate.value.identities[0].value.profile.provider === ProfileProvider.Invitation.code;
 
-        if (isRelationshipInvitationFromSubjectUpdateRequest) {
+        if (isSubjectUpdatingRelationshipInvitation) {
             delegateIdentity.profile.name.givenName = dto.delegate.value.identities[0].value.profile.name.givenName;
             delegateIdentity.profile.name.familyName = dto.delegate.value.identities[0].value.profile.name.familyName;
 
@@ -735,11 +735,14 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(attributeNameCode);
             Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribute name with code: ${attributeNameCode}`);
 
+            const attributeValue = dtoAttribute.value;
+
             const isPermissionClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.Permission.code;
             const isOtherClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.Other.code;
             const isAgencyServiceClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.AgencyService.code;
 
             if (isPermissionClassifier) {
+
                 if (!isPermissionAttributeAllowed) {
                     logger.warn('Found relationship attribute with classifier permission but permission customisation not allowed');
                     throw new Error('400');
@@ -751,22 +754,24 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                         let foundAttribute = false;
                         for (let attribute of attributes) {
                             if (attribute.attributeName.code === attributeName.code) {
-                                attribute.value = dtoAttribute.value;
+                                attribute.value = attributeValue;
+                                await attribute.save();
                                 foundAttribute = true;
                                 break;
                             }
                         }
                         if (!foundAttribute) {
-                            attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, attributeName));
+                            attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
                         }
-                        // attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, relationshipAttributeNameUsage.attributeName));
 
                     } else {
-                        // todo do we want to fail ???
+                        logger.warn('Relationship attribute not associated with relationship type');
+                        throw new Error('400');
                     }
-
                 }
+
             } else if (isOtherClassifier) {
+
                 const relationshipAttributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
                 const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
                 if (relationshipAttributeNameUsage !== null) {
@@ -774,31 +779,43 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                     let foundAttribute = false;
                     for (let attribute of attributes) {
                         if (attribute.attributeName.code === attributeName.code) {
-                            attribute.value = dtoAttribute.value;
+                            attribute.value = attributeValue;
+                            await attribute.save();
                             foundAttribute = true;
                             break;
                         }
                     }
                     if (!foundAttribute) {
-                        attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, attributeName));
+                        attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
                     }
-                    // attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, relationshipAttributeNameUsage.attributeName));
 
                 } else {
-                    // todo do we want to fail ???
+                    logger.warn('Relationship attribute not associated with relationship type');
+                    throw new Error('400');
                 }
+
             } else if (isAgencyServiceClassifier) {
 
-                let foundAttribute = false;
-                for (let attribute of attributes) {
-                    if (attribute.attributeName.code === attributeName.code) {
-                        attribute.value = dtoAttribute.value;
-                        foundAttribute = true;
-                        break;
+                const relationshipAttributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
+                const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
+                if (relationshipAttributeNameUsage !== null) {
+
+                    let foundAttribute = false;
+                    for (let attribute of attributes) {
+                        if (attribute.attributeName.code === attributeName.code) {
+                            attribute.value = attributeValue;
+                            await attribute.save();
+                            foundAttribute = true;
+                            break;
+                        }
                     }
-                }
-                if (!foundAttribute) {
-                    attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, attributeName));
+                    if (!foundAttribute) {
+                        attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
+                    }
+
+                } else {
+                    logger.warn('Relationship attribute not associated with relationship type');
+                    throw new Error('400');
                 }
 
             }
@@ -818,9 +835,6 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 attributes
             );
         } else {
-            Assert.assertNotNull(identifier, 'Identifier not found');
-
-            const relationship = await RelationshipModel.findByIdentifier(identifier);
             Assert.assertNotNull(relationship, 'Relationship not found');
 
             relationship.subject = subjectIdentity.party;
