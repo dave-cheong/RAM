@@ -439,9 +439,13 @@ export interface IRelationship extends IHasLinks {
     status: string;
     initiatedBy: string;
     attributes: IRelationshipAttribute[];
+    getAttribute(code: string): IRelationshipAttribute;
+    insertOrUpdateAttribute(attribute: IRelationshipAttribute);
+    deleteAttribute(code: string);
 }
 
 export class Relationship implements IRelationship {
+
     public static build(sourceObject: any): IRelationship {
         return new Builder<IRelationship>(sourceObject, this)
             .mapHref('relationshipType', RelationshipType)
@@ -466,6 +470,35 @@ export class Relationship implements IRelationship {
                 public initiatedBy: string,
                 public attributes: IRelationshipAttribute[]) {
     }
+
+    public getAttribute(code: string): IRelationshipAttribute {
+        for (let attribute of this.attributes) {
+            if (attribute.attributeName.value.code === code) {
+                return attribute;
+            }
+        }
+        return null;
+    }
+
+    public insertOrUpdateAttribute(attribute: IRelationshipAttribute) {
+        if (attribute) {
+            this.deleteAttribute(attribute.attributeName.value.code);
+            this.attributes.push(attribute);
+        }
+    }
+
+    public deleteAttribute(code: string) {
+        if (code) {
+            for (let i = 0; i < this.attributes.length; i = i + 1) {
+                let aAttribute = this.attributes[i];
+                if (aAttribute.attributeName.value.code === code) {
+                    this.attributes.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    }
+
 }
 
 // relationship status ................................................................................................
@@ -659,6 +692,8 @@ export interface IProfile {
     name: IName;
     sharedSecrets: ISharedSecret[];
     getSharedSecret(code: string): ISharedSecret;
+    insertOrUpdateSharedSecret(sharedSecret: ISharedSecret);
+    deleteSharedSecret(code: string);
 }
 
 export class Profile implements IProfile {
@@ -682,6 +717,25 @@ export class Profile implements IProfile {
             }
         }
         return null;
+    }
+
+    public insertOrUpdateSharedSecret(sharedSecret: ISharedSecret) {
+        if (sharedSecret) {
+            this.deleteSharedSecret(sharedSecret);
+            this.sharedSecrets.push(sharedSecret);
+        }
+    }
+
+    public deleteSharedSecret(code: string) {
+        if (code) {
+            for (let i = 0; i < this.sharedSecrets.length; i = i + 1) {
+                let aSharedSecret = this.sharedSecrets[i];
+                if (aSharedSecret.sharedSecretType.code === code) {
+                    this.sharedSecrets.splice(i, 1);
+                    break;
+                }
+            }
+        }
     }
 
 }
