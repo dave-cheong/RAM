@@ -609,6 +609,10 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
     public async addOrModify(dto: DTO) : Promise<IRelationship> {
 
+        const relationshipTypeCode = Url.lastPathElement(dto.relationshipType.href);
+        const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(relationshipTypeCode);
+        Assert.assertNotNull(relationshipType, 'Relationship type not found');
+
         const isRelationshipInvitationFromDelegateCreateRequest =
             dto.delegate.value
             && dto.delegate.value.partyType === PartyType.Individual.code
@@ -621,10 +625,6 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             const subjectIdValue = Url.lastPathElement(dto.subject.href);
             const subjectIdentity = await IdentityModel.findByIdValue(subjectIdValue);
             Assert.assertNotNull(subjectIdentity, 'Subject identity not found');
-
-            const relationshipTypeCode = Url.lastPathElement(dto.relationshipType.href);
-            const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(relationshipTypeCode);
-            Assert.assertNotNull(relationshipType, 'Relationship type not found');
 
             const hasSharedSecretValue = dto.delegate.value.identities[0].value.profile.sharedSecrets
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets.length === 1
