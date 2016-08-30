@@ -41,7 +41,7 @@ export const RAMConstants = {
         PERMISSION: 'PERMISSION'
     },
 
-    RelationshipTypeAttributeCode: {
+    RelationshipAttributeNameCode: {
         SSID: 'SSID',
         SELECTED_GOVERNMENT_SERVICES_LIST: 'SELECTED_GOVERNMENT_SERVICES_LIST',
         SUBJECT_RELATIONSHIP_TYPE_DECLARATION: 'SUBJECT_RELATIONSHIP_TYPE_DECLARATION',
