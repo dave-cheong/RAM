@@ -57,7 +57,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public identityHref: string;
     public relationshipHref: string;
 
-    public relationshipTypes$: Observable<IHrefValue<IRelationshipType>[]>;
     public relationshipTypeRefs: IHrefValue<IRelationshipType>[];
     public permissionAttributeUsages: { [relationshipTypeCode: string]: IRelationshipAttributeNameUsage[] } = {};
 
@@ -115,16 +114,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         });
 
         // relationship types
-        this.relationshipTypes$ = this.services.rest.listRelationshipTypes();
-        this.relationshipTypes$.subscribe((relationshipTypeRefs) => {
-            // filter the relationship types to those that can be chosen here
-            this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
-                return relationshipType.value.managedExternallyInd === false
-                    && relationshipType.value.category === RAMConstants.RelationshipTypeCategory.AUTHORISATION;
-            });
-
-            this.resolveAttributeUsages();
+        this.services.rest.listRelationshipTypes().subscribe({
+            next: this.onListRelationshipTypes.bind(this),
+            error: this.onServerError.bind(this)
         });
+
     }
 
     public onFindIdentity(identity: IIdentity) {
@@ -150,6 +144,15 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     // todo refactor to use this
     public onNewRelationship() {
+    }
+
+    public onListRelationshipTypes(relationshipTypeRefs: IHrefValue<IRelationshipType>[]) {
+        // filter the relationship types to those that can be chosen here
+        this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
+            return relationshipType.value.managedExternallyInd === false
+                && relationshipType.value.category === RAMConstants.RelationshipTypeCategory.AUTHORISATION;
+        });
+        this.resolveAttributeUsages();
     }
 
     public back = () => {
