@@ -4,24 +4,24 @@
              [giveAuthorisationsEnabled]="giveAuthorisationsEnabled"></page-header>
 
 <representative-details
-        [(data)]='newRelationship.representativeDetails'
+        [(data)]='relationshipComponentData.representativeDetails'
         (isValid)='representativeIsValid=$event'>
 </representative-details>
 
 <authorisation-type
-        [data]='newRelationship.authType'
+        [data]='relationshipComponentData.authType'
         [options]='relationshipTypeRefs'
         (dataChange)="authTypeChange($event)"
         (isValid)='authTypeIsValid=$event'>
 </authorisation-type>
 
 <authorisation-management
-        [(data)]='newRelationship.authorisationManagement'
+        [(data)]='relationshipComponentData.authorisationManagement'
         [attributeNameUsage]='manageAuthAttribute'
         [disabled]="disableAuthMgmt"></authorisation-management>
 
 <authorisation-permissions
-        [(attributes)]='newRelationship.permissionAttributes'
+        [(attributes)]='relationshipComponentData.permissionAttributes'
         [attributeNameUsages]='permissionAttributeUsages'
         (validationErrors)='authorisationPermissionErrors=$event'></authorisation-permissions>
 
@@ -31,7 +31,7 @@
     </div>
     <div class="panel-body">
 
-        <access-period [(data)]='newRelationship.accessPeriod' (isValid)='accessPeriodIsValid=$event'>
+        <access-period [(data)]='relationshipComponentData.accessPeriod' (isValid)='accessPeriodIsValid=$event'>
         </access-period>
 
     </div>
@@ -43,7 +43,7 @@
     </div>
     <div class="panel-body">
         <relationship-declaration
-                [(data)]='newRelationship.declaration'
+                [(data)]='relationshipComponentData.declaration'
                 [markdown]="markdown"
                 (backEvent)="back()"
                 (createRelationshipEvent)="submit()"
