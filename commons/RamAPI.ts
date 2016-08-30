@@ -440,8 +440,8 @@ export interface IRelationship extends IHasLinks {
     initiatedBy: string;
     attributes: IRelationshipAttribute[];
     getAttribute(code: string): IRelationshipAttribute;
-    insertOrUpdateAttribute(attribute: IRelationshipAttribute);
-    deleteAttribute(code: string);
+    insertOrUpdateAttribute(attribute: IRelationshipAttribute): void;
+    deleteAttribute(code: string): void;
 }
 
 export class Relationship implements IRelationship {
@@ -692,8 +692,8 @@ export interface IProfile {
     name: IName;
     sharedSecrets: ISharedSecret[];
     getSharedSecret(code: string): ISharedSecret;
-    insertOrUpdateSharedSecret(sharedSecret: ISharedSecret);
-    deleteSharedSecret(code: string);
+    insertOrUpdateSharedSecret(sharedSecret: ISharedSecret): void;
+    deleteSharedSecret(code: string): void;
 }
 
 export class Profile implements IProfile {
@@ -721,7 +721,7 @@ export class Profile implements IProfile {
 
     public insertOrUpdateSharedSecret(sharedSecret: ISharedSecret) {
         if (sharedSecret) {
-            this.deleteSharedSecret(sharedSecret);
+            this.deleteSharedSecret(sharedSecret.sharedSecretType.code);
             this.sharedSecrets.push(sharedSecret);
         }
     }
