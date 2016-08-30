@@ -391,15 +391,6 @@ export class RelationshipController {
 
     private create = async(req:Request, res:Response) => {
 
-        // todo move into somewhere
-        let substringAfter = (searchString: string, href: string) => {
-            let idValue:string = null;
-            if (href.startsWith(searchString)) {
-                idValue = decodeURIComponent(href.substr(searchString.length));
-            }
-            return idValue;
-        };
-
         const schema = {
             'relationshipType.href': {
                 in: 'body',
@@ -434,7 +425,7 @@ export class RelationshipController {
                 in: 'body'
             }
         };
-        const subjectIdValue = substringAfter('/api/v1/party/identity/', req.body.subject.href); // todo may need to change as it could be initiated from a delegate
+        const subjectIdValue = Url.lastPathElement(req.body.subject.href); // todo may need to change as it could be initiated from a delegate
         validateReqSchema(req, schema)
             .then(async (req:Request) => {
                 const myPrincipal = context.getAuthenticatedPrincipal();
