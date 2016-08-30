@@ -26,10 +26,8 @@ import {
 } from '../../components/authorisation-management/authorisation-management.component';
 
 import {
-    IAttributeDTO,
     IIdentity,
     Identity,
-    IInvitationCodeRelationshipAddDTO,
     IRelationshipAttributeNameUsage,
     IRelationshipType,
     IRelationship,
