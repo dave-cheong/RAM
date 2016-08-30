@@ -63,4 +63,5 @@ export class OrganisationRepresentativeDetailsComponent implements OnInit {
 
 export interface OrganisationRepresentativeDetailsComponentData {
     abn: string;
+    organisationName: string;
 }

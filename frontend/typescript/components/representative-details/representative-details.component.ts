@@ -25,7 +25,7 @@ export class RepresentativeDetailsComponent {
 
     @Output('isValid') public isValid = new EventEmitter<boolean>();
 
-    public isOrganisation: boolean = null;
+    public isOrganisation: boolean = false;
 
     public setChildValidationStatus = (isOrganisation: boolean, isValid: boolean) => {
         if (isOrganisation && this.isOrganisation) {
@@ -36,9 +36,11 @@ export class RepresentativeDetailsComponent {
             this.isValid.emit(isValid);
         }
     }
+
 }
 
 export interface RepresentativeDetailsComponentData {
     individual?: IndividualRepresentativeDetailsComponentData;
     organisation?: OrganisationRepresentativeDetailsComponentData;
+    isOrganisation: boolean;
 }

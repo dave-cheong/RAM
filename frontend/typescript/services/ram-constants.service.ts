@@ -24,7 +24,12 @@ export const RAMConstants = {
     },
 
     PartyTypeCode: {
-        INDIVIDUAL: 'INDIVIDUAL'
+        INDIVIDUAL: 'INDIVIDUAL',
+        ORGANISATION: 'ORGANISATION'
+    },
+
+    ProfileProviderCode: {
+        INVITATION: 'INVITATION'
     },
 
     IdentityTypeCode: {
