@@ -566,16 +566,16 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
 // static ..............................................................................................................
 
 interface IRelationshipStaticContract {
-    add2(relationshipType: IRelationshipType,
-           subject: IParty,
-           subjectNickName: IName,
-           delegate: IParty,
-           delegateNickName: IName,
-           startTimestamp: Date,
-           endTimestamp: Date,
-           initiatedBy: RelationshipInitiatedBy,
-           invitationIdentity: IIdentity,
-           attributes: IRelationshipAttribute[]) : Promise<IRelationship>;
+    add(relationshipType: IRelationshipType,
+        subject: IParty,
+        subjectNickName: IName,
+        delegate: IParty,
+        delegateNickName: IName,
+        startTimestamp: Date,
+        endTimestamp: Date,
+        initiatedBy: RelationshipInitiatedBy,
+        invitationIdentity: IIdentity,
+        attributes: IRelationshipAttribute[]) : Promise<IRelationship>;
     findByIdentifier(id: string) : Promise<IRelationship>;
     findByInvitationCode(invitationCode: string) : Promise<IRelationship>;
     findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date) : Promise<IRelationship>;
@@ -605,16 +605,16 @@ interface IRelationshipStaticContract {
 
 class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
-    public async add2(relationshipType: IRelationshipType,
-                      subject: IParty,
-                      subjectNickName: IName,
-                      delegate: IParty,
-                      delegateNickName: IName,
-                      startTimestamp: Date,
-                      endTimestamp: Date,
-                      initiatedBy: RelationshipInitiatedBy,
-                      invitationIdentity: IIdentity,
-                      attributes: IRelationshipAttribute[]) {
+    public async add(relationshipType: IRelationshipType,
+                     subject: IParty,
+                     subjectNickName: IName,
+                     delegate: IParty,
+                     delegateNickName: IName,
+                     startTimestamp: Date,
+                     endTimestamp: Date,
+                     initiatedBy: RelationshipInitiatedBy,
+                     invitationIdentity: IIdentity,
+                     attributes: IRelationshipAttribute[]): Promise<IRelationship> {
 
         let status = RelationshipStatus.Pending;
 
