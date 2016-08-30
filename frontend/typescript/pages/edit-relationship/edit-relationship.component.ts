@@ -155,14 +155,14 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         this.resolveAttributeUsages();
     }
 
-    public back = () => {
+    public back() {
         this.services.route.goToRelationshipsPage(
             this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
         );
-    };
+    }
 
     /* tslint:disable:max-func-body-length */
-    public submit = () => {
+    public submit() {
 
         let delegate: ICreateIdentityDTO;
 
@@ -195,7 +195,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         }
 
         const authorisationManagement: IAttributeDTO = {
-            code: 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND',
+            code: RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND,
             value: this.newRelationship.authorisationManagement.value
         };
 
@@ -225,7 +225,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.addGlobalErrorMessages(err);
         });
 
-    };
+    }
 
     public resolveAttributeUsages() {
         for (let relTypeRef of this.relationshipTypeRefs) {
@@ -252,8 +252,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         // find the selected relationship type by code
         let selectedRelationshipType = this.services.model.getRelationshipTypeByCode(this.relationshipTypeRefs, data.authType);
         if(selectedRelationshipType) {
-            const allowManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, RAMConstants.RelationshipTypeAttributeCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
-            const canChangeManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, RAMConstants.RelationshipTypeAttributeCode.DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND);
+            const allowManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            const canChangeManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND);
 
             this.manageAuthAttribute = allowManageAuthorisationUsage;
 

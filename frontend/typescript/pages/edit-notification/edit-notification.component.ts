@@ -129,7 +129,7 @@ export class EditNotificationComponent extends AbstractPageComponent {
             if (ref.value.code === RAMConstants.RelationshipTypeCode.OSP) {
                 this.ospRelationshipTypeRef = ref;
                 this.declarationText = this.services.model.getRelationshipTypeAttributeNameUsage(ref,
-                    RAMConstants.RelationshipTypeAttributeCode.SUBJECT_RELATIONSHIP_TYPE_DECLARATION).defaultValue;
+                    RAMConstants.RelationshipAttributeNameCode.SUBJECT_RELATIONSHIP_TYPE_DECLARATION).defaultValue;
                 break;
             }
         }
@@ -152,7 +152,7 @@ export class EditNotificationComponent extends AbstractPageComponent {
             this.findByABN();
 
             // ssid
-            let ssidsAttribute = this.services.model.getRelationshipAttribute(relationship, RAMConstants.RelationshipTypeAttributeCode.SSID, null);
+            let ssidsAttribute = this.services.model.getRelationshipAttribute(relationship, RAMConstants.RelationshipAttributeNameCode.SSID, null);
             if (ssidsAttribute && ssidsAttribute.value) {
                 let ssids = ssidsAttribute.value;
                 this.getSSIDFormArray().removeAt(0);
@@ -171,7 +171,7 @@ export class EditNotificationComponent extends AbstractPageComponent {
             this.accessPeriod.startDateEnabled = this.originalStartDate > todayMidnight;
 
             // agency services
-            let agencyServicesAttribute = this.services.model.getRelationshipAttribute(relationship, RAMConstants.RelationshipTypeAttributeCode.SELECTED_GOVERNMENT_SERVICES_LIST, null);
+            let agencyServicesAttribute = this.services.model.getRelationshipAttribute(relationship, RAMConstants.RelationshipAttributeNameCode.SELECTED_GOVERNMENT_SERVICES_LIST, null);
             if (agencyServicesAttribute && agencyServicesAttribute.value) {
                 let agencyServices = agencyServicesAttribute.value;
                 (this.form.controls['agencyServices'] as FormControl).updateValue(agencyServices);
@@ -264,12 +264,12 @@ export class EditNotificationComponent extends AbstractPageComponent {
             // ssid attribute
             attributes.push(new RelationshipAttribute(ssids,
                 this.services.model.getRelationshipTypeAttributeNameRef(
-                    this.ospRelationshipTypeRef, RAMConstants.RelationshipTypeAttributeCode.SSID)));
+                    this.ospRelationshipTypeRef, RAMConstants.RelationshipAttributeNameCode.SSID)));
 
             // agency services
             attributes.push(new RelationshipAttribute(agencyServiceCodes,
                 this.services.model.getRelationshipTypeAttributeNameRef(
-                    this.ospRelationshipTypeRef, RAMConstants.RelationshipTypeAttributeCode.SELECTED_GOVERNMENT_SERVICES_LIST)));
+                    this.ospRelationshipTypeRef, RAMConstants.RelationshipAttributeNameCode.SELECTED_GOVERNMENT_SERVICES_LIST)));
 
             // save
             if (!this.relationshipHref) {
