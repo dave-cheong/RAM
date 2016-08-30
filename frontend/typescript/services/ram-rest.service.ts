@@ -389,16 +389,6 @@ export class RAMRestService {
         return payload;
     }
 
-    private extractDataHrefValue(targetClass: any) {
-        return (res: Response) => {
-            if (res.status < 200 || res.status >= 300) {
-                throw new Error('Status code is:' + res.status);
-            }
-            let payload = res.json() || {};
-            return HrefValue.build(payload, targetClass);
-        };
-    }
-
     private extractDataHrefValueArray(targetClass: any) {
         return (res: Response) => {
             if (res.status < 200 || res.status >= 300) {
