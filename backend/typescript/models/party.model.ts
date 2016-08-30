@@ -167,26 +167,24 @@ PartySchema.method('addRelationship', async (dto: IInvitationCodeRelationshipAdd
 
 });
 
-/* tslint:disable:max-func-body-length */
 PartySchema.method('addRelationship2', async function (dto: IRelationshipDTO) {
-    /* tslint:disable:max-func-body-length */
-    let findAfterSearchString = (href: string, searchString: string) => {
-        let idValue:string = null;
-        if (href.startsWith(searchString)) {
-            idValue = decodeURIComponent(href.substr(searchString.length));
-        }
-        return idValue;
-    };
 
-    // lookups
-    const relationshipTypeCode = findAfterSearchString(dto.relationshipType.href, '/api/v1/relationshipType/');
-    const relationshipType = await RelationshipTypeModel.findByCodeInDateRange(relationshipTypeCode, new Date()); // todo what if find after search string returns null?
-    const delegateIdValue = findAfterSearchString(dto.delegate.href, '/api/v1/party/identity/');
+    const relationshipTypeCode = Url.lastPathElement(dto.relationshipType.href);
+    Assert.assertNotNull(relationshipTypeCode, 'Relationship type code in resource reference not found');
+
+    const relationshipType = await RelationshipTypeModel.findByCodeInDateRange(relationshipTypeCode, new Date());
+    Assert.assertNotNull(relationshipType, 'Relationship type not found');
+
+    const delegateIdValue = Url.lastPathElement(dto.delegate.href);
+    Assert.assertNotNull(delegateIdValue, 'Delegate id value in resource reference not found');
+
     const delegateIdentity = await IdentityModel.findByIdValue(delegateIdValue);
+    Assert.assertNotNull(delegateIdentity, 'Delegate identity not found');
+
     const subjectIdentity = await IdentityModel.findDefaultByPartyId(this.id);
+    Assert.assertNotNull(subjectIdentity, 'Subject identity not found');
 
     const attributes: IRelationshipAttribute[] = [];
-
     for (let attr of dto.attributes) {
         const attributeName = await RelationshipAttributeNameModel.findByCodeInDateRange(attr.attributeName.value.code, new Date());
         if (attributeName) {
@@ -197,7 +195,6 @@ PartySchema.method('addRelationship2', async function (dto: IRelationshipDTO) {
         }
     }
 
-    // create the relationship
     return RelationshipModel.add2(
         relationshipType,
         this,
