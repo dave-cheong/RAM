@@ -252,7 +252,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // TODO calculate declaration markdown based on relationship type and services selected
         // TODO update declaration component to show new text
-        this.relationshipComponentData.declaration.markdown = 'TODO '+data.authType;
+        this.relationshipComponentData.declaration.markdown = 'TODO ' + data.authType;
 
         // find the selected relationship type by code
         let selectedRelationshipTypeRef = CodeDecode.getRefByCode(this.relationshipTypeRefs, data.authType) as IHrefValue<IRelationshipType>;
@@ -267,7 +267,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             // get the default value for the relationship type
             this.relationshipComponentData.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
             // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
-            this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage===null : true;
+            this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage === null : true;
             this.permissionAttributeUsages = this.permissionAttributeUsagesByType[selectedRelationshipTypeRef.value.code];
             this.relationshipComponentData.permissionAttributes = [];
             for (let usage of this.permissionAttributeUsages) {
