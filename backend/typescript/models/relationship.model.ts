@@ -651,12 +651,11 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             const hasSharedSecretValue = dto.delegate.value.identities[0].value.profile.sharedSecrets
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets.length === 1
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value;
-            Assert.assertTrue(hasSharedSecretValue, 'Shared secret not found');
 
             delegateIdentity = await IdentityModel.createInvitationCodeIdentity(
                 dto.delegate.value.identities[0].value.profile.name.givenName,
                 dto.delegate.value.identities[0].value.profile.name.familyName,
-                dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value
+                hasSharedSecretValue ? dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value : null
             );
         }
 
