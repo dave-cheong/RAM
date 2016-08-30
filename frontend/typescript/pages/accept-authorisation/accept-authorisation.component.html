@@ -77,9 +77,9 @@
         <h4><span class="badge square">5</span> Authorisation management</h4>
     </div>
     <div class="panel-body">
-        <h4 *ngIf="delegateManageAuthorisationAllowedIndAttribute?.value">
+        <h4 *ngIf="isManageAuthorisationAllowed()">
             You <b>will be able</b> to manage authorisations for this subject.</h4>
-        <h4 *ngIf="!delegateManageAuthorisationAllowedIndAttribute?.value">
+        <h4 *ngIf="!isManageAuthorisationAllowed()">
             You <b>will NOT be</b> able to manage authorisations for this subject.</h4>
         {{delegateManageAuthorisationAllowedIndAttribute?.attributeName?.value?.longDecodeText}}
     </div>

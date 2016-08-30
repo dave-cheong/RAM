@@ -62,11 +62,7 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
         this.relationship$ = this.services.rest.findPendingRelationshipByInvitationCode(this.code);
         this.relationship$.subscribe((relationship) => {
             this.relationship = relationship;
-            for (let attribute of relationship.attributes) {
-                if (attribute.attributeName.value.code === 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND') {
-                    this.delegateManageAuthorisationAllowedIndAttribute = attribute;
-                }
-            }
+            this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
             this.relationshipType$ = this.services.rest.findRelationshipTypeByHref(relationship.relationshipType.href);
             this.relationshipType$.subscribe((relationshipType) => {
                 for (let attributeUsage of relationshipType.relationshipAttributeNames) {
@@ -83,6 +79,10 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
             }
         });
 
+    }
+
+    public isManageAuthorisationAllowed() {
+        return this.delegateManageAuthorisationAllowedIndAttribute && this.delegateManageAuthorisationAllowedIndAttribute.value && 'true' === this.delegateManageAuthorisationAllowedIndAttribute.value[0]
     }
 
     public showDeclineConfirmation = () => {
