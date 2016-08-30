@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMEnum, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model, removeFromArray, IRAMObject} from './base';
 import {Url} from './url';
-import {IParty, PartyModel} from './party.model';
+import {IParty, PartyModel, IPartyInstanceContract} from './party.model';
 import {IRoleType} from './roleType.model';
 import {IRoleAttribute, RoleAttributeModel} from './roleAttribute.model';
 import {RoleAttributeNameModel, RoleAttributeNameClassifier} from './roleAttributeName.model';
@@ -18,7 +18,7 @@ const MAX_PAGE_SIZE = 10;
 
 // exports ............................................................................................................
 
-export interface IRole extends IRAMObjectContract, IRoleInstanceContract {
+export interface IRole extends IRAMObject, IRoleInstanceContract {
 }
 
 export interface IRoleModel extends mongoose.Model<IRole>, IRoleStaticContract {
@@ -147,7 +147,6 @@ export interface IRoleInstanceContract extends IRAMObjectContract {
     roleStatus: RoleStatus;
     attributes: IRoleAttribute[];
     _roleTypeCode: string;
-    _id: string;
 
     updateOrCreateAttribute(roleAttributeNameCode: string, value: string): Promise<IRoleAttribute>;
     saveAttributes(): Promise<IRole>;
@@ -200,7 +199,7 @@ class RoleInstanceContractImpl extends RAMObjectContractImpl implements IRoleIns
         }
     }
 
-    public async saveAttributes(): Promise<IRole> {
+    public async saveAttributes(): Promise<IRoleInstanceContract> {
         return this.save();
     }
 
@@ -213,10 +212,10 @@ class RoleInstanceContractImpl extends RAMObjectContractImpl implements IRoleIns
         }
     }
 
-    public async deleteAttribute(roleAttributeNameCode: string, roleAttributeNameClassifier: string): Promise<IRole> {
+    public async deleteAttribute(roleAttributeNameCode: string, roleAttributeNameClassifier: string): Promise<IRoleInstanceContract> {
         this.attributes.forEach((attribute: IRoleAttribute) => {
             if (attribute.attributeName.classifier === roleAttributeNameClassifier && attribute.attributeName.code === roleAttributeNameCode) {
-                this.attributes.pull({_id: attribute.id});
+                removeFromArray(this.attributes, {_id: attribute.id});
                 this.save();
                 attribute.remove();
             }
@@ -277,7 +276,7 @@ interface IRoleStaticContract {
           roleStatus: RoleStatus,
           attributes: IRoleAttribute[]) => Promise<IRole>;
     findByIdentifier: (id: string) => Promise<IRole>;
-    findByRoleTypeAndParty: (roleType: IRoleType, party: IParty) => Promise<IRole>;
+    findByRoleTypeAndParty: (roleType: IRoleType, party: IPartyInstanceContract) => Promise<IRole>;
     searchByIdentity: (identityIdValue: string,
                        roleType: string,
                        status: string,

@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose';
 import {Model, RAMEnum, IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Query, Assert} from './base';
 import {Url} from './url';
 import {DOB_SHARED_SECRET_TYPE_CODE} from './sharedSecretType.model';
-import {IParty, PartyModel} from './party.model';
+import {IParty, PartyModel, IPartyInstanceContract} from './party.model';
 import {IName, NameModel} from './name.model';
 import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model';
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
@@ -567,7 +567,7 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
 
 interface IRelationshipStaticContract {
     add(relationshipType: IRelationshipType,
-        subject: IParty,
+        subject: IPartyInstanceContract,
         subjectNickName: IName,
         delegate: IParty,
         delegateNickName: IName,

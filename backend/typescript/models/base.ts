@@ -99,7 +99,7 @@ export interface IRAMObjectContract {
 
 // exists for type safety only, do not add functions here
 export class RAMObjectContractImpl implements IRAMObjectContract {
-    constructor(public _id: string,
+    constructor(public _id: any,
                 public createdAt: Date,
                 public updatedAt: Date,
                 public deleteInd: boolean,
@@ -224,6 +224,11 @@ export const Model = (name: string, schema: mongoose.Schema, instanceContract: a
 
 };
 
+export const removeFromArray = (arr:Array, value: Object) => {
+    const a = arr as mongoose.Types.DocumentArray;
+    a.pull(value);
+};
+
 export class Assert {
 
     public static assertNotNull(object: Object, failMessage: string, detail?: string) {
@@ -253,5 +258,4 @@ export class Assert {
         const condition = _.trim(value1).toLowerCase() === _.trim(value2).toLowerCase();
         this.assertTrue(condition, failMessage, detail);
     }
-
 }

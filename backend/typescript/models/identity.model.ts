@@ -368,7 +368,7 @@ class IdentityInstanceContractImpl implements IIdentityInstanceContract {
 
 // static .............................................................................................................
 
-export interface IIdentityStaticContract extends mongoose.Model<IIdentity> {
+export interface IIdentityStaticContract {
     createFromDTO: (dto: ICreateIdentityDTO) => Promise<IIdentity>;
     createInvitationCodeIdentity: (givenName: string, familyName: string, dateOfBirth: string) => Promise<IIdentity>;
     addCompany: (abn: string, name: string) => Promise<IIdentity>;
