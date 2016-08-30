@@ -250,13 +250,16 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     }
 
     public authTypeChange = (data:AuthorisationTypeComponentData) => {
+
         // TODO calculate declaration markdown based on relationship type and services selected
         // TODO update declaration component to show new text
         this.newRelationship.declaration.markdown = 'TODO '+data.authType;
 
         // find the selected relationship type by code
         let selectedRelationshipTypeRef = CodeDecode.getRefByCode(this.relationshipTypeRefs, data.authType) as IHrefValue<IRelationshipType>;
+
         if (selectedRelationshipTypeRef) {
+
             const allowManageAuthorisationUsage = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
             const canChangeManageAuthorisationUsage = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND);
 
@@ -272,6 +275,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 let relationshipAttribute = new RelationshipAttribute([usage.defaultValue], usage.attributeNameDef);
                 this.newRelationship.permissionAttributes.push(relationshipAttribute);
             }
+
         } else {
             this.disableAuthMgmt = true;
         }
