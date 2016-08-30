@@ -672,8 +672,8 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 subjectIdentity.profile.name,
                 delegateIdentity.party,
                 delegateIdentity.profile.name,
-                new Date(),
-                null,
+                dto.startTimestamp,
+                dto.endTimestamp,
                 initiatedBy,
                 delegateIdentity,
                 attributes
