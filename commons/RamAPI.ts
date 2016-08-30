@@ -661,6 +661,7 @@ export interface IProfile {
 }
 
 export class Profile implements IProfile {
+
     public static build(sourceObject: any): IProfile {
         return new Builder<IProfile>(sourceObject, this)
             .map('name', Name)
@@ -672,6 +673,16 @@ export class Profile implements IProfile {
                 public name: Name,
                 public sharedSecrets: SharedSecret[]) {
     }
+
+    public getSharedSecret(code: string): ISharedSecret {
+        for (let sharedSecret of this.sharedSecrets) {
+            if (sharedSecret.sharedSecretType.code === code) {
+                return sharedSecret;
+            }
+        }
+        return null;
+    }
+
 }
 
 // profile provider ...................................................................................................
