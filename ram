@@ -51,8 +51,6 @@ case "$1" in
     cd frontend
     rm -rf typings
     npm install && bower install && typings install
-    cd ..
-    ./$me jspm
     echo ""
     ;;
 
