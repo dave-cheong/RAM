@@ -658,6 +658,7 @@ export interface IProfile {
     provider: string;
     name: IName;
     sharedSecrets: ISharedSecret[];
+    getSharedSecret(code: string): ISharedSecret;
 }
 
 export class Profile implements IProfile {
