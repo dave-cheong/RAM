@@ -120,7 +120,6 @@ PartySchema.method('toDTO', async function () {
  * the relationship will be transferred to the authorised identity.
  *
  */
-/* tslint:disable:max-func-body-length */
 // TODO delete this method and use a more generic addRelationship2 which will either create an invitation code OR use provided subject and delegate
 PartySchema.method('addRelationship', async (dto: IInvitationCodeRelationshipAddDTO) => {
 
@@ -138,7 +137,6 @@ PartySchema.method('addRelationship', async (dto: IInvitationCodeRelationshipAdd
     );
 
     const attributes: IRelationshipAttribute[] = [];
-
     for (let attr of dto.attributes) {
         const attributeName = await RelationshipAttributeNameModel.findByCodeInDateRange(attr.code, new Date());
         if (attributeName) {
@@ -149,8 +147,7 @@ PartySchema.method('addRelationship', async (dto: IInvitationCodeRelationshipAdd
         }
     }
 
-    // create the relationship
-    const relationship = await RelationshipModel.add2(
+    return await RelationshipModel.add(
         relationshipType,
         subjectIdentity.party,
         subjectIdentity.profile.name,
@@ -162,8 +159,6 @@ PartySchema.method('addRelationship', async (dto: IInvitationCodeRelationshipAdd
         temporaryDelegateIdentity,
         attributes
     );
-
-    return relationship;
 
 });
 
@@ -195,7 +190,7 @@ PartySchema.method('addRelationship2', async function (dto: IRelationshipDTO) {
         }
     }
 
-    return RelationshipModel.add2(
+    return RelationshipModel.add(
         relationshipType,
         this,
         subjectIdentity.profile.name,

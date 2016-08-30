@@ -106,7 +106,7 @@ describe('RAM Relationship', () => {
                         party: delegateParty1
                     });
 
-                    relationship1 = await RelationshipModel.add2(relationshipTypeCustom,
+                    relationship1 = await RelationshipModel.add(relationshipTypeCustom,
                         subjectParty1,
                         subjectNickName1,
                         delegateIdentity1.party,
@@ -313,7 +313,7 @@ describe('RAM Relationship', () => {
 
             const invitationCodeIdentity = await IdentityModel.createInvitationCodeIdentity('John', 'Delegate 1', '01/01/1999');
 
-            const relationshipToAccept = await RelationshipModel.add2(
+            const relationshipToAccept = await RelationshipModel.add(
                 relationshipTypeCustom,
                 subjectParty1,
                 subjectNickName1,
