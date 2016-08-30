@@ -38,7 +38,8 @@ export const RAMConstants = {
     },
 
     RelationshipAttributeNameClassifier: {
-        PERMISSION: 'PERMISSION'
+        PERMISSION: 'PERMISSION',
+        OTHER: 'OTHER'
     },
 
     RelationshipAttributeNameCode: {
@@ -55,6 +56,16 @@ export const RAMConstants = {
 
     RoleTypeCode: {
         OSP: 'OSP'
+    },
+
+    RoleAttributeNameClassifier: {
+        AGENCY_SERVICE: 'AGENCY_SERVICE',
+        OTHER: 'OTHER'
+    },
+
+    RoleAttributeNameCode: {
+        PREFERRED_NAME: 'PREFERRED_NAME',
+        DEVICE_AUSKEYS: 'DEVICE_AUSKEYS'
     }
 
 };
