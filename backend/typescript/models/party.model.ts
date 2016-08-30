@@ -391,8 +391,8 @@ class PartyInstanceContractImpl extends RAMObjectContractImpl implements IPartyI
 
 /* tslint:disable:no-empty-interfaces */
 export interface IPartyStaticContract {
-    findByIdentityIdValue: (idValue: string) => Promise<IParty>;
-    hasAccess: (requestedIdValue: string, requestingPrincipal: IPrincipal, requestingIdentity: IIdentity) => Promise<boolean>;
+    findByIdentityIdValue(idValue: string): Promise<IParty>;
+    hasAccess (requestedIdValue: string, requestingPrincipal: IPrincipal, requestingIdentity: IIdentity): Promise<boolean>;
 }
 
 class PartyStaticContractImpl implements IPartyStaticContract {
