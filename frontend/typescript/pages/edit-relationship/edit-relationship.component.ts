@@ -173,12 +173,12 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         if (this.relationshipComponentData.representativeDetails.individual) {
             const dob = this.relationshipComponentData.representativeDetails.individual.dob;
             delegate = {
-                partyType: 'INDIVIDUAL',
+                partyType: RAMConstants.PartyTypeCode.INDIVIDUAL,
                 givenName: this.relationshipComponentData.representativeDetails.individual.givenName,
                 familyName: this.relationshipComponentData.representativeDetails.individual.familyName,
-                sharedSecretTypeCode: 'DATE_OF_BIRTH', // TODO: set to date of birth code
+                sharedSecretTypeCode: RAMConstants.SharedSecretCode.DATE_OF_BIRTH,
                 sharedSecretValue: dob ? dob.toString() : ' ' /* TODO check format of date, currently sending x for space */,
-                identityType: 'INVITATION_CODE',
+                identityType: RAMConstants.IdentityTypeCode.INVITATION_CODE,
                 agencyScheme: undefined,
                 agencyToken: undefined,
                 linkIdScheme: undefined,
