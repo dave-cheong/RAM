@@ -33,6 +33,7 @@ import {
     IInvitationCodeRelationshipAddDTO,
     IRelationshipAttributeNameUsage,
     IRelationshipType,
+    IRelationship,
     IHrefValue
 } from '../../../../commons/RamAPI';
 
@@ -53,8 +54,8 @@ import {
 
 export class EditRelationshipComponent extends AbstractPageComponent {
 
-    public idValue: string;
-    public key: string;
+    public identityHref: string;
+    public relationshipHref: string;
 
     public relationshipTypes$: Observable<IHrefValue<IRelationshipType>[]>;
     public relationshipTypeRefs: IHrefValue<IRelationshipType>[];
@@ -62,6 +63,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public identity: IIdentity;
+    public relationship: IRelationship;
     public manageAuthAttribute: IRelationshipAttributeNameUsage;
 
     public authType: string = 'choose';
@@ -103,12 +105,13 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     public onInit(params: {path: Params, query: Params}) {
 
-        this.idValue = params.path['idValue'];
-        this.key = params.path['key'];
+        this.identityHref = params.path['identityHref'];
+        this.relationshipHref = params.path['relationshipHref'];
 
         // identity in focus
-        this.services.rest.findIdentityByValue(this.idValue).subscribe((identity) => {
-            this.identity = identity;
+        this.services.rest.findIdentityByHref(this.identityHref).subscribe({
+            next: this.onFindIdentity.bind(this),
+            error: this.onServerError.bind(this)
         });
 
         // relationship types
@@ -124,8 +127,35 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         });
     }
 
+    public onFindIdentity(identity: IIdentity) {
+
+        this.identity = identity;
+
+        // relationship in focus
+        if (this.relationshipHref) {
+            this.services.rest.findRelationshipByHref(this.relationshipHref).subscribe({
+                next: this.onFindRelationship.bind(this),
+                error: this.onServerError.bind(this)
+            });
+        } else {
+            this.onNewRelationship();
+        }
+
+    }
+
+    // todo refactor to use this.relationship
+    public onFindRelationship(relationship: IRelationship) {
+        this.relationship = relationship;
+    }
+
+    // todo refactor to use this
+    public onNewRelationship() {
+    }
+
     public back = () => {
-        this.router.navigate(['/relationships', encodeURIComponent(this.idValue)]);
+        this.services.route.goToRelationshipsPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+        );
     };
 
     /* tslint:disable:max-func-body-length */
@@ -168,7 +198,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         const relationship: IInvitationCodeRelationshipAddDTO = {
             relationshipType: this.newRelationship.authType.authType,
-            subjectIdValue: this.idValue,
+            subjectIdValue: this.identity.idValue,
             delegate: delegate,
             startTimestamp: this.newRelationship.accessPeriod.startDate,
             endTimestamp: this.newRelationship.accessPeriod.endDate,
@@ -182,7 +212,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.services.rest.findIdentityByHref(relationship.delegate.value.identities[0].href).subscribe((identity) => {
                 //console.log(JSON.stringify(identity, null, 4));
                 this.services.route.goToRelationshipAddCompletePage(
-                    this.idValue,
+                    this.identity.idValue,
                     identity.rawIdValue,
                     this.displayName(this.newRelationship.representativeDetails));
             }, (err) => {
@@ -197,7 +227,9 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public resolveAttributeUsages() {
         for (let relTypeRef of this.relationshipTypeRefs) {
             const attributeNames = relTypeRef.value.relationshipAttributeNames;
-            this.permissionAttributeUsages[relTypeRef.value.code] = attributeNames.filter((attName) => { return attName.attributeNameDef.value.classifier === RAMConstants.RelationshipAttributeNameClassifier.PERMISSION; });
+            this.permissionAttributeUsages[relTypeRef.value.code] = attributeNames.filter((attName) => {
+                return attName.attributeNameDef.value.classifier === RAMConstants.RelationshipAttributeNameClassifier.PERMISSION;
+            });
         }
     }
 
@@ -217,8 +249,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         // find the selected relationship type by code
         let selectedRelationshipType = this.services.model.getRelationshipTypeByCode(this.relationshipTypeRefs, data.authType);
         if(selectedRelationshipType) {
-            const allowManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND');
-            const canChangeManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, 'DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND');
+            const allowManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, RAMConstants.RelationshipTypeAttributeCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            const canChangeManageAuthorisationUsage = this.services.model.getRelationshipTypeAttributeNameUsage(selectedRelationshipType, RAMConstants.RelationshipTypeAttributeCode.DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND);
 
             this.manageAuthAttribute = allowManageAuthorisationUsage;
 

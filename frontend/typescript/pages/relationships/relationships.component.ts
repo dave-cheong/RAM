@@ -203,8 +203,9 @@ export class RelationshipsComponent extends AbstractPageComponent {
     }
 
     public goToRelationshipAddPage() {
-        // todo refactor to href
-        this.services.route.goToAddRelationshipPage(this.identity.idValue);
+        this.services.route.goToAddRelationshipPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+        );
     };
 
     public goToRelationshipEnterCodePage() {

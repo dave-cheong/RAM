@@ -41,11 +41,11 @@ export const routes: RouterConfig = [
         component: RelationshipsComponent
     },
     {
-        path: 'relationships/add/:idValue',
+        path: 'relationships/add/:identityHref',
         component: EditRelationshipComponent
     },
     {
-        path: 'relationships/edit/:idValue/:key',
+        path: 'relationships/edit/:identityHref/:relationshipHref',
         component: EditRelationshipComponent
     },
     {
