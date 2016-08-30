@@ -267,11 +267,13 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // update relationship
 
+            // todo ...
+
         }
 
     }
 
-    public onSave(relationship) {
+    public onSave(relationship: IRelationship) {
         this.services.rest.findIdentityByHref(relationship.delegate.value.identities[0].href).subscribe({
             next: (identity) => {
                 //console.log(JSON.stringify(identity, null, 4));

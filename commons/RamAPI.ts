@@ -411,6 +411,7 @@ export class Name implements IName {
             .map('subjectNickName', Name)
             .map('delegateNickName', Name)
             .mapArray('attributes', RelationshipAttribute)
+            .build();
     }
 
     constructor(public givenName: string,
