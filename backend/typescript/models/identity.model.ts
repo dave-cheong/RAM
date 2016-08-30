@@ -369,15 +369,15 @@ class IdentityInstanceContractImpl implements IIdentityInstanceContract {
 // static .............................................................................................................
 
 export interface IIdentityStaticContract {
-    createFromDTO: (dto: ICreateIdentityDTO) => Promise<IIdentity>;
-    createInvitationCodeIdentity: (givenName: string, familyName: string, dateOfBirth: string) => Promise<IIdentity>;
-    addCompany: (abn: string, name: string) => Promise<IIdentity>;
-    findByIdValue: (idValue: string) => Promise<IIdentity>;
-    findByInvitationCode: (invitationCode: string) => Promise<IIdentity>;
-    findPendingByInvitationCodeInDateRange: (invitationCode: string, date: Date) => Promise<IIdentity>;
-    findDefaultByPartyId: (partyId: string) => Promise<IIdentity>;
-    listByPartyId: (partyId: string) => Promise<IIdentity[]>;
-    searchLinkIds: (page: number, pageSize: number) => Promise<SearchResult<IIdentity>>;
+    createFromDTO (dto: ICreateIdentityDTO): Promise<IIdentity>;
+    createInvitationCodeIdentity(givenName: string, familyName: string, dateOfBirth: string): Promise<IIdentity>;
+    addCompany(abn: string, name: string): Promise<IIdentity>;
+    findByIdValue(idValue: string): Promise<IIdentity>;
+    findByInvitationCode(invitationCode: string): Promise<IIdentity>;
+    findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IIdentity>;
+    findDefaultByPartyId(partyId: string): Promise<IIdentity>;
+    listByPartyId(partyId: string): Promise<IIdentity[]>;
+    searchLinkIds(page: number, pageSize: number): Promise<SearchResult<IIdentity>>;
 }
 
 class IdentityStaticContractImpl implements IIdentityStaticContract {
