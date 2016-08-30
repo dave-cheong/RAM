@@ -47,10 +47,12 @@ export class RelationshipAttributeNameClassifier extends RAMEnum {
 
     public static Other = new RelationshipAttributeNameClassifier('OTHER', 'Other');
     public static Permission = new RelationshipAttributeNameClassifier('PERMISSION', 'Permission');
+    public static AgencyService = new RelationshipAttributeNameClassifier('AGENCY_SERVICE', 'Agency Service');
 
     protected static AllValues = [
         RelationshipAttributeNameClassifier.Other,
-        RelationshipAttributeNameClassifier.Permission
+        RelationshipAttributeNameClassifier.Permission,
+        RelationshipAttributeNameClassifier.AgencyService
     ];
 
     constructor(code:string, shortDecodeText:string) {

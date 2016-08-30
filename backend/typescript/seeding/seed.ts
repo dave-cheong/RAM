@@ -713,7 +713,7 @@ export class Seeder {
                 longDecodeText: 'Selected Services for OSP',
                 startDate: now,
                 domain: RelationshipAttributeNameDomain.SelectMulti.code,
-                classifier: RelationshipAttributeNameClassifier.Permission.code,
+                classifier: RelationshipAttributeNameClassifier.AgencyService.code,
                 category: ospServices_category,
                 purposeText: 'Selected Services for OSP',
                 permittedValues: null

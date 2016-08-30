@@ -91,6 +91,7 @@ export interface IRelationshipType extends ICodeDecode {
     category: string;
     attributeNameUsages: IRelationshipAttributeNameUsage[];
     categoryEnum: RelationshipTypeCategory;
+    findAttributeNameUsageByCode(code: string): IRelationshipAttributeNameUsage;
     toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>>;
     toDTO(): Promise<DTO>;
 }
@@ -103,6 +104,15 @@ export interface IRelationshipTypeModel extends mongoose.Model<IRelationshipType
 }
 
 // instance methods ...................................................................................................
+
+RelationshipTypeSchema.method('findAttributeNameUsageByCode', function (code: string) {
+    for (let attributeNameUsage of this.attributeNameUsages) {
+        if (attributeNameUsage.attributeName.code === code) {
+            return attributeNameUsage;
+        }
+    }
+    return null;
+});
 
 RelationshipTypeSchema.method('categoryEnum', function () {
     return RelationshipTypeCategory.valueOf(this.category);

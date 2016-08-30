@@ -8,7 +8,7 @@ import {IParty, PartyModel, IPartyInstanceContract, PartyType} from './party.mod
 import {IName, NameModel} from './name.model';
 import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model';
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
-import {RelationshipAttributeNameModel} from './relationshipAttributeName.model';
+import {RelationshipAttributeNameModel, RelationshipAttributeNameClassifier} from './relationshipAttributeName.model';
 import {ProfileProvider} from './profile.model';
 import {
     IdentityModel,
@@ -627,6 +627,16 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         let endTimestamp = dto.endTimestamp;
         let attributes: IRelationshipAttribute[] = [];
 
+        let relationship;
+        if (!isNewRelationship) {
+            Assert.assertNotNull(identifier, 'Identifier not found');
+
+            relationship = await RelationshipModel.findByIdentifier(identifier);
+            Assert.assertNotNull(relationship, 'Relationship not found');
+
+            attributes = relationship.attributes;
+        }
+
         const subjectIdValue = Url.lastPathElement(dto.subject.href);
         if (subjectIdValue) {
             subjectIdentity = await IdentityModel.findByIdValue(subjectIdValue);
@@ -711,19 +721,86 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             }
         }
 
-        // todo process attributes here
-        for (let attr of dto.attributes) {
-            Assert.assertNotNull(attr.attributeName, 'Attribute did not have an attribute name');
-            Assert.assertNotNull(attr.attributeName.href, 'Attribute did not have an attribute name href');
+        const permissionCustomisationAllowed = relationshipType.findAttributeNameUsageByCode('PERMISSION_CUSTOMISATION_ALLOWED_IND');
+        let isPermissionAttributeAllowed = permissionCustomisationAllowed !== null && permissionCustomisationAllowed.defaultValue;
 
-            const attributeNameCode = decodeURIComponent(Url.lastPathElement(attr.attributeName.href));
-            Assert.assertNotNull(attributeNameCode, 'Attribute name code not found', `Unexpected attribute name href last element: ${attr.attributeName.href}`);
+        for (let dtoAttribute of dto.attributes) {
+            Assert.assertNotNull(dtoAttribute.attributeName, 'Attribute did not have an attribute name');
+            Assert.assertNotNull(dtoAttribute.attributeName.href, 'Attribute did not have an attribute name href');
+
+            const attributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
+            Assert.assertNotNull(attributeNameCode, 'Attribute name code not found', `Unexpected attribute name href last element: ${dtoAttribute.attributeName.href}`);
 
             const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(attributeNameCode);
-            Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribuet name with code: ${attributeNameCode}`);
+            Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribute name with code: ${attributeNameCode}`);
 
-            let attribute: IRelationshipAttribute = await RelationshipAttributeModel.add(attr.value, attributeName);
-            attributes.push(attribute);
+            const isPermissionClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.Permission.code;
+            const isOtherClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.Other.code;
+            const isAgencyServiceClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.AgencyService.code;
+
+            if (isPermissionClassifier) {
+                if (!isPermissionAttributeAllowed) {
+                    logger.warn('Found relationship attribute with classifier permission but permission customisation not allowed');
+                    throw new Error('400');
+                } else {
+                    const relationshipAttributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
+                    const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
+                    if (relationshipAttributeNameUsage !== null) {
+
+                        let foundAttribute = false;
+                        for (let attribute of attributes) {
+                            if (attribute.attributeName.code === attributeName.code) {
+                                attribute.value = dtoAttribute.value;
+                                foundAttribute = true;
+                                break;
+                            }
+                        }
+                        if (!foundAttribute) {
+                            attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, attributeName));
+                        }
+                        // attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, relationshipAttributeNameUsage.attributeName));
+
+                    } else {
+                        // todo do we want to fail ???
+                    }
+
+                }
+            } else if (isOtherClassifier) {
+                const relationshipAttributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
+                const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
+                if (relationshipAttributeNameUsage !== null) {
+
+                    let foundAttribute = false;
+                    for (let attribute of attributes) {
+                        if (attribute.attributeName.code === attributeName.code) {
+                            attribute.value = dtoAttribute.value;
+                            foundAttribute = true;
+                            break;
+                        }
+                    }
+                    if (!foundAttribute) {
+                        attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, attributeName));
+                    }
+                    // attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, relationshipAttributeNameUsage.attributeName));
+
+                } else {
+                    // todo do we want to fail ???
+                }
+            } else if (isAgencyServiceClassifier) {
+
+                let foundAttribute = false;
+                for (let attribute of attributes) {
+                    if (attribute.attributeName.code === attributeName.code) {
+                        attribute.value = dtoAttribute.value;
+                        foundAttribute = true;
+                        break;
+                    }
+                }
+                if (!foundAttribute) {
+                    attributes.push(await RelationshipAttributeModel.add(dtoAttribute.value, attributeName));
+                }
+
+            }
         }
 
         if (isNewRelationship) {
