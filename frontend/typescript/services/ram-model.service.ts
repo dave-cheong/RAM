@@ -1,3 +1,7 @@
+//
+// todo deprecate this, as these helpers should now be defined in the DTOs themselves
+//
+
 import {Injectable} from '@angular/core';
 import {DatePipe} from '@angular/common';
 
