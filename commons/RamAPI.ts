@@ -606,7 +606,7 @@ export class SharedSecret implements ISharedSecret {
     }
 
     constructor(public value: string,
-                public sharedSecretType: SharedSecretType) {
+                public sharedSecretType: ISharedSecretType) {
     }
 }
 

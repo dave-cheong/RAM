@@ -2,7 +2,8 @@ import {logger} from '../logger';
 import * as mongoose from 'mongoose';
 import {Model, RAMEnum, IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Query, Assert} from './base';
 import {Url} from './url';
-import {DOB_SHARED_SECRET_TYPE_CODE} from './sharedSecretType.model';
+import {SharedSecretModel} from './sharedSecret.model';
+import {DOB_SHARED_SECRET_TYPE_CODE, SharedSecretTypeModel} from './sharedSecretType.model';
 import {IParty, PartyModel, IPartyInstanceContract, PartyType} from './party.model';
 import {IName, NameModel} from './name.model';
 import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model';
@@ -22,7 +23,7 @@ import {
     Relationship as DTO,
     RelationshipStatus as RelationshipStatusDTO,
     RelationshipAttribute as RelationshipAttributeDTO,
-    SearchResult, SharedSecret
+    SearchResult
 } from '../../../commons/RamAPI';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -674,7 +675,13 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
             delegateIdentity.profile.sharedSecrets.clear();
             if (hasSharedSecretValue) {
-                // delegateIdentity.profile.sharedSecrets.push(new SharedSecret(dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value, await SharedSecretTypeModel.findByCodeInDateRange(DOB, new Date())));
+                const sharedSecretValue = dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value;
+                const sharedSecretType = await SharedSecretTypeModel.findByCodeIgnoringDateRange(DOB_SHARED_SECRET_TYPE_CODE);
+                const sharedSecret = await SharedSecretModel.create({
+                    value: sharedSecretValue,
+                    sharedSecretType: sharedSecretType
+                });
+                delegateIdentity.profile.sharedSecrets.push(sharedSecret);
             }
         }
 
