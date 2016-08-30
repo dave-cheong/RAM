@@ -576,8 +576,8 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         let subjectIdentity: IIdentity;
         let delegateIdentity: IIdentity;
         let invitationIdentity: IIdentity;
-        let startTimestamp = dto.startTimestamp;
-        let endTimestamp = dto.endTimestamp;
+        let startTimestamp;
+        let endTimestamp;
         let attributes: IRelationshipAttribute[] = [];
 
         let relationship;
@@ -600,6 +600,14 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             delegateIdentity = await IdentityModel.findByIdValue(delegateIdValue);
         }
 
+        // todo if new, start date can not be past only today and future
+        // todo if edit, start date can be future and past.
+        startTimestamp = dto.startTimestamp;
+
+        // todo end must be after start
+        endTimestamp = dto.endTimestamp;
+
+        // todo zero hours
         // startTimestamp.setHours(0, 0, 0);
         // if (endTimestamp) {
         //     endTimestamp.setHours(0, 0, 0);
