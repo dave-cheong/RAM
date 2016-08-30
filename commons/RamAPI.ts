@@ -765,6 +765,7 @@ export interface IIdentity extends IHasLinks {
     rawIdValue: string;
     identityType: string;
     defaultInd: boolean;
+    strength: number;
     agencyScheme: string;
     agencyToken: string;
     invitationCodeStatus: string;
@@ -791,6 +792,7 @@ export class Identity implements IIdentity {
                 public rawIdValue: string,
                 public identityType: string,
                 public defaultInd: boolean,
+                public strength: number,
                 public agencyScheme: string,
                 public agencyToken: string,
                 public invitationCodeStatus: string,

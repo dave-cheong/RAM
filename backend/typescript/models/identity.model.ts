@@ -174,6 +174,11 @@ const IdentitySchema = RAMSchema({
         required: [true, 'Default Indicator is required'],
         default: false
     },
+    strength: {
+        type: Number,
+        required: [true, 'Strength is required'],
+        default: 0
+    },
     agencyScheme: {
         type: String,
         trim: true,
@@ -250,6 +255,8 @@ mongooseAutoIncrement.initialize(mongoose.connection);
 IdentitySchema.plugin(mongooseAutoIncrement.plugin, {model: 'Identity', field: 'seq'});
 
 IdentitySchema.pre('validate', function (next: () => void) {
+
+    // generate id for invitation codes
     const identityType = IdentityType.valueOf(this.identityType) as IdentityType;
     if (identityType === IdentityType.InvitationCode && !this.rawIdValue) {
         this.nextCount((err: Error, count: number) => {
@@ -261,6 +268,7 @@ IdentitySchema.pre('validate', function (next: () => void) {
         this.idValue = identityType ? identityType.buildIdValue(this) : null;
         next();
     }
+
 });
 
 // instance ...........................................................................................................
@@ -270,6 +278,7 @@ export interface IIdentityInstanceContract {
     rawIdValue: string;
     identityType: string;
     defaultInd: boolean;
+    strength: number;
     agencyScheme: string;
     agencyToken: string;
     invitationCodeStatus: string;
@@ -296,6 +305,7 @@ class IdentityInstanceContractImpl implements IIdentityInstanceContract {
     public rawIdValue: string;
     public identityType: string;
     public defaultInd: boolean;
+    public strength: number;
     public agencyScheme: string;
     public agencyToken: string;
     public invitationCodeStatus: string;
@@ -350,6 +360,7 @@ class IdentityInstanceContractImpl implements IIdentityInstanceContract {
             this.rawIdValue,
             this.identityType,
             this.defaultInd,
+            this.strength,
             this.agencyScheme,
             this.agencyToken,
             this.invitationCodeStatus,
