@@ -2,7 +2,8 @@ import {logger} from '../logger';
 import * as mongoose from 'mongoose';
 import {Model, RAMEnum, IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Query, Assert} from './base';
 import {Url} from './url';
-import {DOB_SHARED_SECRET_TYPE_CODE} from './sharedSecretType.model';
+import {SharedSecretModel} from './sharedSecret.model';
+import {DOB_SHARED_SECRET_TYPE_CODE, SharedSecretTypeModel} from './sharedSecretType.model';
 import {IParty, PartyModel, IPartyInstanceContract, PartyType} from './party.model';
 import {IName, NameModel} from './name.model';
 import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model';
@@ -22,7 +23,7 @@ import {
     Relationship as DTO,
     RelationshipStatus as RelationshipStatusDTO,
     RelationshipAttribute as RelationshipAttributeDTO,
-    SearchResult, SharedSecret
+    SearchResult
 } from '../../../commons/RamAPI';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -621,6 +622,9 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         const initiatedBy = RelationshipInitiatedBy.valueOf(dto.initiatedBy);
         let subjectIdentity: IIdentity;
         let delegateIdentity: IIdentity;
+        let invitationIdentity: IIdentity;
+        let startTimestamp = dto.startTimestamp;
+        let endTimestamp = dto.endTimestamp;
         let attributes: IRelationshipAttribute[] = [];
 
         const subjectIdValue = Url.lastPathElement(dto.subject.href);
@@ -631,6 +635,11 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         const delegateIdValue = Url.lastPathElement(dto.delegate.href);
         if (delegateIdValue) {
             delegateIdentity = await IdentityModel.findByIdValue(delegateIdValue);
+        }
+
+        startTimestamp.setHours(0, 0, 0);
+        if (endTimestamp) {
+            endTimestamp.setHours(0, 0, 0);
         }
 
         const isRelationshipInvitationFromSubjectCreateRequest =
@@ -652,6 +661,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 dto.delegate.value.identities[0].value.profile.name.familyName,
                 hasSharedSecretValue ? dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value : null
             );
+            invitationIdentity = delegateIdentity;
         }
 
         const isRelationshipInvitationFromSubjectUpdateRequest =
@@ -674,8 +684,15 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
             delegateIdentity.profile.sharedSecrets.clear();
             if (hasSharedSecretValue) {
-                // delegateIdentity.profile.sharedSecrets.push(new SharedSecret(dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value, await SharedSecretTypeModel.findByCodeInDateRange(DOB, new Date())));
+                const sharedSecretValue = dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value;
+                const sharedSecretType = await SharedSecretTypeModel.findByCodeIgnoringDateRange(DOB_SHARED_SECRET_TYPE_CODE);
+                const sharedSecret = await SharedSecretModel.create({
+                    value: sharedSecretValue,
+                    sharedSecretType: sharedSecretType
+                });
+                delegateIdentity.profile.sharedSecrets.push(sharedSecret);
             }
+            invitationIdentity = delegateIdentity;
         }
 
         Assert.assertNotNull(subjectIdentity, 'Subject identity not found');
@@ -695,6 +712,19 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         }
 
         // todo process attributes here
+        for (let attr of dto.attributes) {
+            Assert.assertNotNull(attr.attributeName, 'Attribute did not have an attribute name');
+            Assert.assertNotNull(attr.attributeName.href, 'Attribute did not have an attribute name href');
+
+            const attributeNameCode = decodeURIComponent(Url.lastPathElement(attr.attributeName.href));
+            Assert.assertNotNull(attributeNameCode, 'Attribute name code not found', `Unexpected attribute name href last element: ${attr.attributeName.href}`);
+
+            const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(attributeNameCode);
+            Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribuet name with code: ${attributeNameCode}`);
+
+            let attribute: IRelationshipAttribute = await RelationshipAttributeModel.add(attr.value, attributeName);
+            attributes.push(attribute);
+        }
 
         if (isNewRelationship) {
             return await RelationshipModel.add(
@@ -703,10 +733,10 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 subjectIdentity.profile.name,
                 delegateIdentity.party,
                 delegateIdentity.profile.name,
-                dto.startTimestamp,
-                dto.endTimestamp,
+                startTimestamp,
+                endTimestamp,
                 initiatedBy,
-                delegateIdentity,
+                invitationIdentity,
                 attributes
             );
         } else {
@@ -715,12 +745,14 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             const relationship = await RelationshipModel.findByIdentifier(identifier);
             Assert.assertNotNull(relationship, 'Relationship not found');
 
-            // todo
-            relationship.relationshipType = relationshipType;
             relationship.subject = subjectIdentity.party;
             relationship.delegate = delegateIdentity.party;
+            relationship.startTimestamp = startTimestamp;
+            relationship.endTimestamp = endTimestamp;
+            relationship.invitationIdentity = invitationIdentity;
+            relationship.attributes = attributes;
 
-            return relationship;
+            return await relationship.save();
         }
     }
 
