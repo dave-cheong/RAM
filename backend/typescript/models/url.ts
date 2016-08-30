@@ -137,7 +137,7 @@ export class Url {
 
     // relationship type ..............................................................................................
 
-    public static async forRelationshipType(model: relationshipType.IRelationshipType): Promise<string> {
+    public static async forRelationshipType(model: relationshipType.IRelationshipTypeInstanceContract): Promise<string> {
         return '/api/v1/relationshipType/' + encodeURIComponent(model.code);
     }
 
