@@ -82,7 +82,9 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     }
 
     public isManageAuthorisationAllowed() {
-        return this.delegateManageAuthorisationAllowedIndAttribute && this.delegateManageAuthorisationAllowedIndAttribute.value && 'true' === this.delegateManageAuthorisationAllowedIndAttribute.value[0]
+        return this.delegateManageAuthorisationAllowedIndAttribute &&
+            this.delegateManageAuthorisationAllowedIndAttribute.value &&
+            'true' === this.delegateManageAuthorisationAllowedIndAttribute.value[0];
     }
 
     public showDeclineConfirmation = () => {
