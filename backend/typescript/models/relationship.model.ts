@@ -442,8 +442,6 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
                 );
             }
 
-            // TODO credentials strengths (not spec'ed out yet)
-
             /* complete claim */
 
             // mark invitation code identity as claimed
@@ -462,12 +460,21 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
     }
 
     public async acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship> {
-        //logger.debug('Attempting to accept relationship by ', acceptingDelegateIdentity.idValue);
+        logger.debug('Attempting to accept relationship by ', acceptingDelegateIdentity.idValue);
 
         Assert.assertTrue(this.statusEnum() === RelationshipStatus.Pending, 'Unable to accept a non-pending relationship');
 
         // confirm the delegate is the user accepting
         Assert.assertTrue(acceptingDelegateIdentity.party.id === this.delegate.id, 'Not allowed');
+
+        // check identity strength
+        logger.info(`checking strength -> identity=${acceptingDelegateIdentity.strength} relationshipType=${this.relationshipType.minIdentityStrength}`);
+        Assert.assertGreaterThanEqual(
+            acceptingDelegateIdentity.strength,
+            this.relationshipType.minIdentityStrength,
+            'YOUR CREDENTIAL CANNOT ACCEPT THIS AUTHORISATION. The identity in your credential has not been verified to the level required to accept a universal representative authorisation. To accept this authorisation you need to verify the identity of your credential or use a credential with a verified identity. See Help for instructions.',
+            `${acceptingDelegateIdentity.strength} < ${this.relationshipType.minIdentityStrength}`
+        );
 
         // mark relationship as active
         this.status = RelationshipStatus.Accepted.code;

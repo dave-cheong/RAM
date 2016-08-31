@@ -258,4 +258,8 @@ export class Assert {
         const condition = _.trim(value1).toLowerCase() === _.trim(value2).toLowerCase();
         this.assertTrue(condition, failMessage, detail);
     }
+
+    static assertGreaterThanEqual(value: number, min: number, failMessage: string, detail?: string) {
+        this.assertTrue(value >= min, failMessage, detail);
+    }
 }
