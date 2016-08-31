@@ -143,6 +143,8 @@ class RelationshipTypeInstanceContractImpl extends CodeDecodeContractImpl implem
             this.longDecodeText,
             this.startDate,
             this.endDate,
+            this.minCredentialStrength,
+            this.minIdentityStrength,
             this.voluntaryInd,
             this.managedExternallyInd,
             this.category,

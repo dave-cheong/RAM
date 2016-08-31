@@ -522,6 +522,8 @@ export class RelationshipStatus implements IRelationshipStatus {
 // relationship type ..................................................................................................
 
 export interface IRelationshipType extends ICodeDecode {
+    minCredentialStrength: number;
+    minIdentityStrength: number;
     voluntaryInd: boolean;
     relationshipAttributeNames: IRelationshipAttributeNameUsage[];
     managedExternallyInd: boolean;
@@ -544,6 +546,8 @@ export class RelationshipType extends CodeDecode implements IRelationshipType {
                 longDecodeText: string,
                 startTimestamp: Date,
                 endTimestamp: Date,
+                public minCredentialStrength: number,
+                public minIdentityStrength: number,
                 public voluntaryInd: boolean,
                 public managedExternallyInd: boolean,
                 public category: string,

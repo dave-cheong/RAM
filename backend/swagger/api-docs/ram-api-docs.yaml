@@ -1308,11 +1308,23 @@ definitions:
 
   RelationshipTypeDetails:
     type: object
-    required: ["voluntaryInd","relationshipAttributeNames"]
+    required: ["voluntaryInd","managedExternallyInd","relationshipAttributeNames"]
     properties:
+      minCredentialStrength:
+        type: boolean
+        description: The minimum credential strength for accepting
+      minIdentityStrength:
+        type: boolean
+        description: The minimum identity strength for accepting
       voluntaryInd:
         type: boolean
         description: Does the Subject Party get a say whether the delegate may have this relationship?
+      managedExternallyInd:
+        type: boolean
+        description: Is the relationship type managed externally?
+      category:
+        type: string
+        description: The category for the relationship type
       relationshipAttributeNames:
         type: array
         description: Relationship attributes that may be used with this resource
