@@ -67,7 +67,7 @@ export class RelationshipController {
         const invitationCode = req.params.invitationCode;
         validateReqSchema(req, schema)
             .then((req:Request) => this.relationshipModel.findByInvitationCode(invitationCode))
-            .then((model) => model ? model.claimPendingInvitation(context.getAuthenticatedIdentity()) : null)
+            .then((model) => model ? model.claimPendingInvitation(context.getAuthenticatedIdentity(), invitationCode) : null)
             .then((model) => model ? model.toDTO(invitationCode) : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))

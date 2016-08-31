@@ -293,7 +293,7 @@ export interface IRelationshipInstanceContract extends IRAMObjectContract {
     statusEnum(): RelationshipStatus;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
     toDTO(invitationCode: string): Promise<DTO>;
-    claimPendingInvitation(claimingDelegateIdentity: IIdentity): Promise<IRelationship>;
+    claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship>;
     acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship>;
     rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship>;
     notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship>;
@@ -365,7 +365,7 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
         );
     }
 
-    public async claimPendingInvitation(claimingDelegateIdentity: IIdentity): Promise<IRelationship> {
+    public async claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship> {
         try {
             /* validate */
 
@@ -384,40 +384,44 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
                 'A pending relationship should only have one delegate identity'
             );
 
-            const invitationIdentity = invitationIdentities[0];
-
-            // check invitation code is valid
             Assert.assertTrue(
-                invitationIdentity.identityTypeEnum() === IdentityType.InvitationCode,
+                this.invitationIdentity.identityTypeEnum() === IdentityType.InvitationCode,
                 'Must be an invitation code to claim'
             );
+
             Assert.assertTrue(
-                invitationIdentity.invitationCodeStatusEnum() === IdentityInvitationCodeStatus.Pending,
-                'Invitation code must be pending'
+                this.invitationIdentity.rawIdValue === invitationCode,
+                'Invitation code does not match'
+            );
+
+            Assert.assertTrue(
+                this.invitationIdentity.invitationCodeStatusEnum() === IdentityInvitationCodeStatus.Pending || this.invitationIdentity.invitationCodeStatusEnum() === IdentityInvitationCodeStatus.Claimed,
+                'Invitation code must be pending',
+                `${this.invitationIdentity.invitationCodeStatusEnum()} != PENDING or CLAIMED`
             );
             Assert.assertTrue(
-                invitationIdentity.invitationCodeExpiryTimestamp > new Date(),
+                this.invitationIdentity.invitationCodeExpiryTimestamp > new Date(),
                 'Invitation code has expired'
             );
 
             // check name
             Assert.assertCaseInsensitiveEqual(
                 claimingDelegateIdentity.profile.name.givenName,
-                invitationIdentity.profile.name.givenName,
+                this.invitationIdentity.profile.name.givenName,
                 'Identity does not match',
-                `${claimingDelegateIdentity.profile.name.givenName} != ${invitationIdentity.profile.name.givenName}`
+                `${claimingDelegateIdentity.profile.name.givenName} != ${this.invitationIdentity.profile.name.givenName}`
             );
 
             Assert.assertCaseInsensitiveEqual(
                 claimingDelegateIdentity.profile.name.familyName,
-                invitationIdentity.profile.name.familyName,
+                this.invitationIdentity.profile.name.familyName,
                 'Identity does not match',
-                `${claimingDelegateIdentity.profile.name.familyName} != ${invitationIdentity.profile.name.familyName}`
+                `${claimingDelegateIdentity.profile.name.familyName} != ${this.invitationIdentity.profile.name.familyName}`
             );
 
             // TODO not sure about this implementation
             // check date of birth IF it is recorded on the invitation
-            if (invitationIdentity.profile.getSharedSecret(DOB_SHARED_SECRET_TYPE_CODE)) {
+            if (this.invitationIdentity.profile.getSharedSecret(DOB_SHARED_SECRET_TYPE_CODE)) {
                 //
                 // Assert.assertTrue(
                 //      acceptingDelegateIdentity.profile.getSharedSecret(DOB_SHARED_SECRET_TYPE_CODE)
@@ -447,9 +451,9 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
             /* complete claim */
 
             // mark invitation code identity as claimed
-            invitationIdentity.invitationCodeStatus = IdentityInvitationCodeStatus.Claimed.code;
-            invitationIdentity.invitationCodeClaimedTimestamp = new Date();
-            await invitationIdentity.save();
+            this.invitationIdentity.invitationCodeStatus = IdentityInvitationCodeStatus.Claimed.code;
+            this.invitationIdentity.invitationCodeClaimedTimestamp = new Date();
+            await this.invitationIdentity.save();
 
             // point relationship to the accepting delegate identity
             this.delegate = claimingDelegateIdentity.party;
@@ -538,7 +542,7 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
 // static ..............................................................................................................
 
 interface IRelationshipStaticContract {
-    addOrModify(identifier: string, dto: DTO) : Promise<IRelationship>;
+    addOrModify(identifier: string, dto: DTO): Promise<IRelationship>;
     add(relationshipType: IRelationshipType,
         subject: IPartyInstanceContract,
         subjectNickName: IName,
@@ -548,38 +552,37 @@ interface IRelationshipStaticContract {
         endTimestamp: Date,
         initiatedBy: RelationshipInitiatedBy,
         invitationIdentity: IIdentity,
-        attributes: IRelationshipAttribute[]) : Promise<IRelationship>;
-    findByIdentifier(id: string) : Promise<IRelationship>;
-    findByInvitationCode(invitationCode: string) : Promise<IRelationship>;
-    findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date) : Promise<IRelationship>;
-    hasActiveInDateRange1stOr2ndLevelConnection(requestingParty: IParty, requestedIdValue: string, date: Date) : Promise<boolean>;
-    search(subjectIdentityIdValue: string, delegateIdentityIdValue: string, page: number, pageSize: number) : Promise<SearchResult<IRelationship>>;
+        attributes: IRelationshipAttribute[]): Promise<IRelationship>;
+    findByIdentifier(id: string): Promise<IRelationship>;
+    findByInvitationCode(invitationCode: string): Promise<IRelationship>;
+    findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IRelationship>;
+    hasActiveInDateRange1stOr2ndLevelConnection(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<boolean>;
+    search(subjectIdentityIdValue: string, delegateIdentityIdValue: string, page: number, pageSize: number): Promise<SearchResult<IRelationship>>;
     searchByIdentity(identityIdValue: string,
-                       partyType: string,
-                       relationshipType: string,
-                       relationshipTypeCategory: string,
-                       profileProvider: string,
-                       status: string,
-                       inDateRange: boolean,
-                       text: string,
-                       sort: string,
-                       page: number,
-                       pageSize: number) : Promise<SearchResult<IRelationship>>;
+                     partyType: string,
+                     relationshipType: string,
+                     relationshipTypeCategory: string,
+                     profileProvider: string,
+                     status: string,
+                     inDateRange: boolean,
+                     text: string,
+                     sort: string,
+                     page: number,
+                     pageSize: number): Promise<SearchResult<IRelationship>>;
     searchByIdentitiesInDateRange(subjectIdValue: string,
-                                    delegateIdValue: string,
-                                    relationshipType: string,
-                                    status: string,
-                                    date: Date,
-                                    page: number,
-                                    pageSize: number) : Promise<SearchResult<IRelationship>>;
-    searchDistinctSubjectsForMe(requestingParty: IParty, partyType: string, authorisationManagement: string, text: string, sort: string, page: number, pageSize: number)
-        : Promise<SearchResult<IParty>>;
+                                  delegateIdValue: string,
+                                  relationshipType: string,
+                                  status: string,
+                                  date: Date,
+                                  page: number,
+                                  pageSize: number): Promise<SearchResult<IRelationship>>;
+    searchDistinctSubjectsForMe(requestingParty: IParty, partyType: string, authorisationManagement: string, text: string, sort: string, page: number, pageSize: number): Promise<SearchResult<IParty>>;
 }
 
 class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
     /* tslint:disable:max-func-body-length */
-    public async addOrModify(identifier: string, dto: DTO) : Promise<IRelationship> {
+    public async addOrModify(identifier: string, dto: DTO): Promise<IRelationship> {
 
         const myPrincipal = context.getAuthenticatedPrincipal();
         const myIdentity = context.getAuthenticatedIdentity();
@@ -867,7 +870,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
     }
 
-    public async findByIdentifier(id: string) : Promise<IRelationship> {
+    public async findByIdentifier(id: string): Promise<IRelationship> {
         // TODO migrate from _id to another id
         return RelationshipModel
             .findOne({
@@ -885,7 +888,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             .exec();
     }
 
-    public async findByInvitationCode(invitationCode: string) : Promise<IRelationship> {
+    public async findByInvitationCode(invitationCode: string): Promise<IRelationship> {
         const identity = await IdentityModel.findByInvitationCode(invitationCode);
         if (identity) {
             const delegate = identity.party;
@@ -907,7 +910,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         return null;
     }
 
-    public async findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date) : Promise<IRelationship> {
+    public async findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IRelationship> {
         const identity = await IdentityModel.findPendingByInvitationCodeInDateRange(invitationCode, date);
         if (identity) {
             const delegate = identity.party;
@@ -930,7 +933,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
     }
 
     // todo what about start date?
-    public async hasActiveInDateRange1stOr2ndLevelConnection(requestingParty: IParty, requestedIdValue: string, date: Date) : Promise<boolean> {
+    public async hasActiveInDateRange1stOr2ndLevelConnection(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<boolean> {
 
         const requestedParty = await PartyModel.findByIdentityIdValue(requestedIdValue);
 
@@ -1008,7 +1011,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
     }
 
     // todo this search might no longer be useful from SS2
-    public async search(subjectIdentityIdValue: string, delegateIdentityIdValue: string, page: number, pageSize: number) : Promise<SearchResult<IRelationship>> {
+    public async search(subjectIdentityIdValue: string, delegateIdentityIdValue: string, page: number, pageSize: number): Promise<SearchResult<IRelationship>> {
         return new Promise<SearchResult<IRelationship>>(async(resolve, reject) => {
             const thePageSize: number = pageSize ? Math.min(pageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
             try {
@@ -1041,16 +1044,16 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
     }
 
     public async searchByIdentity(identityIdValue: string,
-                     partyType: string,
-                     relationshipType: string,
-                     relationshipTypeCategory: string,
-                     profileProvider: string,
-                     status: string,
-                     inDateRange: boolean,
-                     text: string,
-                     sort: string,
-                     page: number,
-                     pageSize: number) : Promise<SearchResult<IRelationship>> {
+                                  partyType: string,
+                                  relationshipType: string,
+                                  relationshipTypeCategory: string,
+                                  profileProvider: string,
+                                  status: string,
+                                  inDateRange: boolean,
+                                  text: string,
+                                  sort: string,
+                                  page: number,
+                                  pageSize: number): Promise<SearchResult<IRelationship>> {
         return new Promise<SearchResult<IRelationship>>(async(resolve, reject) => {
             const thePageSize: number = pageSize ? Math.min(pageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
             try {
@@ -1132,12 +1135,12 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
     }
 
     public async searchByIdentitiesInDateRange(subjectIdValue: string,
-                                  delegateIdValue: string,
-                                  relationshipType: string,
-                                  status: string,
-                                  date: Date,
-                                  page: number,
-                                  pageSize: number) : Promise<SearchResult<IRelationship>> {
+                                               delegateIdValue: string,
+                                               relationshipType: string,
+                                               status: string,
+                                               date: Date,
+                                               page: number,
+                                               pageSize: number): Promise<SearchResult<IRelationship>> {
         return new Promise<SearchResult<IRelationship>>(async(resolve, reject) => {
             const thePageSize: number = pageSize ? Math.min(pageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
             try {
@@ -1189,8 +1192,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
      *
      * todo need to optional filters (authorisation management)
      */
-    public async searchDistinctSubjectsForMe(requestingParty: IParty, partyType: string, authorisationManagement: string, text: string, sort: string, page: number, pageSize: number)
-    : Promise<SearchResult<IParty>> {
+    public async searchDistinctSubjectsForMe(requestingParty: IParty, partyType: string, authorisationManagement: string, text: string, sort: string, page: number, pageSize: number): Promise<SearchResult<IParty>> {
         return new Promise<SearchResult<IParty>>(async(resolve, reject) => {
             const thePageSize: number = pageSize ? Math.min(pageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
             try {
