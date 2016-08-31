@@ -330,6 +330,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     // todo change this to use href hateoas instead of the id value
     public onInsert(relationship: IRelationship) {
         let delegateIdentity = relationship.delegate.value.identities[0].value;
+        console.log('delegateIdentity', delegateIdentity);
+        console.log('--', this.identity.idValue);
+        console.log('--', delegateIdentity.rawIdValue);
+        console.log('--', this.displayName(this.relationshipComponentData.representativeDetails));
         this.services.route.goToRelationshipAddCompletePage(
             this.identity.idValue,
             delegateIdentity.rawIdValue,
@@ -351,7 +355,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     }
 
     public displayName(repDetails: RepresentativeDetailsComponentData) {
-        if (repDetails.organisation) {
+        if (repDetails.isOrganisation) {
             return repDetails.organisation.abn;
         } else {
             return repDetails.individual.givenName + (repDetails.individual.familyName ? ' ' + repDetails.individual.familyName : '');
