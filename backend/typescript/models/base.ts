@@ -259,7 +259,7 @@ export class Assert {
         this.assertTrue(condition, failMessage, detail);
     }
 
-    static assertGreaterThanEqual(value: number, min: number, failMessage: string, detail?: string) {
+    public static assertGreaterThanEqual(value: number, min: number, failMessage: string, detail?: string) {
         this.assertTrue(value >= min, failMessage, detail);
     }
 }
