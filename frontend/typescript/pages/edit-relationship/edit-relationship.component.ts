@@ -8,7 +8,10 @@ import {RAMConstants} from '../../services/ram-constants.service';
 import {RAMServices} from '../../services/ram-services';
 
 import {AccessPeriodComponent, AccessPeriodComponentData} from '../../components/access-period/access-period.component';
-import {AuthorisationPermissionsComponent} from '../../components/authorisation-permissions/authorisation-permissions.component';
+import {
+    AuthorisationPermissionsComponent,
+    AuthorisationPermissionsComponentData
+} from '../../components/authorisation-permissions/authorisation-permissions.component';
 import {
     AuthorisationTypeComponent,
     AuthorisationTypeComponentData
@@ -102,6 +105,9 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             value: 'false'
         },
         permissionAttributes: [],
+        authorisationPermissions : {
+            value: ''
+        },
         declaration: {
             accepted: false,
             markdown: 'TODO'
@@ -371,6 +377,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
             this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage === null : true;
             this.permissionAttributeUsages = this.permissionAttributeUsagesByType[selectedRelationshipTypeRef.value.code];
+
             this.relationshipComponentData.permissionAttributes = [];
             for (let usage of this.permissionAttributeUsages) {
                 let relationshipAttribute = new RelationshipAttribute([usage.defaultValue], usage.attributeNameDef);
@@ -390,6 +397,7 @@ export interface EditRelationshipComponentData {
     authType: AuthorisationTypeComponentData;
     representativeDetails: RepresentativeDetailsComponentData;
     authorisationManagement: AuthorisationManagementComponentData;
+    authorisationPermissions: AuthorisationPermissionsComponentData;
     permissionAttributes: IRelationshipAttribute[];
     declaration: DeclarationComponentData;
 }
