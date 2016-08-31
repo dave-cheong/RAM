@@ -13,9 +13,9 @@ export class AuthorisationPermissionsComponent {
     @Input('data') public data: AuthorisationPermissionsComponentData;
 
     public accessLevels = {
-        full: "Full access",
-        limited: "Limited access",
-        none: null
+        full: 'Full access',
+        limited: 'Limited access',
+        none: null as string
     };
 
     public toggleFull(permissionAttribute: IRelationshipAttribute) {
