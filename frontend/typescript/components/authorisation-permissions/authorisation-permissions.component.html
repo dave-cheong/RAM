@@ -10,17 +10,27 @@
         </div>
         <div class="col-md-12">
             <p>
-                Full access: The agency service allows the representative access to all transactions without further steps.
+                Full access: The agency service allows the representative access to all transactions without further
+                steps.
                 For more information see the detail for each service provided in the accordians below.
             </p>
         </div>
-        <div class="col-md-4">
-            <div class="form-group">
-                <select class="form-control" name="accessLevel">
-                                <option value="fullAccess">Full Access</option>
-                                <option value="limitedAccess">Limited Access</option>
-                                <option value="noAccess">No Access</option>
-                            </select>
+        <div class="pull-right">
+            <h4>Individually set the below online government services</h4>
+        </div>
+        <div class="form-group">
+            <div class="col-md-12" *ngFor="let permissionAttribute of permissionAttributes">
+                <div class="pull-left">
+                    {{permissionAttribute.attributeName.value.shortDecodeText}}
+                </div>
+                <div class="pull-right">
+                    <button class="btn" [class.btn-secondary]="permissionAttribute.value[0] === accessLevels.full" [class.btn-inverse]="permissionAttribute.value[0] !== accessLevels.full"
+                            (click)="toggleFull(permissionAttribute)"> {{accessLevels.full}}
+                    </button>
+                    <button class="btn" [class.btn-secondary]="permissionAttribute.value[0] === accessLevels.limited" [class.btn-inverse]="permissionAttribute.value[0] !== accessLevels.limited"
+                            (click)="toggleLimited(permissionAttribute)"> {{accessLevels.limited}}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
