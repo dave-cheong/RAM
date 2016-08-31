@@ -324,6 +324,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             ));
 
             // permission attributes
+            // todo this needs to replace any existing permissions
             if (relationshipType.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true') {
                 for (let permissionAttribute of this.relationshipComponentData.permissionAttributes) {
                     this.relationship.attributes.push(permissionAttribute);
