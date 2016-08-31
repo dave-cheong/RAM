@@ -271,7 +271,7 @@
                                     .data('id', item.value.idValue)
                                     .text(item.value.profile.name._displayName)
                                     .append($('<span/>').addClass('pull-right label label-success').text('Regular User'))
-                                    .append($('<span/>').addClass('pull-right label label-default').css('margin-right', '15px').text('Strength ' + item.value.strength))
+                                    .append($('<span/>').addClass('pull-right label label-warning').css('margin-right', '15px').text('Strength ' + item.value.strength))
                                     .append($('<span/>').addClass('pull-right label label-default').css('margin-right', '15px').text(item.value.identityType.replace('_', ' ')));
                             $identities.append($li);
                             console.log('zzz', item.value);
