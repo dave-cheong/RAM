@@ -65,7 +65,9 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
             this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
             this.canAccept = this.services.model.getLinkByType('accept', this.relationship)!=null;
             if(!this.canAccept) {
-                this.addGlobalMessage('YOUR CREDENTIAL CANNOT ACCEPT THIS AUTHORISATION. The identity in your credential has not been verified to the level required to accept a universal representative authorisation. To accept this authorisation you need to verify the identity of your credential or use a credential with a verified identity. See Help for instructions.');
+               this.services.translate.get('acceptRelationship.insufficientStrength').subscribe({
+                    next: (message) => this.addGlobalMessage(message)
+                });
             }
 
             this.relationshipType$ = this.services.rest.findRelationshipTypeByHref(relationship.relationshipType.href);
