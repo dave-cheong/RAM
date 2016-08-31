@@ -37,4 +37,6 @@ export class AuthorisationPermissionsComponent {
 
 export interface AuthorisationPermissionsComponentData {
     value: string;
+    customisationEnabled: boolean;
+    enabled: boolean;
 }

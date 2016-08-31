@@ -301,7 +301,7 @@ footer {
   padding-bottom: 50px;
 }
 
-.btn {
+.btn:focus, .btn:active {
   outline: none;
 }
 
@@ -342,8 +342,9 @@ footer {
     &:hover,
     &:focus,
     &.focus {
-      background-color: $border;
-      border-color: $background;
+      color: $color;
+      background-color: $background;
+      border-color: #ccc;
     }
   }
   .badge {
