@@ -15,23 +15,31 @@
                 For more information see the detail for each service provided in the accordians below.
             </p>
         </div>
-        <div class="pull-right">
-            <h4>Individually set the below online government services</h4>
-        </div>
-        <div class="form-group">
-            <div class="col-md-12" *ngFor="let permissionAttribute of permissionAttributes">
-                <div class="pull-left">
-                    {{permissionAttribute.attributeName.value.shortDecodeText}}
-                </div>
-                <div class="pull-right">
-                    <button class="btn" [class.btn-secondary]="permissionAttribute.value[0] === accessLevels.full" [class.btn-inverse]="permissionAttribute.value[0] !== accessLevels.full"
-                            (click)="toggleFull(permissionAttribute)"> {{accessLevels.full}}
-                    </button>
-                    <button class="btn" [class.btn-secondary]="permissionAttribute.value[0] === accessLevels.limited" [class.btn-inverse]="permissionAttribute.value[0] !== accessLevels.limited"
-                            (click)="toggleLimited(permissionAttribute)"> {{accessLevels.limited}}
-                    </button>
-                </div>
+        <div class="col-md-12">
+            <div class="pull-right">
+                <h4>Individually set the below online government services</h4>
             </div>
+        </div>
+        <div class="col-md-12">
+            <table class="table checkbox-table">
+                <tbody>
+                    <tr *ngFor="let permissionAttribute of permissionAttributes">
+                        <td class="col-md-8">
+                            {{permissionAttribute.attributeName.value.shortDecodeText}}
+                        </td>
+                        <td class="col-md-4">
+                            <div class="pull-right">
+                                <button class="btn" [class.btn-secondary]="permissionAttribute.value[0] === accessLevels.full" [class.btn-inverse]="permissionAttribute.value[0] !== accessLevels.full"
+                                        (click)="toggleFull(permissionAttribute)"> {{accessLevels.full}}
+                                </button>
+                                <button class="btn" [class.btn-secondary]="permissionAttribute.value[0] === accessLevels.limited" [class.btn-inverse]="permissionAttribute.value[0] !== accessLevels.limited"
+                                        (click)="toggleLimited(permissionAttribute)"> {{accessLevels.limited}}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
