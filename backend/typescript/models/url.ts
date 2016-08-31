@@ -117,6 +117,10 @@ export class Url {
         return '/api/v1/relationship/' + encodeURIComponent(model._id.toString());
     }
 
+    public static async forRelationshipClaim(invitationCode: string): Promise<string> {
+        return '/api/v1/relationship/invitationCode/' + encodeURIComponent(invitationCode) + '/claim';
+    }
+
     public static async forRelationshipAccept(invitationCode: string): Promise<string> {
         return '/api/v1/relationship/invitationCode/' + encodeURIComponent(invitationCode) + '/accept';
     }
