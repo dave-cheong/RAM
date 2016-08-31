@@ -47,6 +47,7 @@ export class JohnMaximsIdentitySeeder {
                     rawIdValue: 'johnmaxims_identity_1',
                     identityType: IdentityType.LinkId.code,
                     defaultInd: true,
+                    strength: 1,
                     linkIdScheme: IdentityLinkIdScheme.MyGov.code,
                     profile: Seeder.johnmaxims_profile,
                     party: Seeder.johnmaxims_party

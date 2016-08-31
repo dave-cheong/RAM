@@ -8,7 +8,7 @@ import {
     HrefValue,
     Identity as DTO,
     SearchResult,
-    ICreateIdentityDTO
+    CreateIdentityDTO
 } from '../../../commons/RamAPI';
 import {NameModel} from './name.model';
 import {SharedSecretModel} from './sharedSecret.model';
@@ -380,7 +380,7 @@ class IdentityInstanceContractImpl implements IIdentityInstanceContract {
 // static .............................................................................................................
 
 export interface IIdentityStaticContract {
-    createFromDTO (dto: ICreateIdentityDTO): Promise<IIdentity>;
+    createFromDTO (dto: CreateIdentityDTO): Promise<IIdentity>;
     createInvitationCodeIdentity(givenName: string, familyName: string, dateOfBirth: string): Promise<IIdentity>;
     addCompany(abn: string, name: string): Promise<IIdentity>;
     findByIdValue(idValue: string): Promise<IIdentity>;
@@ -399,7 +399,8 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
      * transferred to the authorised identity.
      */
     /* tslint:disable:max-func-body-length */
-    public async createFromDTO(dto: ICreateIdentityDTO): Promise<IIdentity> {
+    public async createFromDTO(dto: CreateIdentityDTO): Promise<IIdentity> {
+
         const name = await NameModel.create({
             givenName: dto.givenName,
             familyName: dto.familyName,
@@ -428,10 +429,8 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             defaultInd: true,
             agencyScheme: dto.agencyScheme,
             agencyToken: dto.agencyToken,
-            invitationCodeStatus: dto.identityType === IdentityType.InvitationCode.code ?
-                IdentityInvitationCodeStatus.Pending.code : undefined,
-            invitationCodeExpiryTimestamp: dto.identityType === IdentityType.InvitationCode.code ?
-                getNewInvitationCodeExpiry() : undefined,
+            invitationCodeStatus: dto.identityType === IdentityType.InvitationCode.code ? IdentityInvitationCodeStatus.Pending.code : undefined,
+            invitationCodeExpiryTimestamp: dto.identityType === IdentityType.InvitationCode.code ? getNewInvitationCodeExpiry() : undefined,
             invitationCodeClaimedTimestamp: undefined,
             publicIdentifierScheme: dto.publicIdentifierScheme,
             linkIdScheme: dto.linkIdScheme,
@@ -445,52 +444,53 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
     }
 
     public async createInvitationCodeIdentity(givenName: string, familyName: string, dateOfBirth: string): Promise<IIdentity> {
-        return await IdentityModel.createFromDTO(
-            {
-                rawIdValue: undefined,
-                partyType: PartyType.Individual.code,
-                givenName: givenName,
-                familyName: familyName,
-                unstructuredName: undefined,
-                sharedSecretTypeCode: DOB_SHARED_SECRET_TYPE_CODE,
-                sharedSecretValue: dateOfBirth,
-                identityType: IdentityType.InvitationCode.code,
-                agencyScheme: undefined,
-                agencyToken: undefined,
-                linkIdScheme: undefined,
-                linkIdConsumer: undefined,
-                publicIdentifierScheme: undefined,
-                profileProvider: ProfileProvider.Invitation.code
-            }
-        );
+        return await IdentityModel.createFromDTO(new CreateIdentityDTO(
+            undefined,
+            PartyType.Individual.code,
+            givenName,
+            familyName,
+            undefined,
+            DOB_SHARED_SECRET_TYPE_CODE,
+            dateOfBirth,
+            IdentityType.InvitationCode.code,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            ProfileProvider.Invitation.code
+        ));
     }
 
     /*
      * Used when looking for a company in the ABR. If the ABN already exists in RAM
      * then only the name needs be checked and/or added (TBD). Otherwise a new identity and associated party are created. In either case the party idValue is returned (PUBLIC_IDENTIFIER:ABN:nnnnnnnnnnn).
      */
+    // todo check Paul Marrington's code regarding the DOB for company
     public async addCompany(abn: string, name: string): Promise<IIdentity> {
         const identity = await IdentityModel.findByIdValue(abn);
         if (identity) {
             return addCompanyNameIfNeeded(identity, name);
         } else {
-            const identity = (await IdentityModel.createFromDTO({
-                rawIdValue: abn,
-                partyType: PartyType.ABN.code,
-                givenName: undefined,
-                familyName: undefined,
-                unstructuredName: name,
+            const identity = await IdentityModel.createFromDTO(new CreateIdentityDTO(
+                abn,
+                PartyType.ABN.code,
+                undefined,
+                undefined,
+                name,
                 // fun - company has to have a date of birth!!!
-                sharedSecretTypeCode: DOB_SHARED_SECRET_TYPE_CODE,
-                sharedSecretValue: '01/07/1984',
-                identityType: IdentityType.PublicIdentifier.code,
-                agencyScheme: undefined,
-                agencyToken: undefined,
-                linkIdScheme: undefined,
-                linkIdConsumer: undefined,
-                publicIdentifierScheme: IdentityPublicIdentifierScheme.ABN.code,
-                profileProvider: ProfileProvider.ABR.code
-            }));
+                DOB_SHARED_SECRET_TYPE_CODE,
+                '01/07/1984',
+                IdentityType.PublicIdentifier.code,
+                0,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                IdentityPublicIdentifierScheme.ABN.code,
+                ProfileProvider.ABR.code
+            ));
             return identity;
         }
     }

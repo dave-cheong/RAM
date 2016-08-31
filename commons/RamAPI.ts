@@ -829,27 +829,29 @@ export class RelationshipAttribute implements IRelationshipAttribute {
 // todo to be evaluated and removed if required
 // create invitation code .............................................................................................
 
+export class CreateIdentityDTO {
+    constructor(public rawIdValue: string,
+                public partyType: string,
+                public givenName: string,
+                public familyName: string,
+                public unstructuredName: string,
+                public sharedSecretTypeCode: string,
+                public sharedSecretValue: string,
+                public identityType: string,
+                public strength: number,
+                public agencyScheme: string,
+                public agencyToken: string,
+                public linkIdScheme: string,
+                public linkIdConsumer: string,
+                public publicIdentifierScheme: string,
+                public profileProvider: string) {
+    }
+}
+
 export interface ICreateInvitationCodeDTO {
     givenName?: string;
     familyName?: string;
     sharedSecretValue: string;
-}
-
-export interface ICreateIdentityDTO {
-    rawIdValue?: string;
-    partyType: string;
-    givenName?: string;
-    familyName?: string;
-    unstructuredName?: string;
-    sharedSecretTypeCode: string;
-    sharedSecretValue: string;
-    identityType: string;
-    agencyScheme?: string;
-    agencyToken?: string;
-    linkIdScheme?: string;
-    linkIdConsumer?: string;
-    publicIdentifierScheme?: string;
-    profileProvider?: string;
 }
 
 export interface IAttributeDTO {
