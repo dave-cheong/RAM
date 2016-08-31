@@ -341,7 +341,8 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
         return new DTO(
             Url.links()
                 .push('self', Url.GET, await Url.forRelationship(this))
-                .push('accept', Url.POST, await Url.forRelationshipAccept(invitationCode), pendingWithInvitationCode)
+                .push('claim', Url.POST, await Url.forRelationshipClaim(invitationCode), pendingWithInvitationCode)
+                .push('accept', Url.POST, await Url.forRelationshipAccept(invitationCode), pendingWithInvitationCode && this.canAccept())
                 .push('reject', Url.POST, await Url.forRelationshipReject(invitationCode), pendingWithInvitationCode)
                 .push('notifyDelegate', Url.POST, await Url.forRelationshipNotifyDelegate(invitationCode), pendingWithInvitationCode)
                 .push('modify', Url.PUT, await Url.forRelationship(this))
@@ -482,7 +483,18 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
 
         // TODO notify relevant parties
 
-        return Promise.resolve(this);
+        return Promise.resolve(this as IRelationship);
+    }
+
+    // TODO need to include this as part of the PERMISSONS payload
+    // TODO refactor to have this logic only once
+    private canAccept(): boolean {
+        const acceptingDelegateIdentity = context.getAuthenticatedPrincipal().identity;
+        return (
+            this.statusEnum() === RelationshipStatus.Pending
+            && acceptingDelegateIdentity.party.id === this.delegate.id
+            && acceptingDelegateIdentity.strength >= this.relationshipType.minIdentityStrength
+        );
     }
 
     public async rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship> {
@@ -517,7 +529,7 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
         // TODO notify relevant parties
         //logger.debug(`TODO Send notification to ${email}`);
 
-        return Promise.resolve(this);
+        return Promise.resolve(this as IRelationship);
     }
 
 }
