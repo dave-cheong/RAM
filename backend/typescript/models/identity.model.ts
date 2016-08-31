@@ -427,6 +427,7 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             rawIdValue: dto.rawIdValue,
             identityType: dto.identityType,
             defaultInd: true,
+            strength: dto.strength,
             agencyScheme: dto.agencyScheme,
             agencyToken: dto.agencyToken,
             invitationCodeStatus: dto.identityType === IdentityType.InvitationCode.code ? IdentityInvitationCodeStatus.Pending.code : undefined,
