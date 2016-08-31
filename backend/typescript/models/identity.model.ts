@@ -11,7 +11,7 @@ import {
     CreateIdentityDTO
 } from '../../../commons/RamAPI';
 import {NameModel} from './name.model';
-import {SharedSecretModel} from './sharedSecret.model';
+import {SharedSecretModel, ISharedSecret} from './sharedSecret.model';
 import {IProfile, ProfileModel, ProfileProvider} from './profile.model';
 import {IParty, PartyModel, PartyType} from './party.model';
 import {SharedSecretTypeModel, DOB_SHARED_SECRET_TYPE_CODE} from './sharedSecretType.model';
@@ -407,15 +407,19 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             unstructuredName: dto.unstructuredName
         });
 
-        const sharedSecret = await SharedSecretModel.create({
-            value: dto.sharedSecretValue,
-            sharedSecretType: await SharedSecretTypeModel.findByCodeInDateRange(dto.sharedSecretTypeCode, new Date())
-        });
+        const sharedSecrets: ISharedSecret[] = [];
+
+        if(dto.sharedSecretTypeCode && dto.sharedSecretValue) {
+            sharedSecrets.push(await SharedSecretModel.create({
+                value: dto.sharedSecretValue,
+                sharedSecretType: await SharedSecretTypeModel.findByCodeInDateRange(dto.sharedSecretTypeCode, new Date())
+            }));
+        }
 
         const profile = await ProfileModel.create({
             provider: dto.profileProvider,
             name: name,
-            sharedSecrets: [sharedSecret]
+            sharedSecrets: sharedSecrets
         });
 
         const party = await PartyModel.create({
