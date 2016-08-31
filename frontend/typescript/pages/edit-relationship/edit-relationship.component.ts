@@ -386,7 +386,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             this.relationshipComponentData.permissionAttributes = [];
             for (let usage of this.permissionAttributeUsages) {
-                let relationshipAttribute = new RelationshipAttribute([usage.defaultValue], usage.attributeNameDef);
+                let relationshipAttribute = new RelationshipAttribute(usage.defaultValue ? [usage.defaultValue] : [], usage.attributeNameDef);
                 this.relationshipComponentData.permissionAttributes.push(relationshipAttribute);
             }
 

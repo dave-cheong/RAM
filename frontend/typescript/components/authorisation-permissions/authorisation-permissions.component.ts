@@ -18,21 +18,14 @@ export class AuthorisationPermissionsComponent {
         none: null as string
     };
 
-    public toggleFull(permissionAttribute: IRelationshipAttribute) {
-        if (permissionAttribute.value[0] === this.accessLevels.full) {
-            permissionAttribute.value[0] = this.accessLevels.none;
+    public toggle(permissionAttribute: IRelationshipAttribute, permittedValue: string) {
+        if (permissionAttribute.value.length === 0 || permissionAttribute.value[0] !== permittedValue) {
+            permissionAttribute.value = [permittedValue];
         } else {
-            permissionAttribute.value[0] = this.accessLevels.full;
+            permissionAttribute.value = [];
         }
     };
 
-    public toggleLimited(permissionAttribute: IRelationshipAttribute) {
-        if (permissionAttribute.value[0] === this.accessLevels.limited) {
-            permissionAttribute.value[0] = this.accessLevels.none;
-        } else {
-            permissionAttribute.value[0] = this.accessLevels.limited;
-        }
-    };
 }
 
 export interface AuthorisationPermissionsComponentData {
