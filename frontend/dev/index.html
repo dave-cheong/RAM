@@ -33,6 +33,18 @@
             color: #ccc;
         }
 
+        #user-list ul li .label {
+            color: #fff;
+            margin-top: 0;
+            padding: 5px 7px;
+        }
+
+        #user-list .list-group-item.active, #user-list .list-group-item.active:focus, #user-list .list-group-item.active:hover {
+            color: #000;
+            background: #e8e8e8;
+            border: 1px solid #e8e8e8;
+        }
+
         #user-detail {
             text-align: center;
         }
@@ -230,14 +242,6 @@
 
             var $identities = $('.identities');
 
-            function buildName(name) {
-                if (name.unstructuredName) {
-                    return name.unstructuredName;
-                } else {
-                    return name.givenName + ' ' + name.familyName;
-                }
-            }
-
             function getId() {
                 return [$('#x-ram-givenname').val(), $('#x-ram-familyname').val()].join('_').trim();
             }
@@ -263,8 +267,9 @@
                                     .addClass('list-group-item')
                                     .addClass('regular-user')
                                     .data('id', item.value.idValue)
-                                    .text(buildName(item.value.profile.name))
-                                    .append($('<span/>').addClass('pull-right').text('Regular User'));
+                                    .text(item.value.profile.name._displayName)
+                                    .append($('<span/>').addClass('pull-right label label-success').text('Regular User'))
+                                    .append($('<span/>').addClass('pull-right label label-default').css('margin-right', '15px').text('Strength ' + item.value.strength));
                             $identities.append($li);
                         }
                     }
@@ -273,7 +278,7 @@
                     refreshPrincipalDetails();
 
                     // select user
-                    $('#user-list li').click(function () {
+                    $('#user-list').find('li').click(function () {
                         var identity = $(this).data('id');
                         logIn(identity);
                     });
@@ -290,7 +295,7 @@
                                     .addClass('agency-user')
                                     .data('id', item.id)
                                     .text(item.displayName)
-                                    .append($('<span/>').addClass('pull-right').text('Agency User'));
+                                    .append($('<span/>').addClass('pull-right label label-info').text('Agency User'));
                             $identities.append($li);
                         }
 
@@ -298,7 +303,7 @@
                         refreshPrincipalDetails();
 
                         // select user
-                        $('#user-list li').click(function () {
+                        $('#user-list').find('li').click(function () {
                             var identity = $(this).data('id');
                             logIn(identity);
                         });
