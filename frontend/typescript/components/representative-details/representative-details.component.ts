@@ -27,13 +27,29 @@ export class RepresentativeDetailsComponent {
 
     public isOrganisation: boolean = false;
 
-    public setChildValidationStatus = (isOrganisation: boolean, isValid: boolean) => {
+    public setChildValidationStatus(isOrganisation: boolean, isValid: boolean) {
         if (isOrganisation && this.isOrganisation) {
-            this.data.individual = undefined;
             this.isValid.emit(isValid);
         } else if (!isOrganisation && !this.isOrganisation) {
-            this.data.organisation = undefined;
             this.isValid.emit(isValid);
+        }
+    }
+
+    public toggleIndividualOrganisation(isOrganisation: boolean) {
+        this.isOrganisation = isOrganisation;
+        if (isOrganisation) {
+            this.data.individual = undefined;
+            this.data.organisation = {
+                abn: '',
+                organisationName: ''
+            };
+        } else {
+            this.data.organisation = undefined;
+            this.data.individual = {
+                givenName: '',
+                familyName: null,
+                dob: null
+            };
         }
     }
 
