@@ -271,6 +271,13 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 )
             ];
 
+            // permission attributes
+            if (relationshipType.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true') {
+                for (let permissionAttribute of this.relationshipComponentData.permissionAttributes) {
+                    this.relationship.attributes.push(permissionAttribute);
+                }
+            }
+
             // invoke api
             let saveHref = this.services.model.getLinkHrefByType(RAMConstants.Link.RELATIONSHIP_CREATE, this.identity);
             this.services.rest.insertRelationshipByHref(saveHref, this.relationship).subscribe({
@@ -315,6 +322,13 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 [this.relationshipComponentData.authorisationManagement.value],
                 relationshipType.value.getAttributeNameRef(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND)
             ));
+
+            // permission attributes
+            if (relationshipType.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true') {
+                for (let permissionAttribute of this.relationshipComponentData.permissionAttributes) {
+                    this.relationship.attributes.push(permissionAttribute);
+                }
+            }
 
             // invoke api
             let saveHref = this.services.model.getLinkHrefByType(RAMConstants.Link.MODIFY, this.relationship);
