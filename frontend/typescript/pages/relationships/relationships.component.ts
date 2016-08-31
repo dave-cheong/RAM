@@ -220,6 +220,15 @@ export class RelationshipsComponent extends AbstractPageComponent {
         }
     }
 
+    // todo go to relationship page
+    public goToRelationshipPage(relationshipRef: IHrefValue<IRelationship>) {
+        alert('TODO: Not yet implemented');
+    }
+
+    public isEditRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
+        return this.services.model.hasLinkHrefByType(RAMConstants.Link.MODIFY, relationshipRef.value);
+    }
+
 }
 
 class SubjectGroupWithRelationships {
