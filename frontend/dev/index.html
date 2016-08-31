@@ -223,6 +223,7 @@
             var X_RAM_HEADERS_FOR_ADDING = {
 
                 'x-ram-identitytype': 'LINK_ID',
+                'x-ram-identitystrength': '1',
                 'x-ram-partytype': 'INDIVIDUAL',
 
                 'x-ram-givenname': 'Homer',
@@ -270,8 +271,10 @@
                                     .data('id', item.value.idValue)
                                     .text(item.value.profile.name._displayName)
                                     .append($('<span/>').addClass('pull-right label label-success').text('Regular User'))
-                                    .append($('<span/>').addClass('pull-right label label-default').css('margin-right', '15px').text('Strength ' + item.value.strength));
+                                    .append($('<span/>').addClass('pull-right label label-default').css('margin-right', '15px').text('Strength ' + item.value.strength))
+                                    .append($('<span/>').addClass('pull-right label label-default').css('margin-right', '15px').text(item.value.identityType.replace('_', ' ')));
                             $identities.append($li);
+                            console.log('zzz', item.value);
                         }
                     }
 
