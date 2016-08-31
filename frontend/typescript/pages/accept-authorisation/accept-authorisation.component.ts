@@ -63,7 +63,7 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
         this.relationship$.subscribe((relationship) => {
             this.relationship = relationship;
             this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
-            this.canAccept = this.services.model.getLinkByType('accept', this.relationship)!=null;
+            this.canAccept = this.services.model.getLinkByType('accept', this.relationship) !== null;
             if(!this.canAccept) {
                this.services.translate.get('acceptRelationship.insufficientStrength').subscribe({
                     next: (message) => this.addGlobalMessage(message)

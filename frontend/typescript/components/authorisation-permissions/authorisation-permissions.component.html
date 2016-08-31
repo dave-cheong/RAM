@@ -31,17 +31,12 @@
                         </td>
                         <td class="col-md-4 vmiddle">
                             <div class="pull-right">
-                                <button class="btn"
-                                        [class.btn-secondary]="permissionAttribute.value[0] === accessLevels.full"
-                                        [class.btn-inverse]="permissionAttribute.value[0] !== accessLevels.full"
+                                <button *ngFor="let permittedValue of permissionAttribute.attributeName.value.permittedValues"
                                         [disabled]='(!data.customisationEnabled)'
-                                        (click)="toggleFull(permissionAttribute)"> {{accessLevels.full}}
-                                </button>
-                                <button class="btn"
-                                        [class.btn-secondary]="permissionAttribute.value[0] === accessLevels.limited"
-                                        [class.btn-inverse]="permissionAttribute.value[0] !== accessLevels.limited"
-                                        [disabled]='(!data.customisationEnabled)'
-                                        (click)="toggleLimited(permissionAttribute)"> {{accessLevels.limited}}
+                                        class="btn"
+                                        [class.btn-secondary]="permissionAttribute.value.length > 0 && permissionAttribute.value[0] === permittedValue"
+                                        [class.btn-inverse]="permissionAttribute.value.length == 0 || permissionAttribute.value[0] !== permittedValue"
+                                        (click)="toggle(permissionAttribute, permittedValue)"> {{permittedValue}}
                                 </button>
                             </div>
                         </td>
