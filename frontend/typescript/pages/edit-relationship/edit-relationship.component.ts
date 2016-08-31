@@ -106,7 +106,9 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         },
         permissionAttributes: [],
         authorisationPermissions : {
-            value: ''
+            value: '',
+            customisationEnabled: false,
+            enabled: false
         },
         declaration: {
             accepted: false,
@@ -371,6 +373,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             const canChangeManageAuthorisationUsage = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND);
 
             this.manageAuthAttribute = allowManageAuthorisationUsage;
+
+            // authorisation permission component
+            this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true';
+            this.relationshipComponentData.authorisationPermissions.enabled = true;
 
             // get the default value for the relationship type
             this.relationshipComponentData.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';

@@ -168,6 +168,16 @@ div.navbar-header {
   padding: 15px;
 }
 
+.table td.vmiddle {
+  vertical-align: middle;
+}
+
+blockquote {
+  background: $well-bg;
+  border-left-color: $brand-primary;
+  font-size: 15px;
+}
+
 select, select.form-control {
   background: url('../images/select-arrow.png') no-repeat 100% 50% #fff;
   border: 1px solid $input-border;
@@ -301,23 +311,21 @@ footer {
   padding-bottom: 50px;
 }
 
+.btn:focus, .btn:active {
+  outline: none;
+}
+
 .btn.btn-inverse {
-  $color: $gray-darker !default;
+  $color: #666 !default;
   $background: #fff !default;
   $border: $btn-default-bg !default;
   color: $color;
   background-color: $background;
-  border-color: $border;
-  &:focus,
-  &.focus {
-    color: $background;
-    background-color: darken($color, 10%);
-    border-color: darken($border, 25%);
-  }
+  border-color: #ccc;
   &:hover {
     color: $background;
     background-color: lighten($color, 30%);
-    border-color: darken($border, 12%);
+    border-color: darken(#ccc, 12%);
   }
   &:active,
   &.active,
@@ -325,7 +333,6 @@ footer {
     color: $background;
     background-color: darken($color, 10%);
     border-color: darken($border, 12%);
-
     &:hover,
     &:focus,
     &.focus {
@@ -345,8 +352,9 @@ footer {
     &:hover,
     &:focus,
     &.focus {
-      background-color: $border;
-      border-color: $background;
+      color: $color;
+      background-color: $background;
+      border-color: #ccc;
     }
   }
   .badge {
