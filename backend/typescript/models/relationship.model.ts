@@ -584,7 +584,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         const myPrincipal = context.getAuthenticatedPrincipal();
         const myIdentity = context.getAuthenticatedIdentity();
 
-        const isNewRelationship = !dto.subject.href || !dto.delegate.href;
+        const isNewRelationship = !identifier;
 
         const relationshipTypeCode = Url.lastPathElement(dto.relationshipType.href);
         Assert.assertNotNull(relationshipTypeCode, 'Relationship type code was empty', `Expected relationshipType href last element to be the code: ${dto.relationshipType.href}`);
