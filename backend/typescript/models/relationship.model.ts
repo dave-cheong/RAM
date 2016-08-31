@@ -576,11 +576,11 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         let subjectIdentity: IIdentity;
         let delegateIdentity: IIdentity;
         let invitationIdentity: IIdentity;
-        let startTimestamp;
-        let endTimestamp;
+        let startTimestamp: Date;
+        let endTimestamp: Date;
         let attributes: IRelationshipAttribute[] = [];
 
-        let relationship;
+        let relationship: IRelationship;
         if (!isNewRelationship) {
             Assert.assertNotNull(identifier, 'Identifier not found');
 
