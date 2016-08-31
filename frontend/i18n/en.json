@@ -42,6 +42,7 @@
   "_comment - person's name after this" : "",
 
   "acceptRelationship.enterAuthCode" : "Please enter the authorisation code for the relationship you wish to establish.",
+  "acceptRelationship.insufficientStrength" : "YOUR CREDENTIAL CANNOT ACCEPT THIS AUTHORISATION. The identity in your credential has not been verified to the level required to accept a universal representative authorisation. To accept this authorisation you need to verify the identity of your credential or use a credential with a verified identity. See Help for instructions.",
 
   "dummy" : "to avoid having to keep adding a comma when adding on to the end of this file :)"
 }

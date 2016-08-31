@@ -25,6 +25,7 @@ import {
     RelationshipAttribute as RelationshipAttributeDTO,
     SearchResult
 } from '../../../commons/RamAPI';
+import {Translator} from '../ram/translator';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -473,7 +474,7 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
         Assert.assertGreaterThanEqual(
             acceptingDelegateIdentity.strength,
             this.relationshipType.minIdentityStrength,
-            'YOUR CREDENTIAL CANNOT ACCEPT THIS AUTHORISATION. The identity in your credential has not been verified to the level required to accept a universal representative authorisation. To accept this authorisation you need to verify the identity of your credential or use a credential with a verified identity. See Help for instructions.',
+            Translator.get('acceptRelationship.insufficientStrength'),
             `${acceptingDelegateIdentity.strength} < ${this.relationshipType.minIdentityStrength}`
         );
 

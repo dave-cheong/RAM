@@ -4,5 +4,8 @@
   "Authorisation Type" : "Authorisation Type",
   "error.identityIdInvalid" : "Identity Id is not valid",
   "error.pageInvalid" : "Page is not valid",
-  "error.pageSizeInvalid" : "Page Size is not valid"
+  "error.pageSizeInvalid" : "Page Size is not valid",
+
+  "acceptRelationship.insufficientStrength" : "YOUR CREDENTIAL CANNOT ACCEPT THIS AUTHORISATION. The identity in your credential has not been verified to the level required to accept a universal representative authorisation. To accept this authorisation you need to verify the identity of your credential or use a credential with a verified identity. See Help for instructions."
+
 }
