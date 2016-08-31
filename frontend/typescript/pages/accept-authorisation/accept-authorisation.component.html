@@ -94,7 +94,7 @@
             you acknowledge that:</h4>
         <div class="todo">TODO {{delegateRelationshipTypeDeclarationAttributeUsage?.defaultValue}}</div>
         <ng2-markdown [markdown]="delegateRelationshipTypeDeclarationAttributeUsage?.defaultValue"></ng2-markdown>
-        <h4><input type="checkbox" [(ngModel)]="accept"> I accept</h4>
+        <h4><input type="checkbox" [(ngModel)]="accept" [disabled]="!canAccept"> I accept</h4>
     </div>
 </div>
 
@@ -105,7 +105,7 @@
     <div class="pull-right">
         <button class="btn pull-left" (click)="showDeclineConfirmation()">Decline</button>
         &nbsp;
-        <button class="btn btn-primary pull-left" (click)="acceptAuthorisation()" [disabled]='(!accept)'>Accept</button>
+        <button class="btn btn-primary pull-left" (click)="acceptAuthorisation()" [disabled]="(!accept) && !canAccept">Accept</button>
     </div>
 </div>
 
@@ -114,7 +114,7 @@
     <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
         <div class="pull-right">
             <button class="btn pull-left" (click)="cancelDeclineConfirmation()">Cancel</button>
-            <button class="btn btn-primary pull-left" (click)="confirmDeclineAuthorisation()" [disabled]="!canAccept">Confirm</button>
+            <button class="btn btn-primary pull-left" (click)="confirmDeclineAuthorisation()">Confirm</button>
         </div>
     </div>
 </p-dialog>
