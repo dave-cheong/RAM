@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "RAM",
-		"_postman_id": "c07b35dd-8dbf-680c-6696-d3e5473af86a",
+		"_postman_id": "4b560a17-31b9-fc76-76a0-8de4672f6dc8",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -226,6 +226,11 @@
 							{
 								"key": "X-RAM-IdentityType",
 								"value": "LINK_ID",
+								"description": ""
+							},
+							{
+								"key": "X-RAM-IdentityStrength",
+								"value": "1",
 								"description": ""
 							},
 							{
