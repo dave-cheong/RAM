@@ -9,25 +9,27 @@
             <h4>Access levels:</h4>
         </div>
         <div class="col-md-12">
-            <p>
-                Full access: The agency service allows the representative access to all transactions without further
-                steps.
-                For more information see the detail for each service provided in the accordians below.
-            </p>
+            <blockquote>
+                <p>
+                    Full access: The agency service allows the representative access to all transactions without further
+                    steps. For more information see the detail for each service provided in the accordians below.
+                </p>
+            </blockquote>
         </div>
         <div class="col-md-12">
             <div class="pull-right">
-                <h4>Individually set the below online government services</h4>
+                <h4 *ngIf="data.customisationEnabled">Individually set the below online government services</h4>
+                <h4 *ngIf="!data.customisationEnabled">Full Access is granted for all online government services</h4>
             </div>
         </div>
         <div class="col-md-12">
             <table class="table checkbox-table">
                 <tbody>
                     <tr *ngFor="let permissionAttribute of permissionAttributes">
-                        <td class="col-md-8">
+                        <td class="col-md-8 vmiddle">
                             {{permissionAttribute.attributeName.value.shortDecodeText}}
                         </td>
-                        <td class="col-md-4">
+                        <td class="col-md-4 vmiddle">
                             <div class="pull-right">
                                 <button class="btn"
                                         [class.btn-secondary]="permissionAttribute.value[0] === accessLevels.full"

@@ -168,6 +168,16 @@ div.navbar-header {
   padding: 15px;
 }
 
+.table td.vmiddle {
+  vertical-align: middle;
+}
+
+blockquote {
+  background: $well-bg;
+  border-left-color: $brand-primary;
+  font-size: 15px;
+}
+
 select, select.form-control {
   background: url('../images/select-arrow.png') no-repeat 100% 50% #fff;
   border: 1px solid $input-border;
