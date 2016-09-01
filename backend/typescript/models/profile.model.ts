@@ -90,7 +90,7 @@ const ProfileSchema = RAMSchema({
 export interface IProfileInstanceContract extends IRAMObjectContract {
     provider: string;
     name: IName;
-    sharedSecrets: [ISharedSecret];
+    sharedSecrets: ISharedSecret[];
     providerEnum(): ProfileProvider;
     getSharedSecret(code: string): ISharedSecret;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
@@ -101,7 +101,7 @@ class ProfileInstanceContractImpl extends RAMObjectContractImpl implements IProf
 
     public provider: string;
     public name: IName;
-    public sharedSecrets: [ISharedSecret];
+    public sharedSecrets: ISharedSecret[];
 
     public providerEnum(): ProfileProvider {
         return ProfileProvider.valueOf(this.provider) as ProfileProvider;

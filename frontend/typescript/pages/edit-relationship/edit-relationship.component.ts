@@ -397,10 +397,17 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.relationshipComponentData.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
             // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
             this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage === null : true;
+
             this.permissionAttributeUsages = this.permissionAttributeUsagesByType[selectedRelationshipTypeRef.value.code];
 
+            // sort usages
+            let orderedUsages = this.permissionAttributeUsages.slice();
+            orderedUsages.sort(function(a, b) {
+                return a.sortOrder - b.sortOrder;
+            });
+
             this.relationshipComponentData.permissionAttributes = [];
-            for (let usage of this.permissionAttributeUsages) {
+            for (let usage of orderedUsages) {
                 let relationshipAttribute = new RelationshipAttribute(usage.defaultValue ? [usage.defaultValue] : [], usage.attributeNameDef);
                 this.relationshipComponentData.permissionAttributes.push(relationshipAttribute);
             }
