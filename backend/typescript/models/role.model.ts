@@ -215,7 +215,7 @@ class Role extends RAMObjectContractImpl implements IRole {
             if (attribute.attributeName.classifier === roleAttributeNameClassifier && attribute.attributeName.code === roleAttributeNameCode) {
                 removeFromArray(this.attributes, {_id: attribute.id});
                 this.save();
-                attribute.remove();
+                attribute.delete();
             }
         });
         return this.save();

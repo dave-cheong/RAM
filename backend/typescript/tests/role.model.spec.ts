@@ -67,7 +67,7 @@ describe('RAM Role', () => {
                     roleAttribute1 = await RoleAttributeModel.create({
                         value: ['true'],
                         attributeName: Seeder.usi_roleAttributeName
-                    });
+                    } as IRoleAttribute);
 
                     role1 = await RoleModel.add(
                         roleTypeOsp,

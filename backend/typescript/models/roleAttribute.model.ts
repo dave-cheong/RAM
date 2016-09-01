@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {IRAMObject, RAMSchema, Model} from './base';
+import {IRAMObject, RAMSchema, Model, RAMObjectContractImpl, IRAMObjectContract} from './base';
 import {RoleModel} from './role.model';
 import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.model';
 import {
@@ -14,15 +14,9 @@ const _RoleModel = RoleModel;
 /* tslint:disable:no-unused-variable */
 const _RoleAttributeNameModel = RoleAttributeNameModel;
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface IRoleAttribute extends IRAMObject, IRoleAttributeInstanceContract {
-}
-
-export interface IRoleAttributeModel extends mongoose.Model<IRoleAttribute>, IRoleAttributeStaticContract {
-}
-
-export let RoleAttributeModel: IRoleAttributeModel;
+let RoleAttributeMongooseModel: mongoose.Model<IRoleAttributeDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -43,14 +37,14 @@ const RoleAttributeSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-interface IRoleAttributeInstanceContract {
+export interface IRoleAttribute extends IRAMObjectContract {
     value: string[];
     attributeName: IRoleAttributeName;
     toDTO(): Promise<DTO>;
+    delete(callback?: (err: any) => void): Promise<void>;
 }
 
-class RoleAttributeInstanceContractImpl implements IRoleAttributeInstanceContract {
-
+class RoleAttribute extends RAMObjectContractImpl implements IRoleAttribute {
     public value: string[];
     public attributeName: IRoleAttributeName;
 
@@ -61,21 +55,33 @@ class RoleAttributeInstanceContractImpl implements IRoleAttributeInstanceContrac
         );
     }
 
+    public delete(callback?: (err: any) => void): Promise<void> {
+        return RoleAttributeMongooseModel.remove(this).exec();
+    }
+
 }
 
+interface IRoleAttributeDocument extends IRoleAttribute, mongoose.Document {
+}
 // static .............................................................................................................
 
-interface IRoleAttributeStaticContract {
-}
+export class RoleAttributeModel {
+    public static async create(source: any): Promise<IRoleAttribute> {
+        return RoleAttributeMongooseModel.create(source);
+    }
 
-class RoleAttributeStaticContractImpl implements IRoleAttributeStaticContract {
+    public static async findById(id: string): Promise<IRoleAttribute> {
+        return RoleAttributeMongooseModel
+            .findOne({
+                _id: id
+            }).exec();
+    }
 }
 
 // concrete model .....................................................................................................
 
-RoleAttributeModel = Model(
+RoleAttributeMongooseModel = Model(
     'RoleAttribute',
     RoleAttributeSchema,
-    RoleAttributeInstanceContractImpl,
-    RoleAttributeStaticContractImpl
-) as IRoleAttributeModel;
+    RoleAttribute
+) as mongoose.Model<IRoleAttributeDocument>;
