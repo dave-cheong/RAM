@@ -108,6 +108,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         authorisationPermissions : {
             value: '',
             customisationEnabled: false,
+            accessLevelsDescription: null,
             enabled: false
         },
         declaration: {
