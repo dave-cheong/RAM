@@ -44,16 +44,16 @@ describe('RAM Role', () => {
                     partyNickName1 = await NameModel.create({
                         givenName: 'Jane',
                         familyName: 'Subject 1'
-                    } as IName);
+                    });
 
                     partyProfile1 = await ProfileModel.create({
                         provider: ProfileProvider.MyGov.code,
                         name: partyNickName1
-                    } as IProfile);
+                    });
 
                     party1 = await PartyModel.create({
                         partyType: PartyType.Individual.code
-                    } as IParty);
+                    });
 
                     partyIdentity1 = await IdentityModel.create({
                         rawIdValue: 'uuid_1',
@@ -62,12 +62,12 @@ describe('RAM Role', () => {
                         linkIdScheme: IdentityLinkIdScheme.MyGov.code,
                         profile: partyProfile1,
                         party: party1
-                    } as IIdentity);
+                    });
 
                     roleAttribute1 = await RoleAttributeModel.create({
                         value: ['true'],
                         attributeName: Seeder.usi_roleAttributeName
-                    } as IRoleAttribute);
+                    });
 
                     role1 = await RoleModel.add(
                         roleTypeOsp,
@@ -120,7 +120,7 @@ describe('RAM Role', () => {
                 startTimestamp: new Date(),
                 endTimestamp: new Date(),
                 status: RoleStatus.Active.code
-            } as IRole);
+            });
 
             expect(instance).not.toBeNull();
             expect(instance._id).not.toBeNull();
