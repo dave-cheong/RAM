@@ -25,7 +25,6 @@ import {
 } from '../models/relationship.model';
 import {IRelationshipType} from '../models/relationshipType.model';
 import {context} from '../providers/context.provider';
-import {Translator} from "../ram/translator";
 
 /* tslint:disable:max-func-body-length */
 describe('RAM Relationship', () => {
@@ -47,8 +46,6 @@ describe('RAM Relationship', () => {
     let relationship1:IRelationship;
 
     beforeEach((done) => {
-        Translator.initialise();
-
 
         Seeder.verbose(false);
 

@@ -1,4 +1,5 @@
 import * as api from './ram/ServerAPI';
+import {Translator} from './ram/translator';
 
 // load environmental config ..........................................................................................
 
@@ -11,3 +12,6 @@ if (process.env.RAM_CONF === void 0 ||
 
 /* tslint:disable:no-var-requires */
 export const conf: api.IRamConf = require(`${process.env.RAM_CONF}`);
+
+// initialise the translation/localisation service
+Translator.initialise();

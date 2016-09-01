@@ -80,8 +80,6 @@ server.use(methodOverride());
 server.use(express.static(path.join(__dirname, conf.frontendDir)));
 server.use(express.static('swagger'));
 
-Translator.initialise();
-
 // server.use(continueOnlyIfJWTisValid(conf.jwtSecretKey,true));
 
 // setup security .....................................................................................................
