@@ -865,9 +865,9 @@ definitions:
         type: boolean
         description: Agency User indicator for this principal
       agencyUser:
-        $ref: AgencyUser
+        $ref: '#/definitions/AgencyUser'
       identity:
-        $ref: Identity
+        $ref: '#/definitions/Identity'
 
   # Profile ...........................................................................................................
 
