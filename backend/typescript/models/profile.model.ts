@@ -140,7 +140,7 @@ interface IProfileDocument extends IProfile, mongoose.Document {
 
 export class ProfileModel {
 
-    public static async create(source: IProfile): Promise<IProfile> {
+    public static async create(source: any): Promise<IProfile> {
         return ProfileMongooseModel.create(source);
     }
 

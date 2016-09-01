@@ -35,7 +35,7 @@ class SharedSecretType extends CodeDecodeContractImpl implements ISharedSecretTy
 
 export class SharedSecretTypeModel {
 
-    public static async create(source: ISharedSecretType): Promise<ISharedSecretType> {
+    public static async create(source: any): Promise<ISharedSecretType> {
         return SharedSecretTypeMongooseModel.create(source);
     }
 

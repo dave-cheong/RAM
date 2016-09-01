@@ -15,7 +15,7 @@ describe('RAM Name', () => {
         try {
             const name = await NameModel.create({
                 givenName: 'John'
-            } as IName);
+            });
             expect(name._displayName).toBe('John');
             done();
         } catch (e) {
@@ -29,7 +29,7 @@ describe('RAM Name', () => {
             const name = await NameModel.create({
                 givenName: 'John',
                 familyName: 'Smith'
-            } as IName);
+            });
             expect(name._displayName).toBe('John Smith');
             done();
         } catch (e) {
@@ -42,7 +42,7 @@ describe('RAM Name', () => {
         try {
             const name = await NameModel.create({
                 unstructuredName: 'John\'s Catering Pty Ltd'
-            } as IName);
+            });
             expect(name._displayName).toBe('John\'s Catering Pty Ltd');
             done();
         } catch (e) {
@@ -54,7 +54,7 @@ describe('RAM Name', () => {
     it('fails insert with empty fields', async (done) => {
         try {
             await NameModel.create({
-            } as IName);
+            });
             fail('should not have inserted with empty fields');
             done();
         } catch (e) {
@@ -70,7 +70,7 @@ describe('RAM Name', () => {
             await NameModel.create({
                 givenName: 'John',
                 unstructuredName: 'John\'s Catering Pty Ltd'
-            } as IName);
+            });
             fail('should not have inserted with empty fields');
             done();
         } catch (e) {
@@ -84,7 +84,7 @@ describe('RAM Name', () => {
             await NameModel.create({
                 familyName: 'Smith',
                 unstructuredName: 'John\'s Catering Pty Ltd'
-            } as IName);
+            });
             fail('should not have inserted with empty fields');
             done();
         } catch (e) {
@@ -99,7 +99,7 @@ describe('RAM Name', () => {
                 givenName: 'John',
                 familyName: 'Smith',
                 unstructuredName: 'John\'s Catering Pty Ltd'
-            } as IName);
+            });
             fail('should not have inserted with empty fields');
             done();
         } catch (e) {

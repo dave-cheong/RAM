@@ -388,7 +388,7 @@ interface IPartyDocument extends IParty, mongoose.Document {
 
 export class PartyModel {
 
-    public static async create(source: IParty): Promise<IParty> {
+    public static async create(source: any): Promise<IParty> {
         return PartyMongooseModel.create(source);
     }
 

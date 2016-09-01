@@ -64,7 +64,7 @@ interface ISharedSecretDocument extends ISharedSecret, mongoose.Document {
 
 export class SharedSecretModel {
 
-    public static async create(source: ISharedSecret): Promise<ISharedSecret> {
+    public static async create(source: any): Promise<ISharedSecret> {
         return SharedSecretMongooseModel.create(source);
     }
 

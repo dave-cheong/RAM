@@ -95,7 +95,7 @@ interface INameDocument extends IName, mongoose.Document {
 
 export class NameModel {
 
-    public static async create(source: IName): Promise<IName> {
+    public static async create(source: any): Promise<IName> {
         return NameMongooseModel.create(source);
     }
 
