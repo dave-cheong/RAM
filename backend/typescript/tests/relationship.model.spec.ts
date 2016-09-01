@@ -289,7 +289,7 @@ describe('RAM Relationship', () => {
             expect(preClaimedDelegateIdentity.invitationCodeStatusEnum()).toBe(IdentityInvitationCodeStatus.Pending);
 
             // perform claim
-            await relationshipToClaim.claimPendingInvitation(claimingDelegateIdentity1);
+            await relationshipToClaim.claimPendingInvitation(claimingDelegateIdentity1, invitationCode);
             const retrievedClaimedInstance = await RelationshipModel.findByIdentifier(relationshipToClaim.id);
 
             // delegate should be updated to claimingDelegateIdentity1
@@ -335,7 +335,7 @@ describe('RAM Relationship', () => {
                 party: delegateParty1
             });
 
-            await relationshipToAccept.claimPendingInvitation(acceptingDelegateIdentity1);
+            await relationshipToAccept.claimPendingInvitation(acceptingDelegateIdentity1, invitationCodeIdentity.rawIdValue);
             const acceptedInstance = await relationshipToAccept.acceptPendingInvitation(acceptingDelegateIdentity1);
             const retrievedAcceptedInstance = await RelationshipModel.findByIdentifier(relationshipToAccept.id);
 
@@ -424,7 +424,7 @@ describe('RAM Relationship', () => {
                 party: delegateParty1
             });
 
-            await relationshipToReject.claimPendingInvitation(acceptingDelegateIdentity1);
+            await relationshipToReject.claimPendingInvitation(acceptingDelegateIdentity1, invitationCodeIdentity.rawIdValue);
 
             await relationshipToReject.rejectPendingInvitation(acceptingDelegateIdentity1);
 
