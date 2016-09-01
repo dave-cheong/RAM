@@ -50,10 +50,10 @@ export class Builder<T> {
                 let value = sourceObject[key];
                 if (value !== undefined && value !== null) {
                     if (key === 'timestamp' || key.indexOf('Timestamp') !== -1 || key.endsWith('At')) {
-                        if (value) {
-                            targetObject[key] = new Date(value);
-                        }
-                    } else {
+                        // date
+                        targetObject[key] = new Date(value);
+                    } else if (typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean') {
+                        // number, string, boolean
                         targetObject[key] = value;
                     }
                 }
