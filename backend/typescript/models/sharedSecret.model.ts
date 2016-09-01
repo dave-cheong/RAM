@@ -8,15 +8,9 @@ import {ISharedSecretType, SharedSecretTypeModel} from './sharedSecretType.model
 /* tslint:disable:no-unused-variable */
 const _SharedSecretTypeModel = SharedSecretTypeModel;
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface ISharedSecret extends IRAMObject, ISharedSecretInstanceContract {
-}
-
-export interface ISharedSecretModel extends mongoose.Model<ISharedSecret>, ISharedSecretStaticContract {
-}
-
-export let SharedSecretModel: ISharedSecretModel;
+let SharedSecretMongooseModel: mongoose.Model<ISharedSecretDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -43,13 +37,13 @@ const SharedSecretSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-interface ISharedSecretInstanceContract extends IRAMObjectContract {
+export interface ISharedSecret extends IRAMObjectContract {
     value: string;
     sharedSecretType: ISharedSecretType;
     matchesValue(candidateValue: string): boolean;
 }
 
-class SharedSecretInstanceContractImpl extends RAMObjectContractImpl implements ISharedSecretInstanceContract {
+class SharedSecret extends RAMObjectContractImpl implements ISharedSecret {
 
     public value: string;
     public sharedSecretType: ISharedSecretType;
@@ -63,19 +57,29 @@ class SharedSecretInstanceContractImpl extends RAMObjectContractImpl implements 
 
 }
 
-// static .............................................................................................................
+interface ISharedSecretDocument extends ISharedSecret, mongoose.Document {
 
-interface ISharedSecretStaticContract {
 }
 
-class SharedSecretStaticContractImpl implements ISharedSecretStaticContract {
+// static .............................................................................................................
+
+export class SharedSecretModel {
+
+    public static async add(value: string, sharedSecretType: ISharedSecretType): Promise<ISharedSecret> {
+        let document = await SharedSecretMongooseModel.create({
+            value: value,
+            sharedSecretType: sharedSecretType
+        });
+        document.populate(null);
+        return document;
+    }
+
 }
 
 // concrete model .....................................................................................................
 
-SharedSecretModel = Model(
+SharedSecretMongooseModel = Model(
     'SharedSecret',
     SharedSecretSchema,
-    SharedSecretInstanceContractImpl,
-    SharedSecretStaticContractImpl
-) as ISharedSecretModel;
+    SharedSecret
+) as mongoose.Model<ISharedSecretDocument>;

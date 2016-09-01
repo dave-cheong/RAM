@@ -78,6 +78,7 @@ export class RAMEnum {
  * Most objects in RAM extend off the RAMObject
  */
 //noinspection ReservedWordAsName
+// todo stop extending from Document
 export interface IRAMObject extends mongoose.Document {
     createdAt: Date;
     updatedAt: Date;
@@ -88,6 +89,7 @@ export interface IRAMObject extends mongoose.Document {
     delete(): void;
 }
 
+// todo deprecated
 export interface IRAMObjectContract {
     _id: any;
     createdAt: Date;
@@ -196,7 +198,7 @@ export const CodeDecodeSchema = (schema: Object) => {
     return result;
 };
 
-export const Model = (name: string, schema: mongoose.Schema, instanceContract: any, staticContract: any) => {
+export const Model = (name: string, schema: mongoose.Schema, instanceContract: any, staticContract?: any) => {
 
     // console.log('model: ', name);
 
@@ -211,14 +213,16 @@ export const Model = (name: string, schema: mongoose.Schema, instanceContract: a
     });
 
     // loop through all immediately declared functions and add to the schema
-    Object.getOwnPropertyNames(staticContract.prototype).forEach((key, index) => {
-        // console.log('  static: ' + key);
-        let value = staticContract.prototype[key];
-        if (key !== 'constructor') {
-            // console.log(key, value);
-            schema.static(key, value);
-        }
-    });
+    if (staticContract) {
+        Object.getOwnPropertyNames(staticContract.prototype).forEach((key, index) => {
+            // console.log('  static: ' + key);
+            let value = staticContract.prototype[key];
+            if (key !== 'constructor') {
+                // console.log(key, value);
+                schema.static(key, value);
+            }
+        });
+    }
 
     return mongoose.model(name, schema);
 

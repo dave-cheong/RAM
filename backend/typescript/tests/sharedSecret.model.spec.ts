@@ -69,10 +69,10 @@ describe('RAM Shared Secret', () => {
                 domain: 'domain'
             });
 
-            sharedSecretNoEndDate = await SharedSecretModel.create({
-                value: sharedSecretValue1,
-                sharedSecretType: sharedSecretTypeNoEndDate
-            });
+            sharedSecretNoEndDate = await SharedSecretModel.add(
+                sharedSecretValue1,
+                sharedSecretTypeNoEndDate
+            );
 
             name1 = await NameModel.create({
                 givenName: 'John',
@@ -173,6 +173,7 @@ describe('RAM Shared Secret', () => {
     it('does not match null value', async (done) => {
         try {
             expect(sharedSecretNoEndDate.matchesValue(null)).toBe(false);
+            console.log('date =', sharedSecretNoEndDate.createdAt);
             done();
         } catch (e) {
             fail('Because ' + e);
