@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {IRAMObject, RAMSchema, Model, RAMObjectContractImpl, IRAMObjectContract} from './base';
+import {RAMSchema, Model, RAMObjectContractImpl, IRAMObjectContract} from './base';
 import {RoleModel} from './role.model';
 import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.model';
 import {

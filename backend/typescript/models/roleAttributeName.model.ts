@@ -1,17 +1,11 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, ICodeDecode, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
+import {RAMEnum, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
 import {Url} from './url';
 import {HrefValue, RoleAttributeName as DTO} from '../../../commons/RamAPI';
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface IRoleAttributeName extends ICodeDecode, IRoleAttributeNameInstanceContract {
-}
-
-export interface IRoleAttributeNameModel extends mongoose.Model<IRoleAttributeName>, IRoleAttributeNameStaticContract {
-}
-
-export let RoleAttributeNameModel: IRoleAttributeNameModel;
+export let RoleAttributeNameMongooseModel: mongoose.Model<IRoleAttributeNameDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -91,7 +85,8 @@ const RoleAttributeNameSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-export interface IRoleAttributeNameInstanceContract extends ICodeDecodeContract {
+export interface IRoleAttributeName extends ICodeDecodeContract {
+    id: string;
     domain: string;
     classifier: string;
     category?: string;
@@ -103,8 +98,8 @@ export interface IRoleAttributeNameInstanceContract extends ICodeDecodeContract 
     toDTO(): Promise<DTO>;
 }
 
-class RoleAttributeNameInstanceContractImpl extends CodeDecodeContractImpl implements IRoleAttributeNameInstanceContract {
-
+class RoleAttributeName extends CodeDecodeContractImpl implements IRoleAttributeName {
+    public id: string;
     public domain: string;
     public classifier: string;
     public category: string;
@@ -144,27 +139,27 @@ class RoleAttributeNameInstanceContractImpl extends CodeDecodeContractImpl imple
 
 }
 
-// static .............................................................................................................
-
-interface IRoleAttributeNameStaticContract {
-    findByCodeIgnoringDateRange(code: string): Promise<IRoleAttributeName>;
-    findByCodeInDateRange(code: string, date: Date): Promise<IRoleAttributeName>;
-    listIgnoringDateRange(): Promise<IRoleAttributeName[]>;
-    listInDateRange(date: Date): Promise<IRoleAttributeName[]>;
+interface IRoleAttributeNameDocument extends IRoleAttributeName, mongoose.Document {
 }
 
-class RoleAttributeNameStaticContractImpl implements IRoleAttributeNameStaticContract {
+// static .............................................................................................................
 
-    public findByCodeIgnoringDateRange(code: string): Promise<IRoleAttributeName> {
-        return RoleAttributeNameModel
+export class RoleAttributeNameModel {
+
+    public static async create(source: any): Promise<IRoleAttributeName> {
+        return RoleAttributeNameMongooseModel.create(source);
+    }
+
+    public static findByCodeIgnoringDateRange(code: string): Promise<IRoleAttributeName> {
+        return RoleAttributeNameMongooseModel
             .findOne({
                 code: code
             })
             .exec();
     }
 
-    public findByCodeInDateRange(code: string, date: Date): Promise<IRoleAttributeName> {
-        return RoleAttributeNameModel
+    public static findByCodeInDateRange(code: string, date: Date): Promise<IRoleAttributeName> {
+        return RoleAttributeNameMongooseModel
             .findOne({
                 code: code,
                 startDate: {$lte: date},
@@ -173,15 +168,15 @@ class RoleAttributeNameStaticContractImpl implements IRoleAttributeNameStaticCon
             .exec();
     }
 
-    public listIgnoringDateRange(): Promise<IRoleAttributeName[]> {
-        return RoleAttributeNameModel
+    public static listIgnoringDateRange(): Promise<IRoleAttributeName[]> {
+        return RoleAttributeNameMongooseModel
             .find({})
             .sort({name: 1})
             .exec();
     }
 
-    public listInDateRange(date: Date): Promise<IRoleAttributeName[]> {
-        return RoleAttributeNameModel
+    public static listInDateRange(date: Date): Promise<IRoleAttributeName[]> {
+        return RoleAttributeNameMongooseModel
             .find({
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
@@ -194,9 +189,8 @@ class RoleAttributeNameStaticContractImpl implements IRoleAttributeNameStaticCon
 
 // concrete model .....................................................................................................
 
-RoleAttributeNameModel = Model(
+RoleAttributeNameMongooseModel = Model(
     'RoleAttributeName',
     RoleAttributeNameSchema,
-    RoleAttributeNameInstanceContractImpl,
-    RoleAttributeNameStaticContractImpl
-) as IRoleAttributeNameModel;
+    RoleAttributeName
+) as mongoose.Model<IRoleAttributeNameDocument>;
