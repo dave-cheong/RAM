@@ -185,7 +185,7 @@ describe('RAM Role', () => {
             await role.deleteAttribute(roleAttribute.attributeName.code, roleAttribute.attributeName.classifier);
 
             // verify
-            const actualRole = await RoleModel.findById(role._id).exec();
+            const actualRole = await RoleModel.findByIdentifier(role._id);
             console.log('actualRole = ', actualRole);
             expect(actualRole.attributes.length).toBe(0);
 

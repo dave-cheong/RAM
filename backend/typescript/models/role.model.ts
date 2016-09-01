@@ -16,15 +16,9 @@ import {logger} from '../logger';
 
 const MAX_PAGE_SIZE = 10;
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface IRole extends IRAMObject, IRoleInstanceContract {
-}
-
-export interface IRoleModel extends mongoose.Model<IRole>, IRoleStaticContract {
-}
-
-export let RoleModel: IRoleModel;
+export let RoleMongooseModel: mongoose.Model<IRoleDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -138,7 +132,7 @@ RoleSchema.pre('validate', function (next: () => void) {
 
 // instance ...........................................................................................................
 
-export interface IRoleInstanceContract extends IRAMObjectContract {
+export interface IRole extends IRAMObjectContract {
     roleType: IRoleType;
     party: IParty;
     startTimestamp: Date;
@@ -158,7 +152,7 @@ export interface IRoleInstanceContract extends IRAMObjectContract {
     toDTO(): Promise<DTO>;
 }
 
-class RoleInstanceContractImpl extends RAMObjectContractImpl implements IRoleInstanceContract {
+class Role extends RAMObjectContractImpl implements IRole {
     public roleType: IRoleType;
     public party: IParty;
     public startTimestamp: Date;
@@ -203,7 +197,7 @@ class RoleInstanceContractImpl extends RAMObjectContractImpl implements IRoleIns
         }
     }
 
-    public async saveAttributes(): Promise<IRoleInstanceContract> {
+    public async saveAttributes(): Promise<IRole> {
         return this.save();
     }
 
@@ -216,7 +210,7 @@ class RoleInstanceContractImpl extends RAMObjectContractImpl implements IRoleIns
         }
     }
 
-    public async deleteAttribute(roleAttributeNameCode: string, roleAttributeNameClassifier: string): Promise<IRoleInstanceContract> {
+    public async deleteAttribute(roleAttributeNameCode: string, roleAttributeNameClassifier: string): Promise<IRole> {
         this.attributes.forEach((attribute: IRoleAttribute) => {
             if (attribute.attributeName.classifier === roleAttributeNameClassifier && attribute.attributeName.code === roleAttributeNameCode) {
                 removeFromArray(this.attributes, {_id: attribute.id});
@@ -270,37 +264,24 @@ class RoleInstanceContractImpl extends RAMObjectContractImpl implements IRoleIns
     }
 }
 
-// static .............................................................................................................
-
-interface IRoleStaticContract {
-    add: (roleType: IRoleType,
-          party: IParty,
-          startTimestamp: Date,
-          endTimestamp: Date,
-          roleStatus: RoleStatus,
-          attributes: IRoleAttribute[]) => Promise<IRole>;
-    findByIdentifier: (id: string) => Promise<IRole>;
-    findByRoleTypeAndParty: (roleType: IRoleType, party: IParty) => Promise<IRole>;
-    searchByIdentity: (identityIdValue: string,
-                       roleType: string,
-                       status: string,
-                       inDateRange: boolean,
-                       page: number,
-                       pageSize: number) => Promise<SearchResult<IRole>>;
-    findActiveByIdentityInDateRange: (identityIdValue: string,
-                                      roleType: string,
-                                      date: Date) => Promise<IRole>;
-
+interface IRoleDocument extends IRole, mongoose.Document {
 }
 
-class RoleStaticContractImpl implements IRoleStaticContract {
-    public async add(roleType: IRoleType,
+// static .............................................................................................................
+
+export class RoleModel {
+
+    public static async create(source: any): Promise<IRole> {
+        return RoleMongooseModel.create(source);
+    }
+
+    public static async add(roleType: IRoleType,
                      party: IParty,
                      startTimestamp: Date,
                      endTimestamp: Date,
                      roleStatus: RoleStatus,
                      attributes: IRoleAttribute[]): Promise<IRole> {
-        return await RoleModel.create({
+        return await RoleMongooseModel.create({
             roleType: roleType,
             party: party,
             startTimestamp: startTimestamp,
@@ -310,9 +291,9 @@ class RoleStaticContractImpl implements IRoleStaticContract {
         });
     }
 
-    public findByIdentifier(id: string): Promise<IRole> {
+    public static findByIdentifier(id: string): Promise<IRole> {
         // TODO migrate from _id to another id
-        return RoleModel
+        return RoleMongooseModel
             .findOne({
                 _id: id
             })
@@ -324,8 +305,8 @@ class RoleStaticContractImpl implements IRoleStaticContract {
             .exec();
     }
 
-    public findByRoleTypeAndParty(roleType: IRoleType, party: IParty): Promise<IRole> {
-        return RoleModel
+    public static findByRoleTypeAndParty(roleType: IRoleType, party: IParty): Promise<IRole> {
+        return RoleMongooseModel
             .findOne({
                 roleType: roleType,
                 party: party
@@ -338,7 +319,7 @@ class RoleStaticContractImpl implements IRoleStaticContract {
             .exec();
     }
 
-    public searchByIdentity(identityIdValue: string,
+    public static searchByIdentity(identityIdValue: string,
                             roleType: string,
                             status: string,
                             inDateRange: boolean,
@@ -365,10 +346,10 @@ class RoleStaticContractImpl implements IRoleStaticContract {
                 }
                 const where: {[key: string]: Object} = {};
                 where['$and'] = mainAnd;
-                const count = await RoleModel
+                const count = await RoleMongooseModel
                     .count(where)
                     .exec();
-                const list = await RoleModel
+                const list = await RoleMongooseModel
                     .find(where)
                     .deepPopulate([
                         'roleType',
@@ -385,11 +366,11 @@ class RoleStaticContractImpl implements IRoleStaticContract {
         });
     }
 
-    public async findActiveByIdentityInDateRange(identityIdValue: string,
+    public static async findActiveByIdentityInDateRange(identityIdValue: string,
                                                  roleType: string,
                                                  date: Date): Promise<IRole> {
         const party = await PartyModel.findByIdentityIdValue(identityIdValue);
-        return RoleModel
+        return RoleMongooseModel
             .findOne({
                 party: party,
                 status: RoleStatus.Active.code,
@@ -408,9 +389,8 @@ class RoleStaticContractImpl implements IRoleStaticContract {
 
 // concrete model .....................................................................................................
 
-RoleModel = Model(
+RoleMongooseModel = Model(
     'Role',
     RoleSchema,
-    RoleInstanceContractImpl,
-    RoleStaticContractImpl
-) as IRoleModel;
+    Role
+) as mongoose.Model<IRoleDocument>;
