@@ -1,17 +1,11 @@
 import * as mongoose from 'mongoose';
-import {ICodeDecode, CodeDecodeSchema, Model} from './base';
+import {CodeDecodeSchema, Model, ICodeDecodeContract, CodeDecodeContractImpl} from './base';
+
+// mongoose ...........................................................................................................
+
+let LegislativeProgramMongooseModel: mongoose.Model<ILegislativeProgramDocument>;
 
 // enums, utilities, helpers ..........................................................................................
-
-// exports ............................................................................................................
-
-export interface ILegislativeProgram extends ICodeDecode, ILegislativeProgramInstanceContract {
-}
-
-export interface ILegislativeProgramModel extends mongoose.Model<ILegislativeProgram>, ILegislativeProgramStaticContract {
-}
-
-export let LegislativeProgramModel: ILegislativeProgramModel;
 
 // schema .............................................................................................................
 
@@ -19,33 +13,33 @@ const LegislativeProgramSchema = CodeDecodeSchema({});
 
 // instance ...........................................................................................................
 
-export interface ILegislativeProgramInstanceContract {
+export interface ILegislativeProgram extends ICodeDecodeContract {
 }
 
-class LegislativeProgramInstanceContractImpl implements ILegislativeProgramInstanceContract {
+class LegislativeProgram extends CodeDecodeContractImpl implements ILegislativeProgram {
+}
+
+interface ILegislativeProgramDocument extends ILegislativeProgram, mongoose.Document {
 }
 
 // static .............................................................................................................
 
-interface ILegislativeProgramStaticContract {
-    findByCodeIgnoringDateRange(code: String): Promise<ILegislativeProgram>;
-    findByCodeInDateRange(code: String, date: Date): Promise<ILegislativeProgram>;
-    listIgnoringDateRange(): Promise<ILegislativeProgram[]>;
-    listInDateRange(date: Date): Promise<ILegislativeProgram[]>;
-}
+export class LegislativeProgramModel {
 
-class LegislativeProgramStaticContractImpl implements ILegislativeProgramStaticContract {
+    public static async create(source: any): Promise<ILegislativeProgram> {
+        return LegislativeProgramMongooseModel.create(source);
+    }
 
-    public findByCodeIgnoringDateRange(code: string): Promise<ILegislativeProgram> {
-        return LegislativeProgramModel
+    public static findByCodeIgnoringDateRange(code: string): Promise<ILegislativeProgram> {
+        return LegislativeProgramMongooseModel
             .findOne({
                 code: code
             })
             .exec();
     }
 
-    public findByCodeInDateRange(code: string, date: Date): Promise<ILegislativeProgram> {
-        return LegislativeProgramModel
+    public static findByCodeInDateRange(code: string, date: Date): Promise<ILegislativeProgram> {
+        return LegislativeProgramMongooseModel
             .findOne({
                 code: code,
                 startDate: {$lte: date},
@@ -54,15 +48,15 @@ class LegislativeProgramStaticContractImpl implements ILegislativeProgramStaticC
             .exec();
     }
 
-    public listIgnoringDateRange(): Promise<ILegislativeProgram[]> {
-        return LegislativeProgramModel
+    public static listIgnoringDateRange(): Promise<ILegislativeProgram[]> {
+        return LegislativeProgramMongooseModel
             .find({})
             .sort({shortDecodeText: 1})
             .exec();
     }
 
-    public listInDateRange(date: Date): Promise<ILegislativeProgram[]> {
-        return LegislativeProgramModel
+    public static listInDateRange(date: Date): Promise<ILegislativeProgram[]> {
+        return LegislativeProgramMongooseModel
             .find({
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
@@ -75,9 +69,8 @@ class LegislativeProgramStaticContractImpl implements ILegislativeProgramStaticC
 
 // concrete model .....................................................................................................
 
-LegislativeProgramModel = Model(
+LegislativeProgramMongooseModel = Model(
     'LegislativeProgram',
     LegislativeProgramSchema,
-    LegislativeProgramInstanceContractImpl,
-    LegislativeProgramStaticContractImpl
-) as ILegislativeProgramModel;
+    LegislativeProgram
+) as mongoose.Model<ILegislativeProgramDocument>;
