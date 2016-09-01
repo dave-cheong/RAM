@@ -427,6 +427,10 @@ export class PartyModel {
         return false;
     }
 
+    public static populate(listOfIds: Object[], options: {path: string}) {
+        return PartyMongooseModel.populate(listOfIds, options);
+    }
+
 }
 
 // concrete model .....................................................................................................

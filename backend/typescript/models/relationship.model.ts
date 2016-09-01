@@ -544,7 +544,7 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
 interface IRelationshipStaticContract {
     addOrModify(identifier: string, dto: DTO): Promise<IRelationship>;
     add(relationshipType: IRelationshipType,
-        subject: IPartyInstanceContract,
+        subject: IParty,
         subjectNickName: IName,
         delegate: IParty,
         delegateNickName: IName,
