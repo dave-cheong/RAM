@@ -7,7 +7,6 @@ import * as methodOverride from 'method-override';
 import * as mongoose from 'mongoose';
 import {conf} from './bootstrap';
 import {logStream, logger} from './logger';
-// import {continueOnlyIfJWTisValid} from './security'
 import expressValidator = require('express-validator');
 import {sendNotFoundError} from './controllers/helpers';
 
@@ -34,12 +33,9 @@ import {AuskeyController} from './controllers/auskey.controller';
 import {TransactController} from './controllers/transact.controller';
 
 import {IdentityModel} from './models/identity.model';
-import {PartyModel} from './models/party.model';
-import {ProfileModel} from './models/profile.model';
 import {RelationshipModel} from './models/relationship.model';
 import {RelationshipTypeModel} from './models/relationshipType.model';
 import {RelationshipAttributeNameModel} from './models/relationshipAttributeName.model';
-import {RoleModel} from './models/role.model';
 import {RoleTypeModel} from './models/roleType.model';
 import {AUSkeyProvider} from './providers/auskey.provider';
 import {context} from './providers/context.provider';
@@ -78,8 +74,6 @@ server.use(expressValidator());
 server.use(methodOverride());
 server.use(express.static(path.join(__dirname, conf.frontendDir)));
 server.use(express.static('swagger'));
-
-// server.use(continueOnlyIfJWTisValid(conf.jwtSecretKey,true));
 
 // setup security .....................................................................................................
 

@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model, removeFromArray, IRAMObject} from './base';
+import {RAMEnum, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model, removeFromArray} from './base';
 import {Url} from './url';
 import {IParty, PartyModel} from './party.model';
 import {IRoleType} from './roleType.model';

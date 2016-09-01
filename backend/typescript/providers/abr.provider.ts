@@ -79,15 +79,21 @@ const extractName = (item:any) =>
 const buildOrganisationEntry = (item:any):ABRentry => {
     //console.log(JSON.stringify(item, null, 2));
     const addressRecord = address(item.mainBusinessPhysicalAddress);
+    // return {
+    //     abn:        item.ABN[0].identifierValue[0],
+    //     name:       extractName(item),
+    //     state:      addressRecord.stateCode[0],
+    //     postcode:   addressRecord.postcode[0],
+    //     type:       item.entityType[0].entityDescription[0],
+    //     status:     item.entityStatus[0].entityStatusCode[0],
+    //     from:       item.entityStatus[0].effectiveFrom[0],
+    //     to:         item.entityStatus[0].effectiveTo[0]
+    // };
     return {
         abn:        item.ABN[0].identifierValue[0],
         name:       extractName(item),
         state:      addressRecord.stateCode[0],
-        postcode:   addressRecord.postcode[0],
-        type:       item.entityType[0].entityDescription[0],
-        status:     item.entityStatus[0].entityStatusCode[0],
-        from:       item.entityStatus[0].effectiveFrom[0],
-        to:         item.entityStatus[0].effectiveTo[0]
+        postcode:   addressRecord.postcode[0]
     };
 };
 
