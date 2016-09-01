@@ -400,12 +400,6 @@ export class RelationshipController {
                     errorMessage: 'Start timestamp is not a valid date'
                 },
                 errorMessage: 'Start timestamp is not valid'
-            },
-            'endTimestamp': {
-                in: 'body',
-                isDate: {
-                    errorMessage: 'End timestamp is not a valid date'
-                }
             }
         };
         validateReqSchema(req, schema)
@@ -447,17 +441,10 @@ export class RelationshipController {
             'startTimestamp': {
                 in: 'body',
                 notEmpty: true,
-                // isDate: {
-                //     errorMessage: 'Start timestamp is not valid'
-                // },
-                // todo resolve issue
-                errorMessage: 'Start timestamp is not valid'
-            },
-            'endTimestamp': {
-                in: 'body',
                 isDate: {
-                    errorMessage: 'End timestamp is not a valid date'
-                }
+                    errorMessage: 'Start timestamp is not a valid date'
+                },
+                errorMessage: 'Start timestamp is not valid'
             }
         };
         validateReqSchema(req, schema)

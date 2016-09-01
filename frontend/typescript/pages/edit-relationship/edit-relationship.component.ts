@@ -392,6 +392,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             // authorisation permission component
             this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true';
             this.relationshipComponentData.authorisationPermissions.enabled = true;
+            this.relationshipComponentData.authorisationPermissions.accessLevelsDescription = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.ACCESS_LEVELS_DESCRIPTION);
 
             // get the default value for the relationship type
             this.relationshipComponentData.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';

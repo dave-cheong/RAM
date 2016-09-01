@@ -31,5 +31,6 @@ export class AuthorisationPermissionsComponent {
 export interface AuthorisationPermissionsComponentData {
     value: string;
     customisationEnabled: boolean;
+    accessLevelsDescription: IRelationshipAttributeNameUsage;
     enabled: boolean;
 }

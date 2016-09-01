@@ -140,6 +140,7 @@ export class Seeder {
 
     // relationship attribute names (other)
     public static permissionCustomisationAllowedInd_relAttributeName:IRelationshipAttributeName;
+    public static accessLevelsDescription_relAttributeName:IRelationshipAttributeName;
     public static delegateManageAuthorisationAllowedInd_relAttributeName:IRelationshipAttributeName;
     public static delegateManageAuthorisationUserConfigurableInd_relAttributeName:IRelationshipAttributeName;
     public static delegateRelationshipTypeDeclaration_relAttributeName:IRelationshipAttributeName;
@@ -577,6 +578,17 @@ export class Seeder {
                 purposeText: 'Indicator of whether a relationship type allows the user to customise permission levels'
             } as any);
 
+            Seeder.accessLevelsDescription_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'ACCESS_LEVELS_DESCRIPTION',
+                shortDecodeText: 'Access Levels description',
+                longDecodeText: 'Full access: The agency service allows the representative access to all transactions without further steps. For more information see the detail for each service provided in the accordians below.',
+                startDate: now,
+                domain: RelationshipAttributeNameDomain.Null.code,
+                classifier: RelationshipAttributeNameClassifier.Other.code,
+                category: null,
+                purposeText: 'Descriptive text to explain the permission attribute access levels'
+            } as any);
+
             Seeder.delegateManageAuthorisationAllowedInd_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
                 code: 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND',
                 shortDecodeText: 'Do you want this representative to manage authorisations for this organisation?',
@@ -841,6 +853,7 @@ export class Seeder {
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
+                {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: 'Markdown for Delegate Universal Representative Declaration', sortOrder: 3},
@@ -871,6 +884,7 @@ export class Seeder {
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
+                {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: 'Markdown for Delegate Universal Representative Declaration', sortOrder: 3},
@@ -896,6 +910,7 @@ export class Seeder {
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 1},
+                {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 2},
                 {attribute: Seeder.delegateManageAuthorisationUserConfigurableInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: -1},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
