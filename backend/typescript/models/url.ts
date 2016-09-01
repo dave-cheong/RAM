@@ -151,7 +151,7 @@ export class Url {
         return '/api/v1/roleStatus/' + encodeURIComponent(model.code);
     }
 
-    public static async forRole(model: role.IRoleInstanceContract): Promise<string> {
+    public static async forRole(model: role.IRole): Promise<string> {
         return '/api/v1/role/' + encodeURIComponent(model._id.toString());
     }
 
