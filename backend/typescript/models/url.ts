@@ -92,7 +92,7 @@ export class Url {
         return '/api/v1/partyType/' + encodeURIComponent(model.code);
     }
 
-    public static async forParty(model: party.IPartyInstanceContract): Promise<string> {
+    public static async forParty(model: party.IParty): Promise<string> {
         const defaultIdentity = await identity.IdentityModel.findDefaultByPartyId(model._id);
         if (defaultIdentity) {
             return '/api/v1/party/identity/' + encodeURIComponent(defaultIdentity.idValue);
