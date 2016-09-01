@@ -9,7 +9,7 @@ const _RoleAttributeNameModel = RoleAttributeNameModel;
 
 // mongoose ...........................................................................................................
 
-export let RoleAttributeNameUsageMongooseModel: mongoose.Model<IRoleAttributeNameUsageDocument>;
+let RoleAttributeNameUsageMongooseModel: mongoose.Model<IRoleAttributeNameUsageDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 

@@ -5,7 +5,7 @@ import {HrefValue, RoleAttributeName as DTO} from '../../../commons/RamAPI';
 
 // mongoose ...........................................................................................................
 
-export let RoleAttributeNameMongooseModel: mongoose.Model<IRoleAttributeNameDocument>;
+let RoleAttributeNameMongooseModel: mongoose.Model<IRoleAttributeNameDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 

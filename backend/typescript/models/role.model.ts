@@ -18,7 +18,7 @@ const MAX_PAGE_SIZE = 10;
 
 // mongoose ...........................................................................................................
 
-export let RoleMongooseModel: mongoose.Model<IRoleDocument>;
+let RoleMongooseModel: mongoose.Model<IRoleDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
