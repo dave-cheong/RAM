@@ -1,15 +1,9 @@
 import * as mongoose from 'mongoose';
-import {ICodeDecode, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
+import {CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface ISharedSecretType extends ICodeDecode, ISharedSecretTypeInstanceContract {
-}
-
-export interface ISharedSecretTypeModel extends mongoose.Model<ISharedSecretType>, ISharedSecretTypeStaticContract {
-}
-
-export let SharedSecretTypeModel: ISharedSecretTypeModel;
+let SharedSecretTypeMongooseModel: mongoose.Model<ISharedSecretTypeDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -27,11 +21,11 @@ const SharedSecretTypeSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-interface ISharedSecretTypeInstanceContract extends ICodeDecodeContract {
+export interface ISharedSecretType extends ICodeDecodeContract {
     domain: string;
 }
 
-class SharedSecretTypeInstanceContractImpl extends CodeDecodeContractImpl implements ISharedSecretTypeInstanceContract {
+class SharedSecretType extends CodeDecodeContractImpl implements ISharedSecretType {
 
     public domain: string;
 
@@ -39,25 +33,22 @@ class SharedSecretTypeInstanceContractImpl extends CodeDecodeContractImpl implem
 
 // static .............................................................................................................
 
-interface ISharedSecretTypeStaticContract {
-    findByCodeIgnoringDateRange(code: string): Promise<ISharedSecretType>;
-    findByCodeInDateRange(code: string, date: Date): Promise<ISharedSecretType>;
-    listIgnoringDateRange(): Promise<ISharedSecretType[]>;
-    listInDateRange(date: Date): Promise<ISharedSecretType[]>;
-}
+export class SharedSecretTypeModel {
 
-class SharedSecretTypeStaticContractImpl implements ISharedSecretTypeStaticContract {
+    public static async create(source: ISharedSecretType): Promise<ISharedSecretType> {
+        return SharedSecretTypeMongooseModel.create(source);
+    }
 
-    public findByCodeIgnoringDateRange(code: string): Promise<ISharedSecretType> {
-        return SharedSecretTypeModel
+    public static findByCodeIgnoringDateRange(code: string): Promise<ISharedSecretType> {
+        return SharedSecretTypeMongooseModel
             .findOne({
                 code: code
             })
             .exec();
     }
 
-    public findByCodeInDateRange(code: string, date: Date): Promise<ISharedSecretType> {
-        return SharedSecretTypeModel
+    public static findByCodeInDateRange(code: string, date: Date): Promise<ISharedSecretType> {
+        return SharedSecretTypeMongooseModel
             .findOne({
                 code: code,
                 startDate: {$lte: date},
@@ -66,15 +57,15 @@ class SharedSecretTypeStaticContractImpl implements ISharedSecretTypeStaticContr
             .exec();
     }
 
-    public listIgnoringDateRange(): Promise<ISharedSecretType[]> {
-        return SharedSecretTypeModel
+    public static listIgnoringDateRange(): Promise<ISharedSecretType[]> {
+        return SharedSecretTypeMongooseModel
             .find({})
             .sort({name: 1})
             .exec();
     }
 
-    public listInDateRange(date: Date): Promise<ISharedSecretType[]> {
-        return SharedSecretTypeModel
+    public static listInDateRange(date: Date): Promise<ISharedSecretType[]> {
+        return SharedSecretTypeMongooseModel
             .find({
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
@@ -85,11 +76,13 @@ class SharedSecretTypeStaticContractImpl implements ISharedSecretTypeStaticContr
 
 }
 
+interface ISharedSecretTypeDocument extends ISharedSecretType, mongoose.Document {
+}
+
 // concrete model .....................................................................................................
 
-SharedSecretTypeModel = Model(
+SharedSecretTypeMongooseModel = Model(
     'SharedSecretType',
     SharedSecretTypeSchema,
-    SharedSecretTypeInstanceContractImpl,
-    SharedSecretTypeStaticContractImpl
-) as ISharedSecretTypeModel;
+    SharedSecretType
+) as mongoose.Model<ISharedSecretTypeDocument>;

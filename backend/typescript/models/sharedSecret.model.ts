@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import {IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
 import {ISharedSecretType, SharedSecretTypeModel} from './sharedSecretType.model';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -58,18 +58,14 @@ class SharedSecret extends RAMObjectContractImpl implements ISharedSecret {
 }
 
 interface ISharedSecretDocument extends ISharedSecret, mongoose.Document {
-
 }
 
 // static .............................................................................................................
 
 export class SharedSecretModel {
 
-    public static async add(value: string, sharedSecretType: ISharedSecretType): Promise<ISharedSecret> {
-        return SharedSecretMongooseModel.create({
-            value: value,
-            sharedSecretType: sharedSecretType
-        });
+    public static async create(source: ISharedSecret): Promise<ISharedSecret> {
+        return SharedSecretMongooseModel.create(source);
     }
 
 }

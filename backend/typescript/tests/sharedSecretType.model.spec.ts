@@ -23,7 +23,7 @@ describe('RAM Shared Secret Type', () => {
                 longDecodeText: 'Shared Secret',
                 startDate: new Date(),
                 domain: 'domain'
-            });
+            } as ISharedSecretType);
 
             sharedSecretTypeFutureEndDate = await SharedSecretTypeModel.create({
                 code: 'SHARED_SECRET_TYPE_2',
@@ -32,7 +32,7 @@ describe('RAM Shared Secret Type', () => {
                 startDate: new Date(),
                 endDate: new Date(2099, 1, 1),
                 domain: 'domain'
-            });
+            } as ISharedSecretType);
 
             sharedSecretTypeExpiredEndDate = await SharedSecretTypeModel.create({
                 code: 'SHARED_SECRET_TYPE_3',
@@ -41,7 +41,7 @@ describe('RAM Shared Secret Type', () => {
                 startDate: new Date(2016, 1, 1),
                 endDate: new Date(2016, 1, 2),
                 domain: 'domain'
-            });
+            } as ISharedSecretType);
 
             done();
 
@@ -135,7 +135,7 @@ describe('RAM Shared Secret Type', () => {
                 longDecodeText: 'Some long decode text',
                 startDate: new Date(),
                 domain: 'domain'
-            });
+            } as ISharedSecretType);
             fail('should not have inserted with null code');
             done();
         } catch (e) {
@@ -152,7 +152,7 @@ describe('RAM Shared Secret Type', () => {
                 longDecodeText: 'Some long decode text',
                 startDate: new Date(),
                 domain: 'domain'
-            });
+            } as ISharedSecretType);
             fail('should not have inserted with empty code');
             done();
         } catch (e) {
@@ -169,7 +169,7 @@ describe('RAM Shared Secret Type', () => {
                 shortDecodeText: 'Some short decode text',
                 longDecodeText: 'Some long decode text',
                 startDate: new Date()
-            });
+            } as ISharedSecretType);
             fail('should not have inserted with null domain');
             done();
         } catch (e) {
@@ -190,7 +190,7 @@ describe('RAM Shared Secret Type', () => {
                 longDecodeText: 'Some long decode text',
                 startDate: new Date(),
                 domain: 'domain',
-            });
+            } as ISharedSecretType);
 
             await SharedSecretTypeModel.create({
                 code: code,
@@ -198,7 +198,7 @@ describe('RAM Shared Secret Type', () => {
                 longDecodeText: 'Some long decode text',
                 startDate: new Date(),
                 domain: 'domain'
-            });
+            } as ISharedSecretType);
 
             fail('should not have inserted with duplicate code');
             done();

@@ -49,7 +49,7 @@ describe('RAM Shared Secret', () => {
                 longDecodeText: 'Shared Secret',
                 startDate: new Date(),
                 domain: 'domain'
-            });
+            } as ISharedSecretType);
 
             sharedSecretTypeFutureEndDate = await SharedSecretTypeModel.create({
                 code: 'SHARED_SECRET_TYPE_2',
@@ -58,7 +58,7 @@ describe('RAM Shared Secret', () => {
                 startDate: new Date(),
                 endDate: new Date(2099, 1, 1),
                 domain: 'domain'
-            });
+            } as ISharedSecretType);
 
             sharedSecretTypeExpiredEndDate = await SharedSecretTypeModel.create({
                 code: 'SHARED_SECRET_TYPE_3',
@@ -67,12 +67,12 @@ describe('RAM Shared Secret', () => {
                 startDate: new Date(2016, 1, 1),
                 endDate: new Date(2016, 1, 2),
                 domain: 'domain'
-            });
+            } as ISharedSecretType);
 
-            sharedSecretNoEndDate = await SharedSecretModel.add(
-                sharedSecretValue1,
-                sharedSecretTypeNoEndDate
-            );
+            sharedSecretNoEndDate = await SharedSecretModel.create({
+                value: sharedSecretValue1,
+                sharedSecretType: sharedSecretTypeNoEndDate
+            } as ISharedSecret);
 
             name1 = await NameModel.create({
                 givenName: 'John',
