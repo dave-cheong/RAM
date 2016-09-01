@@ -1,5 +1,5 @@
 import {connectDisconnectMongo, resetDataInMongo} from './helpers';
-import {NameModel, IName} from '../models/name.model';
+import {NameModel} from '../models/name.model';
 
 /* tslint:disable:max-func-body-length */
 describe('RAM Name', () => {
