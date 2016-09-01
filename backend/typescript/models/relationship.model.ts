@@ -1230,8 +1230,9 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                     .skip((page - 1) * thePageSize)
                     .limit(thePageSize)
                     .exec();
-                const inflatedList = (await PartyModel.populate(listOfIds, {path: '_id'})).map((item: {_id: string}) => item._id);
-                resolve(new SearchResult<IParty>(page, count, thePageSize, inflatedList));
+                let wrappedPartyList: IParty[] = await PartyModel.populate(listOfIds, {path: '_id'});
+                const unwrappedPartyList = wrappedPartyList.map((item: {_id: IParty}) => item._id);
+                resolve(new SearchResult<IParty>(page, count, thePageSize, unwrappedPartyList));
             } catch (e) {
                 reject(e);
             }
