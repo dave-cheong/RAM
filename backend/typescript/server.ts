@@ -36,7 +36,6 @@ import {IdentityModel} from './models/identity.model';
 import {RelationshipModel} from './models/relationship.model';
 import {RelationshipTypeModel} from './models/relationshipType.model';
 import {RelationshipAttributeNameModel} from './models/relationshipAttributeName.model';
-import {RoleTypeModel} from './models/roleType.model';
 import {AUSkeyProvider} from './providers/auskey.provider';
 import {context} from './providers/context.provider';
 
@@ -132,7 +131,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RoleTypeController(RoleTypeModel)
+    new RoleTypeController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
