@@ -2124,8 +2124,8 @@ declare module "mongoose" {
      * does new MyModel(doc).save() for every doc in docs.
      * Triggers the save() hook.
      */
-    create(docs: any[], callback?: (err: any, res: T[]) => void): Promise<T[]>;
     create(...docs: Object[]): Promise<T>;
+    create(docs: any[], callback?: (err: any, res: T[]) => void): Promise<T[]>;
     create(...docsWithCallback: Object[]): Promise<T>;
 
     /**
