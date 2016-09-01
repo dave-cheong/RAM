@@ -1,11 +1,11 @@
 import {Router, Request, Response} from 'express';
 import {context} from '../providers/context.provider';
 import {sendResource, sendList, sendError, sendNotFoundError, validateReqSchema} from './helpers';
-import {IProfileModel, ProfileProvider} from '../models/profile.model';
+import {ProfileProvider} from '../models/profile.model';
 
 export class ProfileController {
 
-    constructor(private profileModel:IProfileModel) {
+    constructor() {
     }
 
     private findProviderByCode = (req:Request, res:Response) => {

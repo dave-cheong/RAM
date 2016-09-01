@@ -127,7 +127,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new ProfileController(ProfileModel)
+    new ProfileController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
