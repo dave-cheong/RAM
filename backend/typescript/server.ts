@@ -123,7 +123,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new PartyController(PartyModel)
+    new PartyController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
@@ -131,15 +131,15 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RelationshipController(RelationshipModel, PartyModel)
+    new RelationshipController(RelationshipModel)
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RoleController(RoleModel, PartyModel)
+    new RoleController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RoleTypeController(RoleTypeModel, PartyModel)
+    new RoleTypeController(RoleTypeModel)
         .assignRoutes(express.Router()));
 
 server.use('/api/',
@@ -151,7 +151,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new TransactController(RoleModel, IdentityModel, RelationshipModel)
+    new TransactController(IdentityModel, RelationshipModel)
         .assignRoutes(express.Router()));
 
 // setup error handlers ...............................................................................................

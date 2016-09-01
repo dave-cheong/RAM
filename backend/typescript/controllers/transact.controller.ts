@@ -3,14 +3,13 @@ import {context} from '../providers/context.provider';
 import {sendResource, sendError, sendNotFoundError, validateReqSchema} from './helpers';
 import {Url} from '../models/url';
 import {ITransactRequest, TransactResponse} from '../../../commons/RamAPI';
-import {IRoleModel, RoleStatus} from '../models/role.model';
+import {RoleStatus, RoleModel} from '../models/role.model';
 import {IIdentityModel} from '../models/identity.model';
 import {IRelationshipModel, RelationshipStatus} from '../models/relationship.model';
 
 export class TransactController {
 
-    constructor(private roleModel: IRoleModel,
-                private identityModel: IIdentityModel,
+    constructor(private identityModel: IIdentityModel,
                 private relationshipModel: IRelationshipModel) {
     }
 
@@ -50,7 +49,7 @@ export class TransactController {
                 }
 
                 // ensure OSP role
-                const ospRoles = await this.roleModel.searchByIdentity(ospIdentityIdValue, 'OSP', RoleStatus.Active.code, true, 1, 10);
+                const ospRoles = await RoleModel.searchByIdentity(ospIdentityIdValue, 'OSP', RoleStatus.Active.code, true, 1, 10);
                 if (ospRoles.list.length === 0) {
                     throw new Error('401:Organisation is not an Online Service Provider');
                 }

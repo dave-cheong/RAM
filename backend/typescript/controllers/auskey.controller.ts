@@ -3,7 +3,7 @@ import {context} from '../providers/context.provider';
 import {sendResource, sendError, sendNotFoundError, validateReqSchema, sendSearchResult} from './helpers';
 import {IAUSkeyProvider} from '../providers/auskey.provider';
 import {AUSkeyType} from '../models/auskey.model';
-import {IPartyModel} from '../models/party.model';
+import {PartyModel} from '../models/party.model';
 import {IIdentityModel} from '../models/identity.model';
 import {FilterParams} from '../../../commons/RamAPI';
 import {Assert} from '../models/base';
@@ -62,7 +62,7 @@ export class AuskeyController {
                 const myPrincipal = context.getAuthenticatedPrincipal();
                 if (!myPrincipal.agencyUserInd) {
                     const myIdentity = context.getAuthenticatedIdentity();
-                    const hasAccess = await this.partyModel.hasAccess(idValue, myPrincipal, myIdentity);
+                    const hasAccess = await PartyModel.hasAccess(idValue, myPrincipal, myIdentity);
                     if (!hasAccess) {
                         console.log('Identity access denied or does not exist', idValue);
                         throw new Error('403');

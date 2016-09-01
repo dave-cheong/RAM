@@ -4,7 +4,7 @@ import {Model, RAMEnum, IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectCont
 import {Url} from './url';
 import {SharedSecretModel} from './sharedSecret.model';
 import {DOB_SHARED_SECRET_TYPE_CODE, SharedSecretTypeModel} from './sharedSecretType.model';
-import {IParty, PartyModel, IPartyInstanceContract, PartyType} from './party.model';
+import {IParty, PartyModel, PartyType} from './party.model';
 import {IName, NameModel} from './name.model';
 import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model';
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';

@@ -9,7 +9,7 @@ import {
     validateReqSchema,
     REGULAR_CHARS
 } from './helpers';
-import {IPartyModel, PartyModel} from '../models/party.model';
+import {PartyModel} from '../models/party.model';
 import {IRelationshipModel, RelationshipStatus, RelationshipModel} from '../models/relationship.model';
 import {
     FilterParams,
@@ -22,7 +22,7 @@ import {Headers} from './headers';
 // todo add data security
 export class RelationshipController {
 
-    constructor(private relationshipModel:IRelationshipModel, private partyModel:IPartyModel) {
+    constructor(private relationshipModel:IRelationshipModel) {
     }
 
     private findByIdentifier = async(req:Request, res:Response) => {
@@ -208,7 +208,7 @@ export class RelationshipController {
             .then(async (req:Request) => {
                 const myPrincipal = context.getAuthenticatedPrincipal();
                 const myIdentity = context.getAuthenticatedIdentity();
-                const hasAccess = await this.partyModel.hasAccess(req.params.identity_id, myPrincipal, myIdentity);
+                const hasAccess = await PartyModel.hasAccess(req.params.identity_id, myPrincipal, myIdentity);
                 if (!hasAccess) {
                     throw new Error('403');
                 }
