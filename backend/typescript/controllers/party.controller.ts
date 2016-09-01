@@ -2,18 +2,18 @@ import {Router, Request, Response} from 'express';
 import {context} from '../providers/context.provider';
 import {sendResource, sendList, sendError, sendNotFoundError, validateReqSchema} from './helpers';
 import {Headers} from './headers';
-import {IPartyModel, PartyType} from '../models/party.model';
+import {PartyModel, PartyType} from '../models/party.model';
 
 export class PartyController {
 
-    constructor(private partyModel:IPartyModel) {
+    constructor() {
     }
 
     private findMe = async (req:Request, res:Response) => {
         const identity = res.locals[Headers.Identity];
         const schema = {};
         validateReqSchema(req, schema)
-            .then((req:Request) => identity ? this.partyModel.findByIdentityIdValue(identity.idValue) : null)
+            .then((req:Request) => identity ? PartyModel.findByIdentityIdValue(identity.idValue) : null)
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -29,7 +29,7 @@ export class PartyController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => this.partyModel.findByIdentityIdValue(req.params.idValue))
+            .then((req:Request) => PartyModel.findByIdentityIdValue(req.params.idValue))
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
