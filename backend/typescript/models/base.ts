@@ -91,6 +91,7 @@ export interface IRAMObject extends mongoose.Document {
 
 // todo deprecated
 export interface IRAMObjectContract {
+    id: string;
     _id: any;
     createdAt: Date;
     updatedAt: Date;
@@ -101,11 +102,13 @@ export interface IRAMObjectContract {
 
 // exists for type safety only, do not add functions here
 export class RAMObjectContractImpl implements IRAMObjectContract {
+    public id: string;
     constructor(public _id: any,
                 public createdAt: Date,
                 public updatedAt: Date,
                 public deleteInd: boolean,
                 public resourceVersion: string) {
+        this.id = _id.toString();
     }
     public save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this> {
         return null;

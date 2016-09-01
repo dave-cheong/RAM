@@ -54,12 +54,12 @@ describe('RAM Identity', () => {
                     profile1 = await ProfileModel.create({
                         provider: ProfileProvider.MyGov.code,
                         name: name1
-                    });
+                    } as IProfile);
 
                     party1 = await PartyModel.create({
                         partyType: PartyType.Individual.code,
                         name: name1
-                    });
+                    } as IParty);
 
                     identity1 = await IdentityModel.create({
                         rawIdValue: 'uuid_1',
@@ -68,7 +68,7 @@ describe('RAM Identity', () => {
                         linkIdScheme: IdentityLinkIdScheme.MyGov.code,
                         profile: profile1,
                         party: party1
-                    });
+                    } as IIdentity);
 
                     done();
 

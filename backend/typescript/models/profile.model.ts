@@ -19,13 +19,7 @@ const _SharedSecretModel = SharedSecretModel;
 
 // exports ............................................................................................................
 
-export interface IProfile extends IRAMObject, IProfileInstanceContract {
-}
-
-export interface IProfileModel extends mongoose.Model<IProfile>, IProfileStaticContract {
-}
-
-export let ProfileModel: IProfileModel;
+let ProfileMongooseModel: mongoose.Model<IProfileDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -87,7 +81,7 @@ const ProfileSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-export interface IProfileInstanceContract extends IRAMObjectContract {
+export interface IProfile extends IRAMObjectContract {
     provider: string;
     name: IName;
     sharedSecrets: ISharedSecret[];
@@ -97,7 +91,7 @@ export interface IProfileInstanceContract extends IRAMObjectContract {
     toDTO(): Promise<DTO>;
 }
 
-class ProfileInstanceContractImpl extends RAMObjectContractImpl implements IProfileInstanceContract {
+class Profile extends RAMObjectContractImpl implements IProfile {
 
     public provider: string;
     public name: IName;
@@ -139,19 +133,23 @@ class ProfileInstanceContractImpl extends RAMObjectContractImpl implements IProf
 export interface IProfileModel extends mongoose.Model<IProfile> {
 }
 
-// static .............................................................................................................
-
-interface IProfileStaticContract {
+interface IProfileDocument extends IProfile, mongoose.Document {
 }
 
-class ProfileStaticContractImpl implements IProfileStaticContract {
+// static .............................................................................................................
+
+export class ProfileModel {
+
+    public static async create(source: IProfile): Promise<IProfile> {
+        return ProfileMongooseModel.create(source);
+    }
+
 }
 
 // concrete model .....................................................................................................
 
-ProfileModel = Model(
+ProfileMongooseModel = Model(
     'Profile',
     ProfileSchema,
-    ProfileInstanceContractImpl,
-    ProfileStaticContractImpl
-) as IProfileModel;
+    Profile
+) as mongoose.Model<IProfileDocument>;

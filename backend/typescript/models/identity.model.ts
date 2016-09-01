@@ -413,14 +413,14 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             sharedSecrets.push(await SharedSecretModel.create({
                 value: dto.sharedSecretValue,
                 sharedSecretType: await SharedSecretTypeModel.findByCodeInDateRange(dto.sharedSecretTypeCode, new Date())
-            }));
+            } as ISharedSecret));
         }
 
         const profile = await ProfileModel.create({
             provider: dto.profileProvider,
             name: name,
             sharedSecrets: sharedSecrets
-        });
+        } as IProfile);
 
         const party = await PartyModel.create({
             partyType: dto.partyType,
@@ -442,7 +442,7 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             linkIdConsumer: dto.linkIdConsumer,
             profile: profile,
             party: party
-        });
+        } as IIdentity);
 
         return identity;
 

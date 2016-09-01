@@ -47,27 +47,28 @@ describe('RAM Profile', () => {
                 longDecodeText: 'Shared Secret',
                 startDate: new Date(),
                 domain: 'domain'
-            });
+            } as ISharedSecretType);
+
             sharedSecret1 = await SharedSecretModel.create({
                 value: sharedSecretValue1,
                 sharedSecretType: sharedSecretType1
-            });
+            } as ISharedSecret);
 
             name1 = await NameModel.create({
                 givenName: 'John',
                 familyName: 'Smith'
-            });
+            } as IName);
 
             profile1 = await ProfileModel.create({
                 provider: ProfileProvider.MyGov.code,
                 name: name1,
                 sharedSecrets: [sharedSecret1]
-            });
+            } as IProfile);
 
             party1 = await PartyModel.create({
                 partyType: PartyType.Individual.code,
                 name: name1
-            });
+            } as IParty);
 
             identity1 = await IdentityModel.create({
                 rawIdValue: 'uuid_1',
@@ -76,7 +77,7 @@ describe('RAM Profile', () => {
                 linkIdScheme: IdentityLinkIdScheme.MyGov.code,
                 profile: profile1,
                 party: party1
-            });
+            } as IIdentity);
 
             done();
 
@@ -95,7 +96,7 @@ describe('RAM Profile', () => {
             const instance = await ProfileModel.create({
                 provider: provider.code,
                 name: name1
-            });
+            } as IProfile);
 
             expect(instance).not.toBeNull();
             expect(instance.id).not.toBeNull();
@@ -115,7 +116,7 @@ describe('RAM Profile', () => {
             await ProfileModel.create({
                 provider: '__BOGUS__',
                 name: name1
-            });
+            } as IProfile);
             fail('should not have inserted with invalid provider');
             done();
         } catch (e) {
@@ -129,7 +130,7 @@ describe('RAM Profile', () => {
         try {
             await ProfileModel.create({
                 name: name1
-            });
+            } as IProfile);
             fail('should not have inserted with null provider');
             done();
         } catch (e) {
@@ -143,7 +144,7 @@ describe('RAM Profile', () => {
         try {
             await ProfileModel.create({
                 provider: ProfileProvider.MyGov.code
-            });
+            } as IProfile);
             fail('should not have inserted with null name');
             done();
         } catch (e) {
