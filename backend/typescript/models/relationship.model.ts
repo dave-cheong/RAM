@@ -676,7 +676,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets.length === 1
                 && dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value;
 
-            delegateIdentity.profile.sharedSecrets.clear();
+            delegateIdentity.profile.sharedSecrets = [];
             if (hasSharedSecretValue) {
                 const sharedSecretValue = dto.delegate.value.identities[0].value.profile.sharedSecrets[0].value;
                 const sharedSecretType = await SharedSecretTypeModel.findByCodeIgnoringDateRange(DOB_SHARED_SECRET_TYPE_CODE);

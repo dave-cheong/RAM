@@ -224,9 +224,9 @@ export const Model = (name: string, schema: mongoose.Schema, instanceContract: a
 
 };
 
-export const removeFromArray = (arr:Array, value: Object) => {
-    const a = arr as mongoose.Types.DocumentArray;
-    a.pull(value);
+export const removeFromArray = <T>(mongooseArray: Array<T>, value: Object) => {
+    const typedMongooseArray = mongooseArray as mongoose.Types.DocumentArray<T>;
+    typedMongooseArray.pull(value);
 };
 
 export class Assert {

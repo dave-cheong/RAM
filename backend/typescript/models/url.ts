@@ -135,7 +135,7 @@ export class Url {
 
     // relationship attribute name ....................................................................................
 
-    public static async forRelationshipAttributeName(model: relationshipAttributeName.IRelationshipAttributeName): Promise<string> {
+    public static async forRelationshipAttributeName(model: relationshipAttributeName.IRelationshipAttributeNameInstanceContract): Promise<string> {
         return '/api/v1/relationshipAttributeName/' + encodeURIComponent(model.code);
     }
 
@@ -163,7 +163,7 @@ export class Url {
 
     // role type ......................................................................................................
 
-    public static async forRoleType(model: roleType.IRoleType): Promise<string> {
+    public static async forRoleType(model: roleType.IRoleTypeInstanceContract): Promise<string> {
         return '/api/v1/roleType/' + encodeURIComponent(model.code);
     }
 

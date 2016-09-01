@@ -50,9 +50,9 @@ class RoleTypeInstanceContractImpl extends CodeDecodeContractImpl implements IRo
 
     public attributeNameUsages: IRoleAttributeNameUsage[];
 
-    public async toHrefValue(includeValue: boolean) {
+    public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
         return new HrefValue(
-            await Url.forRoleType(this as IRoleType),
+            await Url.forRoleType(this),
             includeValue ? await this.toDTO() : undefined
         );
     };

@@ -91,7 +91,7 @@ const RelationshipAttributeNameSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-interface IRelationshipAttributeNameInstanceContract extends ICodeDecodeContract {
+export interface IRelationshipAttributeNameInstanceContract extends ICodeDecodeContract {
     domain: string;
     classifier: string;
     category?: string;
@@ -122,7 +122,7 @@ class RelationshipAttributeNameInstanceContractImpl extends CodeDecodeContractIm
 
     public async toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>> {
         return new HrefValue(
-            await Url.forRelationshipAttributeName(this as IRelationshipAttributeName),
+            await Url.forRelationshipAttributeName(this),
             includeValue ? await this.toDTO() : undefined
         );
     }
@@ -142,26 +142,6 @@ class RelationshipAttributeNameInstanceContractImpl extends CodeDecodeContractIm
         );
     }
 
-}
-
-// interfaces .........................................................................................................
-
-export interface IRelationshipAttributeName extends ICodeDecode {
-    domain: string;
-    classifier: string;
-    category?: string;
-    purposeText: string;
-    permittedValues: string[];
-    domainEnum(): RelationshipAttributeNameDomain;
-    toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>>;
-    toDTO(): Promise<DTO>;
-}
-
-export interface IRelationshipAttributeNameModel extends mongoose.Model<IRelationshipAttributeName> {
-    findByCodeIgnoringDateRange: (code:string) => Promise<IRelationshipAttributeName>;
-    findByCodeInDateRange: (code:string, date:Date) => Promise<IRelationshipAttributeName>;
-    listIgnoringDateRange: () => Promise<IRelationshipAttributeName[]>;
-    listInDateRange: (date:Date) => Promise<IRelationshipAttributeName[]>;
 }
 
 // static .............................................................................................................

@@ -41,10 +41,9 @@ export class RelationshipsComponent extends AbstractPageComponent {
     public filter: FilterParams;
     public page: number;
 
-    public relationships$: Observable<ISearchResult<IHrefValue<IRelationship>>>;
-
     public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public identity: IIdentity;
+    public relationshipRefs: ISearchResult<IHrefValue<IRelationship>>;
     public partyTypeRefs: IHrefValue<IPartyType>[];
     public profileProviderRefs: IHrefValue<IProfileProvider>[];
     public relationshipStatusRefs: IHrefValue<IRelationshipStatus>[];
@@ -139,29 +138,38 @@ export class RelationshipsComponent extends AbstractPageComponent {
         this.identity = identity;
 
         // relationships
-        this.subjectGroupsWithRelationships = [];
-        this.relationships$ = this.services.rest.searchRelationshipsByIdentity(this.identity.idValue, this.filter.encode(), this.page);
-        this.relationships$.subscribe((relationshipRefs) => {
-            this._isLoading = false;
-            for (const relationshipRef of relationshipRefs.list) {
-                let subjectGroupWithRelationshipsToAddTo: SubjectGroupWithRelationships;
-                const subjectRef = relationshipRef.value.subject;
-                for (const subjectGroupWithRelationships of this.subjectGroupsWithRelationships) {
-                    if (subjectGroupWithRelationships.hasSameSubject(subjectRef)) {
-                        subjectGroupWithRelationshipsToAddTo = subjectGroupWithRelationships;
-                    }
-                }
-                if (!subjectGroupWithRelationshipsToAddTo) {
-                    subjectGroupWithRelationshipsToAddTo = new SubjectGroupWithRelationships();
-                    subjectGroupWithRelationshipsToAddTo.subjectRef = subjectRef;
-                    this.subjectGroupsWithRelationships.push(subjectGroupWithRelationshipsToAddTo);
-                }
-                subjectGroupWithRelationshipsToAddTo.relationshipRefs.push(relationshipRef);
+        this.services.rest.searchRelationshipsByIdentity(this.identity.idValue, this.filter.encode(), this.page).subscribe({
+            next: this.onSearchRelationships.bind(this),
+            error: (err) => {
+                this.onServerError(err);
+                this._isLoading = false;
             }
-        }, (err) => {
-            this.addGlobalErrorMessages(err);
-            this._isLoading = false;
         });
+
+    }
+
+    public onSearchRelationships(relationshipRefs: ISearchResult<IHrefValue<IRelationship>>) {
+
+        this.relationshipRefs = relationshipRefs;
+        this.subjectGroupsWithRelationships = [];
+
+        for (const relationshipRef of relationshipRefs.list) {
+            let subjectGroupWithRelationshipsToAddTo: SubjectGroupWithRelationships;
+            const subjectRef = relationshipRef.value.subject;
+            for (const subjectGroupWithRelationships of this.subjectGroupsWithRelationships) {
+                if (subjectGroupWithRelationships.hasSameSubject(subjectRef)) {
+                    subjectGroupWithRelationshipsToAddTo = subjectGroupWithRelationships;
+                }
+            }
+            if (!subjectGroupWithRelationshipsToAddTo) {
+                subjectGroupWithRelationshipsToAddTo = new SubjectGroupWithRelationships();
+                subjectGroupWithRelationshipsToAddTo.subjectRef = subjectRef;
+                this.subjectGroupsWithRelationships.push(subjectGroupWithRelationshipsToAddTo);
+            }
+            subjectGroupWithRelationshipsToAddTo.relationshipRefs.push(relationshipRef);
+        }
+
+        this._isLoading = false;
 
     }
 
@@ -218,6 +226,15 @@ export class RelationshipsComponent extends AbstractPageComponent {
         if (defaultIdentityResource) {
             this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, defaultIdentityResource.value));
         }
+    }
+
+    // todo go to relationship page
+    public goToRelationshipPage(relationshipRef: IHrefValue<IRelationship>) {
+        alert('TODO: Not yet implemented');
+    }
+
+    public isEditRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
+        return this.services.model.hasLinkHrefByType(RAMConstants.Link.MODIFY, relationshipRef.value);
     }
 
 }
