@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import {RAMEnum, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model, removeFromArray, IRAMObject} from './base';
 import {Url} from './url';
-import {IParty, PartyModel, IPartyInstanceContract} from './party.model';
+import {IParty, PartyModel} from './party.model';
 import {IRoleType} from './roleType.model';
 import {IRoleAttribute, RoleAttributeModel} from './roleAttribute.model';
 import {RoleAttributeNameModel, RoleAttributeNameClassifier} from './roleAttributeName.model';
@@ -280,7 +280,7 @@ interface IRoleStaticContract {
           roleStatus: RoleStatus,
           attributes: IRoleAttribute[]) => Promise<IRole>;
     findByIdentifier: (id: string) => Promise<IRole>;
-    findByRoleTypeAndParty: (roleType: IRoleType, party: IPartyInstanceContract) => Promise<IRole>;
+    findByRoleTypeAndParty: (roleType: IRoleType, party: IParty) => Promise<IRole>;
     searchByIdentity: (identityIdValue: string,
                        roleType: string,
                        status: string,
