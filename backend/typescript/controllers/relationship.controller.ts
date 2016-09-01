@@ -385,11 +385,7 @@ export class RelationshipController {
     };
 
     private create = async(req:Request, res:Response) => {
-
         const schema = {
-            'identifier': {
-                in: 'params'
-            },
             'relationshipType.href': {
                 in: 'body',
                 matches: {
@@ -397,31 +393,20 @@ export class RelationshipController {
                     errorMessage: 'Relationship type is not valid'
                 }
             },
-            // 'subject.href': {
-            //     in: 'body',
-            //     matches: {
-            //         options: ['^/api/v1/party/identity/'],
-            //         errorMessage: 'Subject identity id value not valid'
-            //     }
-            // },
-            // 'delegate.href': {
-            //     in: 'body',
-            //     matches: {
-            //         options: ['^/api/v1/party/identity/'],
-            //         errorMessage: 'Delegate identity id value not valid'
-            //     }
-            // },
-            // 'startTimestamp': {
-            //     in: 'body',
-            //     notEmpty: true,
-            //     isDate: {
-            //         errorMessage: 'Start timestamp is not valid'
-            //     },
-            //     errorMessage: 'Start timestamp is not valid'
-            // },
-            // 'endTimestamp': {
-            //     in: 'body'
-            // }
+            'startTimestamp': {
+                in: 'body',
+                notEmpty: true,
+                isDate: {
+                    errorMessage: 'Start timestamp is not a valid date'
+                },
+                errorMessage: 'Start timestamp is not valid'
+            },
+            'endTimestamp': {
+                in: 'body',
+                isDate: {
+                    errorMessage: 'End timestamp is not a valid date'
+                }
+            }
         };
         validateReqSchema(req, schema)
             .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, req.body))
@@ -469,7 +454,10 @@ export class RelationshipController {
                 errorMessage: 'Start timestamp is not valid'
             },
             'endTimestamp': {
-                in: 'body'
+                in: 'body',
+                isDate: {
+                    errorMessage: 'End timestamp is not a valid date'
+                }
             }
         };
         validateReqSchema(req, schema)
@@ -558,7 +546,6 @@ export class RelationshipController {
             context.isAuthenticated,
             this.createUsingInvitation);
 
-        // todo need to add to swagger
         router.post('/v1/relationship',
             context.begin,
             context.isAuthenticated,
