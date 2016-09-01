@@ -66,12 +66,10 @@ interface ISharedSecretDocument extends ISharedSecret, mongoose.Document {
 export class SharedSecretModel {
 
     public static async add(value: string, sharedSecretType: ISharedSecretType): Promise<ISharedSecret> {
-        let document = await SharedSecretMongooseModel.create({
+        return SharedSecretMongooseModel.create({
             value: value,
             sharedSecretType: sharedSecretType
         });
-        document.populate(null);
-        return document;
     }
 
 }
