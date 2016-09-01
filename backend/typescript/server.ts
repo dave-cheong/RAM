@@ -13,7 +13,6 @@ import {sendNotFoundError} from './controllers/helpers';
 
 import {forgeRockSimulator} from './controllers/forgeRock.simulator.middleware';
 import {security} from './controllers/security.middleware';
-import {Translator} from './ram/translator';
 
 // DEVELOPMENT CONTROLLERS
 import {AuthenticatorSimulatorController} from './controllers/authenticator.simulator.controller';
@@ -147,7 +146,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new AuskeyController(AUSkeyProvider, PartyModel, IdentityModel)
+    new AuskeyController(AUSkeyProvider, IdentityModel)
         .assignRoutes(express.Router()));
 
 server.use('/api/',

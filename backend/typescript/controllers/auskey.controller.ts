@@ -11,7 +11,7 @@ import {Translator} from '../ram/translator';
 
 export class AuskeyController {
 
-    constructor(private auskeyProvider: IAUSkeyProvider, private partyModel: IPartyModel, private identityModel: IIdentityModel) {
+    constructor(private auskeyProvider: IAUSkeyProvider, private identityModel: IIdentityModel) {
     }
 
     private findAusKey = (req: Request, res: Response) => {
