@@ -129,10 +129,6 @@ class Profile extends RAMObjectContractImpl implements IProfile {
 
 }
 
-/* tslint:disable:no-empty-interfaces */
-export interface IProfileModel extends mongoose.Model<IProfile> {
-}
-
 interface IProfileDocument extends IProfile, mongoose.Document {
 }
 
