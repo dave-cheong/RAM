@@ -1,6 +1,6 @@
 <page-header [identity]="identity"
              tab="GET_AUTHORISATION"
-             [message]="globalMessages"
+             [messages]="globalMessages"
              [giveAuthorisationsEnabled]="giveAuthorisationsEnabled"></page-header>
 
 <div class="panel panel-default">
@@ -77,9 +77,9 @@
         <h4><span class="badge square">5</span> Authorisation management</h4>
     </div>
     <div class="panel-body">
-        <h4 *ngIf="delegateManageAuthorisationAllowedIndAttribute?.value">
+        <h4 *ngIf="isManageAuthorisationAllowed()">
             You <b>will be able</b> to manage authorisations for this subject.</h4>
-        <h4 *ngIf="!delegateManageAuthorisationAllowedIndAttribute?.value">
+        <h4 *ngIf="!isManageAuthorisationAllowed()">
             You <b>will NOT be</b> able to manage authorisations for this subject.</h4>
         {{delegateManageAuthorisationAllowedIndAttribute?.attributeName?.value?.longDecodeText}}
     </div>
@@ -94,7 +94,7 @@
             you acknowledge that:</h4>
         <div class="todo">TODO {{delegateRelationshipTypeDeclarationAttributeUsage?.defaultValue}}</div>
         <ng2-markdown [markdown]="delegateRelationshipTypeDeclarationAttributeUsage?.defaultValue"></ng2-markdown>
-        <h4><input type="checkbox" [(ngModel)]="accept"> I accept</h4>
+        <label><h4><input type="checkbox" [(ngModel)]="accept" [disabled]="!canAccept"> I accept</h4></label>
     </div>
 </div>
 
@@ -105,7 +105,7 @@
     <div class="pull-right">
         <button class="btn pull-left" (click)="showDeclineConfirmation()">Decline</button>
         &nbsp;
-        <button class="btn btn-primary pull-left" (click)="acceptAuthorisation()" [disabled]='(!accept)'>Accept</button>
+        <button class="btn btn-primary pull-left" (click)="acceptAuthorisation()" [disabled]="(!accept) && !canAccept">Accept</button>
     </div>
 </div>
 

@@ -47,6 +47,7 @@ export class PattyPeacefulIdentitySeeder {
                     rawIdValue: 'pattypeaceful_identity_1',
                     identityType: IdentityType.LinkId.code,
                     defaultInd: true,
+                    strength: 1,
                     linkIdScheme: IdentityLinkIdScheme.MyGov.code,
                     profile: Seeder.pattypeaceful_profile,
                     party: Seeder.pattypeaceful_party

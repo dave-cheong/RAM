@@ -25,20 +25,38 @@ export class RepresentativeDetailsComponent {
 
     @Output('isValid') public isValid = new EventEmitter<boolean>();
 
-    public isOrganisation: boolean = null;
+    public isOrganisation: boolean = false;
 
-    public setChildValidationStatus = (isOrganisation: boolean, isValid: boolean) => {
+    public setChildValidationStatus(isOrganisation: boolean, isValid: boolean) {
         if (isOrganisation && this.isOrganisation) {
-            this.data.individual = undefined;
             this.isValid.emit(isValid);
         } else if (!isOrganisation && !this.isOrganisation) {
-            this.data.organisation = undefined;
             this.isValid.emit(isValid);
         }
     }
+
+    public toggleIndividualOrganisation(isOrganisation: boolean) {
+        this.isOrganisation = isOrganisation;
+        if (isOrganisation) {
+            this.data.individual = undefined;
+            this.data.organisation = {
+                abn: '',
+                organisationName: ''
+            };
+        } else {
+            this.data.organisation = undefined;
+            this.data.individual = {
+                givenName: '',
+                familyName: null,
+                dob: null
+            };
+        }
+    }
+
 }
 
 export interface RepresentativeDetailsComponentData {
     individual?: IndividualRepresentativeDetailsComponentData;
     organisation?: OrganisationRepresentativeDetailsComponentData;
+    isOrganisation: boolean;
 }

@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {ICodeDecode, CodeDecodeSchema} from './base';
+import {ICodeDecode, ICodeDecodeContract, CodeDecodeContractImpl, CodeDecodeSchema, Model} from './base';
 import {Url} from './url';
 import {RoleAttributeNameModel} from './roleAttributeName.model';
 import {IRoleAttributeNameUsage, RoleAttributeNameUsageModel} from './roleAttributeNameUsage.model';
@@ -17,6 +17,16 @@ const _RoleAttributeNameModel = RoleAttributeNameModel;
 /* tslint:disable:no-unused-variable */
 const _RoleAttributeNameUsageModel = RoleAttributeNameUsageModel;
 
+// exports ............................................................................................................
+
+export interface IRoleType extends ICodeDecode, IRoleTypeInstanceContract {
+}
+
+export interface IRoleTypeModel extends mongoose.Model<IRoleType>, IRoleTypeStaticContract {
+}
+
+export let RoleTypeModel: IRoleTypeModel;
+
 // enums, utilities, helpers ..........................................................................................
 
 // schema .............................................................................................................
@@ -28,100 +38,110 @@ const RoleTypeSchema = CodeDecodeSchema({
     }]
 });
 
-// interfaces .........................................................................................................
+// instance ...........................................................................................................
 
-export interface IRoleType extends ICodeDecode {
+export interface IRoleTypeInstanceContract extends ICodeDecodeContract {
     attributeNameUsages: IRoleAttributeNameUsage[];
-    toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>>;
+    toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
     toDTO(): Promise<DTO>;
 }
 
-export interface IRoleTypeModel extends mongoose.Model<IRoleType> {
-    findByCodeIgnoringDateRange: (code:String) => Promise<IRoleType>;
-    findByCodeInDateRange: (code:String, date:Date) => Promise<IRoleType>;
-    listIgnoringDateRange: () => Promise<IRoleType[]>;
-    listInDateRange: (date:Date) => Promise<IRoleType[]>;
+class RoleTypeInstanceContractImpl extends CodeDecodeContractImpl implements IRoleTypeInstanceContract {
+
+    public attributeNameUsages: IRoleAttributeNameUsage[];
+
+    public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
+        return new HrefValue(
+            await Url.forRoleType(this),
+            includeValue ? await this.toDTO() : undefined
+        );
+    };
+
+    public async toDTO() {
+        return new DTO(
+            this.code,
+            this.shortDecodeText,
+            this.longDecodeText,
+            this.startDate,
+            this.endDate,
+            await Promise.all<RoleAttributeNameUsageDTO>(this.attributeNameUsages.map(
+                async(attributeNameUsage: IRoleAttributeNameUsage) => {
+                    return new RoleAttributeNameUsageDTO(
+                        attributeNameUsage.optionalInd,
+                        attributeNameUsage.defaultValue,
+                        await attributeNameUsage.attributeName.toHrefValue(true)
+                    );
+                }))
+        );
+    };
+
 }
 
-// instance methods ...................................................................................................
+// static .............................................................................................................
 
-RoleTypeSchema.method('toHrefValue', async function (includeValue:boolean) {
-    return new HrefValue(
-        await Url.forRoleType(this),
-        includeValue ? await this.toDTO() : undefined
-    );
-});
+export interface IRoleTypeStaticContract {
+    findByCodeIgnoringDateRange(code: String): Promise<IRoleType>;
+    findByCodeInDateRange(code: String, date: Date): Promise<IRoleType>;
+    listIgnoringDateRange(): Promise<IRoleType[]>;
+    listInDateRange(date: Date): Promise<IRoleType[]>;
+}
 
-RoleTypeSchema.method('toDTO', async function () {
-    return new DTO(
-        this.code,
-        this.shortDecodeText,
-        this.longDecodeText,
-        this.startDate,
-        this.endDate,
-        await Promise.all<RoleAttributeNameUsageDTO>(this.attributeNameUsages.map(
-            async (attributeNameUsage:IRoleAttributeNameUsage) => {
-                return new RoleAttributeNameUsageDTO(
-                    attributeNameUsage.optionalInd,
-                    attributeNameUsage.defaultValue,
-                    await attributeNameUsage.attributeName.toHrefValue(true)
-                );
-            }))
-    );
-});
+class RoleTypeStaticContractImpl implements IRoleTypeStaticContract {
 
-// static methods .....................................................................................................
+    public findByCodeIgnoringDateRange(code: String): Promise<IRoleType> {
+        return RoleTypeModel
+            .findOne({
+                code: code
+            })
+            .deepPopulate([
+                'attributeNameUsages.attributeName'
+            ])
+            .exec();
+    }
 
-RoleTypeSchema.static('findByCodeIgnoringDateRange', (code:String) => {
-    return this.RoleTypeModel
-        .findOne({
-            code: code
-        })
-        .deepPopulate([
-            'attributeNameUsages.attributeName'
-        ])
-        .exec();
-});
+    public findByCodeInDateRange(code: String, date: Date): Promise<IRoleType> {
+        return RoleTypeModel
+            .findOne({
+                code: code,
+                startDate: {$lte: date},
+                $or: [{endDate: null}, {endDate: {$gte: date}}]
+            })
+            .deepPopulate([
+                'attributeNameUsages.attributeName'
+            ])
+            .exec();
+    }
 
-RoleTypeSchema.static('findByCodeInDateRange', (code:String, date:Date) => {
-    return this.RoleTypeModel
-        .findOne({
-            code: code,
-            startDate: {$lte: date},
-            $or: [{endDate: null}, {endDate: {$gte: date}}]
-        })
-        .deepPopulate([
-            'attributeNameUsages.attributeName'
-        ])
-        .exec();
-});
+    public listIgnoringDateRange(): Promise<IRoleType[]> {
+        return RoleTypeModel
+            .find({})
+            .deepPopulate([
+                'attributeNameUsages.attributeName'
+            ])
+            .sort({shortDecodeText: 1})
+            .exec();
+    }
 
-RoleTypeSchema.static('listIgnoringDateRange', () => {
-    return this.RoleTypeModel
-        .find({
-        })
-        .deepPopulate([
-            'attributeNameUsages.attributeName'
-        ])
-        .sort({shortDecodeText: 1})
-        .exec();
-});
+    public listInDateRange(date: Date): Promise<IRoleType[]> {
+        return RoleTypeModel
+            .find({
+                startDate: {$lte: date},
+                $or: [{endDate: null}, {endDate: {$gte: date}}]
+            })
+            .deepPopulate([
+                'attributeNameUsages.attributeName'
+            ])
+            .sort({shortDecodeText: 1})
+            .exec();
+    }
 
-RoleTypeSchema.static('listInDateRange', (date:Date) => {
-    return this.RoleTypeModel
-        .find({
-            startDate: {$lte: date},
-            $or: [{endDate: null}, {endDate: {$gte: date}}]
-        })
-        .deepPopulate([
-            'attributeNameUsages.attributeName'
-        ])
-        .sort({shortDecodeText: 1})
-        .exec();
-});
+}
 
 // concrete model .....................................................................................................
 
-export const RoleTypeModel = mongoose.model(
+RoleTypeModel = Model(
     'RoleType',
-    RoleTypeSchema) as IRoleTypeModel;
+    RoleTypeSchema,
+    RoleTypeInstanceContractImpl,
+    RoleTypeStaticContractImpl
+) as IRoleTypeModel;

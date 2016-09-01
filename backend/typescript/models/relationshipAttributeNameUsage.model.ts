@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import {RAMSchema, IRAMObject, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
 import {IRelationshipAttributeName, RelationshipAttributeNameModel} from './relationshipAttributeName.model';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -6,11 +7,21 @@ import {IRelationshipAttributeName, RelationshipAttributeNameModel} from './rela
 /* tslint:disable:no-unused-variable */
 const _RelationshipAttributeNameModel = RelationshipAttributeNameModel;
 
+// exports ............................................................................................................
+
+export interface IRelationshipAttributeNameUsage extends IRAMObject, IRelationshipAttributeNameUsageInstanceContract {
+}
+
+export interface IRelationshipAttributeNameUsageModel extends mongoose.Model<IRelationshipAttributeNameUsage>, IRelationshipAttributeNameUsageStaticContract {
+}
+
+export let RelationshipAttributeNameUsageModel: IRelationshipAttributeNameUsageModel;
+
 // enums, utilities, helpers ..........................................................................................
 
 // schema .............................................................................................................
 
-const RelationshipAttributeNameUsageSchema = new mongoose.Schema({
+const RelationshipAttributeNameUsageSchema = RAMSchema({
     optionalInd: {
         type: Boolean,
         default: false,
@@ -24,27 +35,44 @@ const RelationshipAttributeNameUsageSchema = new mongoose.Schema({
     attributeName: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'RelationshipAttributeName'
+    },
+    sortOrder : {
+        type: Number,
+        required: true
     }
 });
 
-// interfaces .........................................................................................................
+// instance ...........................................................................................................
 
-export interface IRelationshipAttributeNameUsage extends mongoose.Document {
+interface IRelationshipAttributeNameUsageInstanceContract extends IRAMObjectContract {
     optionalInd: boolean;
     defaultValue?: string;
     attributeName: IRelationshipAttributeName;
+    sortOrder: number;
 }
 
-/* tslint:disable:no-empty-interfaces */
-export interface IRelationshipAttributeNameUsageModel extends mongoose.Model<IRelationshipAttributeNameUsage> {
+class RelationshipAttributeNameUsageInstanceContractImpl extends RAMObjectContractImpl implements IRelationshipAttributeNameUsageInstanceContract {
+
+    public optionalInd: boolean;
+    public defaultValue: string;
+    public attributeName: IRelationshipAttributeName;
+    public sortOrder: number;
+
 }
 
-// instance methods ...................................................................................................
+// static .............................................................................................................
 
-// static methods .....................................................................................................
+interface IRelationshipAttributeNameUsageStaticContract {
+}
+
+class RelationshipAttributeNameUsageStaticContractImpl implements IRelationshipAttributeNameUsageStaticContract {
+}
 
 // concrete model .....................................................................................................
 
-export const RelationshipAttributeNameUsageModel = mongoose.model(
+RelationshipAttributeNameUsageModel = Model(
     'RelationshipAttributeNameUsage',
-    RelationshipAttributeNameUsageSchema) as IRelationshipAttributeNameUsageModel;
+    RelationshipAttributeNameUsageSchema,
+    RelationshipAttributeNameUsageInstanceContractImpl,
+    RelationshipAttributeNameUsageStaticContractImpl
+) as IRelationshipAttributeNameUsageModel;

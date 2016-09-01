@@ -100,7 +100,7 @@ describe('RAM Role', () => {
             });
 
             expect(instance).not.toBeNull();
-            expect(instance.id).not.toBeNull();
+            expect(instance._id).not.toBeNull();
             expect(instance.endEventTimestamp).toBeFalsy();
 
             done();
@@ -123,7 +123,7 @@ describe('RAM Role', () => {
             });
 
             expect(instance).not.toBeNull();
-            expect(instance.id).not.toBeNull();
+            expect(instance._id).not.toBeNull();
             expect(instance.endEventTimestamp).not.toBeFalsy();
 
             done();
@@ -182,18 +182,16 @@ describe('RAM Role', () => {
             );
 
             // perform
-            role.deleteAttribute(roleAttribute.attributeName.code, roleAttribute.attributeName.classifier);
+            await role.deleteAttribute(roleAttribute.attributeName.code, roleAttribute.attributeName.classifier);
 
             // verify
-            const actualRole = await RoleModel.findById(role.id).exec();
-            console.log("actualRole = ", actualRole);
+            const actualRole = await RoleModel.findById(role._id).exec();
+            console.log('actualRole = ', actualRole);
             expect(actualRole.attributes.length).toBe(0);
 
             // attribute should no longer exist
             const actualRoleAttribute = await RoleAttributeModel.findById(roleAttribute.id);
             expect(actualRoleAttribute).toBe(null);
-
-            expect(role).not.toBeNull();
 
             done();
 

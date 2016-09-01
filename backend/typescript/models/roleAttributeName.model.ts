@@ -1,11 +1,21 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, ICodeDecode, CodeDecodeSchema} from './base';
+import {RAMEnum, ICodeDecode, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
 import {Url} from './url';
 import {HrefValue, RoleAttributeName as DTO} from '../../../commons/RamAPI';
 
+// exports ............................................................................................................
+
+export interface IRoleAttributeName extends ICodeDecode, IRoleAttributeNameInstanceContract {
+}
+
+export interface IRoleAttributeNameModel extends mongoose.Model<IRoleAttributeName>, IRoleAttributeNameStaticContract {
+}
+
+export let RoleAttributeNameModel: IRoleAttributeNameModel;
+
 // enums, utilities, helpers ..........................................................................................
 
-// see https://github.com/atogov/RAM/wiki/Relationship-Attribute-Types
+// see https://github.com/atogov/RAM/wiki/Role-Attribute-Types
 export class RoleAttributeNameDomain extends RAMEnum {
 
     public static Null = new RoleAttributeNameDomain('NULL', 'NULL');
@@ -79,9 +89,9 @@ const RoleAttributeNameSchema = CodeDecodeSchema({
     }]
 });
 
-// interfaces .........................................................................................................
+// instance ...........................................................................................................
 
-export interface IRoleAttributeName extends ICodeDecode {
+export interface IRoleAttributeNameInstanceContract extends ICodeDecodeContract {
     domain: string;
     classifier: string;
     category?: string;
@@ -93,92 +103,100 @@ export interface IRoleAttributeName extends ICodeDecode {
     toDTO(): Promise<DTO>;
 }
 
-export interface IRoleAttributeNameModel extends mongoose.Model<IRoleAttributeName> {
-    findByCodeIgnoringDateRange: (code:string) => Promise<IRoleAttributeName>;
-    findByCodeInDateRange: (code:string, date:Date) => Promise<IRoleAttributeName>;
-    listIgnoringDateRange: () => Promise<IRoleAttributeName[]>;
-    listInDateRange: (date:Date) => Promise<IRoleAttributeName[]>;
+class RoleAttributeNameInstanceContractImpl extends CodeDecodeContractImpl implements IRoleAttributeNameInstanceContract {
+
+    public domain: string;
+    public classifier: string;
+    public category: string;
+    public purposeText: string;
+    public permittedValues: string[];
+
+    public domainEnum(): RoleAttributeNameDomain {
+        return RoleAttributeNameDomain.valueOf(this.domain);
+    }
+
+    public isInDateRange(): boolean {
+        const date = new Date();
+        return this.startDate <= date && (this.endDate === null || this.endDate === undefined || this.endDate >= date);
+    }
+
+    public async toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>> {
+        return new HrefValue(
+            await Url.forRoleAttributeName(this),
+            includeValue ? await this.toDTO() : undefined
+        );
+    }
+
+    public async toDTO(): Promise<DTO> {
+        return new DTO(
+            this.code,
+            this.shortDecodeText,
+            this.longDecodeText,
+            this.startDate,
+            this.endDate,
+            this.shortDecodeText,
+            this.domain,
+            this.classifier,
+            this.category,
+            this.permittedValues
+        );
+    }
+
 }
 
-// instance methods ...................................................................................................
+// static .............................................................................................................
 
-RoleAttributeNameSchema.method('domainEnum', function () {
-    return RoleAttributeNameDomain.valueOf(this.domain);
-});
+interface IRoleAttributeNameStaticContract {
+    findByCodeIgnoringDateRange(code: string): Promise<IRoleAttributeName>;
+    findByCodeInDateRange(code: string, date: Date): Promise<IRoleAttributeName>;
+    listIgnoringDateRange(): Promise<IRoleAttributeName[]>;
+    listInDateRange(date: Date): Promise<IRoleAttributeName[]>;
+}
 
-RoleAttributeNameSchema.method('isInDateRange', function() {
-    const date = new Date();
-    return this.startDate <= date && (this.endDate === null || this.endDate === undefined || this.endDate >= date);
-});
+class RoleAttributeNameStaticContractImpl implements IRoleAttributeNameStaticContract {
 
-RoleAttributeNameSchema.method('toHrefValue', async function (includeValue:boolean) {
-    return new HrefValue(
-        await Url.forRoleAttributeName(this),
-        includeValue ? await this.toDTO() : undefined
-    );
-});
+    public findByCodeIgnoringDateRange(code: string): Promise<IRoleAttributeName> {
+        return RoleAttributeNameModel
+            .findOne({
+                code: code
+            })
+            .exec();
+    }
 
-RoleAttributeNameSchema.method('toDTO', async function () {
-    return new DTO(
-        this.code,
-        this.shortDecodeText,
-        this.longDecodeText,
-        this.startDate,
-        this.endDate,
-        this.shortDecodeText,
-        this.domain,
-        this.classifier,
-        this.category,
-        this.permittedValues
-    );
-});
+    public findByCodeInDateRange(code: string, date: Date): Promise<IRoleAttributeName> {
+        return RoleAttributeNameModel
+            .findOne({
+                code: code,
+                startDate: {$lte: date},
+                $or: [{endDate: null}, {endDate: {$gte: date}}]
+            })
+            .exec();
+    }
 
-// static methods .....................................................................................................
+    public listIgnoringDateRange(): Promise<IRoleAttributeName[]> {
+        return RoleAttributeNameModel
+            .find({})
+            .sort({name: 1})
+            .exec();
+    }
 
-RoleAttributeNameSchema.static('findByCodeIgnoringDateRange', (code:string) => {
-    return this.RoleAttributeNameModel
-        .findOne({
-            code: code
-        })
-        .exec();
-});
+    public listInDateRange(date: Date): Promise<IRoleAttributeName[]> {
+        return RoleAttributeNameModel
+            .find({
+                startDate: {$lte: date},
+                $or: [{endDate: null}, {endDate: {$gte: date}}]
+            })
+            .sort({name: 1})
+            .exec();
+    }
 
-RoleAttributeNameSchema.static('findByCodeInDateRange', (code:string, date:Date) => {
-    return this.RoleAttributeNameModel
-        .findOne({
-            code: code,
-            startDate: {$lte: date},
-            $or: [{endDate: null}, {endDate: {$gte: date}}]
-        })
-        .exec();
-});
-
-RoleAttributeNameSchema.static('listIgnoringDateRange', () => {
-    return this.RoleAttributeNameModel
-        .find({
-        })
-        .deepPopulate([
-            'attributeNameUsages.attributeName'
-        ])
-        .sort({name: 1})
-        .exec();
-});
-
-RoleAttributeNameSchema.static('listInDateRange', (date:Date) => {
-    return this.RoleAttributeNameModel
-        .find({
-            startDate: {$lte: date},
-            $or: [{endDate: null}, {endDate: {$gte: date}}]
-        })
-        .deepPopulate([
-            'attributeNameUsages.attributeName'
-        ])
-        .sort({name: 1})
-        .exec();
-});
+}
 
 // concrete model .....................................................................................................
 
-export const RoleAttributeNameModel = mongoose.model(
+RoleAttributeNameModel = Model(
     'RoleAttributeName',
-    RoleAttributeNameSchema) as IRoleAttributeNameModel;
+    RoleAttributeNameSchema,
+    RoleAttributeNameInstanceContractImpl,
+    RoleAttributeNameStaticContractImpl
+) as IRoleAttributeNameModel;

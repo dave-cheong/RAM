@@ -254,19 +254,16 @@ export class EditRoleComponent extends AbstractPageComponent {
     }
 
     private setUpForm() {
-        const preferredName = this.services.model.getRoleAttributeValue(this.services.model.getRoleAttribute(this.role, 'PREFERRED_NAME', 'OTHER'));
-        const deviceAusKeys = this.services.model.getRoleAttributeValue(this.services.model.getRoleAttribute(this.role, 'DEVICE_AUSKEYS', 'OTHER'));
-
+        const preferredName = this.services.model.getRoleAttributeValue(this.services.model.getRoleAttribute(this.role, RAMConstants.RoleAttributeNameCode.PREFERRED_NAME, RAMConstants.RoleAttributeNameClassifier.OTHER));
+        const deviceAusKeys = this.services.model.getRoleAttributeValue(this.services.model.getRoleAttribute(this.role, RAMConstants.RoleAttributeNameCode.DEVICE_AUSKEYS, RAMConstants.RoleAttributeNameClassifier.OTHER));
         (this.form.controls['preferredName'] as FormControl).updateValue(preferredName);
         (this.form.controls['deviceAusKeys'] as FormControl).updateValue(deviceAusKeys);
-
         this.updateAgencyServices();
     }
 
     private updateAgencyServices() {
         this.form.controls['agencyServices'].updateValueAndValidity([]);
-
-        this.assignedAgencyAttributes = this.services.model.getRoleAttributesByClassifier(this.role, 'AGENCY_SERVICE');
+        this.assignedAgencyAttributes = this.services.model.getRoleAttributesByClassifier(this.role, RAMConstants.RoleAttributeNameClassifier.AGENCY_SERVICE);
         if (this.assignedAgencyAttributes) {
             for (let attr of this.assignedAgencyAttributes) {
                 if (attr.value[0] === 'true') {
@@ -356,8 +353,8 @@ export class EditRoleComponent extends AbstractPageComponent {
         if (validationOk) {
             // let roleTypeRef: IHrefValue<IRoleType> = this.services.model.getRoleTypeRef(this.roleTypeRefs, roleTypeCode);
             let attributes: RoleAttribute[] = [];
-            attributes.push(new RoleAttribute(preferredName, this.services.model.getRoleTypeAttributeNameRef(this.role.roleType, 'PREFERRED_NAME')));
-            attributes.push(new RoleAttribute(deviceAusKeys, this.services.model.getRoleTypeAttributeNameRef(this.role.roleType, 'DEVICE_AUSKEYS')));
+            attributes.push(new RoleAttribute(preferredName, this.services.model.getRoleTypeAttributeNameRef(this.role.roleType, RAMConstants.RoleAttributeNameCode.PREFERRED_NAME)));
+            attributes.push(new RoleAttribute(deviceAusKeys, this.services.model.getRoleTypeAttributeNameRef(this.role.roleType, RAMConstants.RoleAttributeNameCode.DEVICE_AUSKEYS)));
 
             for (let agencyServiceCode of agencyServiceCodes) {
                 attributes.push(new RoleAttribute(['true'], this.services.model.getRoleTypeAttributeNameRef(this.role.roleType, agencyServiceCode)));

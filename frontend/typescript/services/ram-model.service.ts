@@ -1,3 +1,7 @@
+//
+// todo deprecate this, as these helpers should now be defined in the DTOs themselves
+//
+
 import {Injectable} from '@angular/core';
 import {DatePipe} from '@angular/common';
 
@@ -182,6 +186,17 @@ export class RAMModelService {
             for (let ref of relationshipTypeRefs) {
                 if (ref.href === href) {
                     return ref.value;
+                }
+            }
+        }
+        return null;
+    }
+
+    public getRelationshipTypeByCode(relationshipTypeRefs: IHrefValue<IRelationshipType>[], code:string): IHrefValue<IRelationshipType> {
+        if (relationshipTypeRefs && code) {
+            for (let ref of relationshipTypeRefs) {
+                if (ref.value.code === code) {
+                    return ref;
                 }
             }
         }

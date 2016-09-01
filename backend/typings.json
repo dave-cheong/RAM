@@ -15,7 +15,7 @@
     "lodash": "registry:dt/lodash#3.10.0+20160330154726",
     "method-override": "registry:dt/method-override#0.0.0+20160317120654",
     "mime": "registry:dt/mime#0.0.0+20160316155526",
-    "mongoose": "registry:dt/mongoose#3.8.5+20160316155526",
+    "mongodb": "registry:dt/mongodb#2.1.0+20160602142941",
     "mongoose-auto-increment": "registry:dt/mongoose-auto-increment#5.0.1+20151122044555",
     "morgan": "registry:dt/morgan#1.2.2+20160317120654",
     "node": "registry:dt/node#4.0.0+20160330064709",

@@ -3,42 +3,52 @@
              [messages]="globalMessages"
              [giveAuthorisationsEnabled]="giveAuthorisationsEnabled"></page-header>
 
-<representative-details [(data)]='newRelationship.representativeDetails' (isValid)='representativeIsValid=$event'>
+<representative-details
+        [(data)]='relationshipComponentData.representativeDetails'
+        (isValid)='representativeIsValid=$event'>
 </representative-details>
 
-<authorisation-type [data]='newRelationship.authType' [options]='relationshipTypeRefs' (dataChange)="authTypeChange($event)" (isValid)='authTypeIsValid=$event'>
+<authorisation-type
+        [data]='relationshipComponentData.authType'
+        [options]='relationshipTypeRefs'
+        (dataChange)="authTypeChange($event)"
+        (isValid)='authTypeIsValid=$event'>
 </authorisation-type>
 
+<authorisation-management
+        [(data)]='relationshipComponentData.authorisationManagement'
+        [attributeNameUsage]='manageAuthAttribute'
+        [disabled]="disableAuthMgmt"></authorisation-management>
+
+<authorisation-permissions
+        [(data)]='relationshipComponentData.authorisationPermissions'
+        [(permissionAttributes)]='relationshipComponentData.permissionAttributes'
+        [attributeNameUsages]='permissionAttributeUsages'
+        (validationErrors)='authorisationPermissionErrors=$event'></authorisation-permissions>
+
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h4><span class="badge square">3</span> {{'addRelationship.accessPeriod.header' | translate}}</h4>
+        <h4><span class="badge square">5</span> {{'addRelationship.accessPeriod.header' | translate}}</h4>
     </div>
     <div class="panel-body">
-
-        <access-period [(data)]='newRelationship.accessPeriod' (isValid)='accessPeriodIsValid=$event'>
+        <access-period
+                [(data)]='relationshipComponentData.accessPeriod'
+                (isValid)='accessPeriodIsValid=$event'>
         </access-period>
-
     </div>
 </div>
-
-<authorisation-management [(data)]='newRelationship.authorisationManagement' [attributeNameUsage]='manageAuthAttribute'></authorisation-management>
-
-<!--authorisation-permissions (validationErrors)='authorisationPermissionErrors=$event'></authorisation-permissions-->
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h4><span class="badge square">5</span> {{'addRelationship.declaration.header' | translate}}</h4>
+        <h4><span class="badge square">6</span> {{'addRelationship.declaration.header' | translate}}</h4>
     </div>
     <div class="panel-body">
-
-        <relationship-declaration [(data)]='newRelationship.declaration'
-                                  [markdown]="markdown"
-                                  (backEvent)="back()"
-                                  (createRelationshipEvent)="submit()"
-                                  (isValid)='declarationIsValid=$event'
-                                  [isAuthorizedBtnEnabled]='accessPeriodIsValid && authTypeIsValid && representativeIsValid'></relationship-declaration>
-
+        <relationship-declaration
+                [(data)]='relationshipComponentData.declaration'
+                [markdown]="markdown"
+                (backEvent)="back()"
+                (createRelationshipEvent)="submit()"
+                (isValid)='declarationIsValid=$event'
+                [isAuthorizedBtnEnabled]='accessPeriodIsValid && authTypeIsValid && representativeIsValid'></relationship-declaration>
     </div>
 </div>
-
-<!--{{dumpObject(newRelationship)}}-->

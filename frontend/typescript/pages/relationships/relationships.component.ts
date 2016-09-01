@@ -37,14 +37,13 @@ import {
 
 export class RelationshipsComponent extends AbstractPageComponent {
 
-    public idValue: string;
+    public identityHref: string;
     public filter: FilterParams;
     public page: number;
 
-    public relationships$: Observable<ISearchResult<IHrefValue<IRelationship>>>;
-
     public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public identity: IIdentity;
+    public relationshipRefs: ISearchResult<IHrefValue<IRelationship>>;
     public partyTypeRefs: IHrefValue<IPartyType>[];
     public profileProviderRefs: IHrefValue<IProfileProvider>[];
     public relationshipStatusRefs: IHrefValue<IRelationshipStatus>[];
@@ -68,7 +67,7 @@ export class RelationshipsComponent extends AbstractPageComponent {
         this._isLoading = true;
 
         // extract path and query parameters
-        this.idValue = params.path['idValue'];
+        this.identityHref = params.path['identityHref'];
         this.filter = FilterParams.decode(params.query['filter']);
         this.page = params.query['page'] ? +params.query['page'] : 1;
 
@@ -88,8 +87,9 @@ export class RelationshipsComponent extends AbstractPageComponent {
         }
 
         // identity in focus
-        this.services.rest.findIdentityByValue(this.idValue).subscribe((identity) => {
-            this.identity = identity;
+        this.services.rest.findIdentityByHref(this.identityHref).subscribe({
+            next: this.onFindIdentity.bind(this),
+            error: this.onServerError.bind(this)
         });
 
         // party types
@@ -114,35 +114,10 @@ export class RelationshipsComponent extends AbstractPageComponent {
             });
         });
 
-        // relationships
-        this.subjectGroupsWithRelationships = [];
-        this.relationships$ = this.services.rest.searchRelationshipsByIdentity(this.idValue, this.filter.encode(), this.page);
-        this.relationships$.subscribe((relationshipRefs) => {
-            this._isLoading = false;
-            for (const relationshipRef of relationshipRefs.list) {
-                let subjectGroupWithRelationshipsToAddTo: SubjectGroupWithRelationships;
-                const subjectRef = relationshipRef.value.subject;
-                for (const subjectGroupWithRelationships of this.subjectGroupsWithRelationships) {
-                    if (subjectGroupWithRelationships.hasSameSubject(subjectRef)) {
-                        subjectGroupWithRelationshipsToAddTo = subjectGroupWithRelationships;
-                    }
-                }
-                if (!subjectGroupWithRelationshipsToAddTo) {
-                    subjectGroupWithRelationshipsToAddTo = new SubjectGroupWithRelationships();
-                    subjectGroupWithRelationshipsToAddTo.subjectRef = subjectRef;
-                    this.subjectGroupsWithRelationships.push(subjectGroupWithRelationshipsToAddTo);
-                }
-                subjectGroupWithRelationshipsToAddTo.relationshipRefs.push(relationshipRef);
-            }
-        }, (err) => {
-            this.addGlobalErrorMessages(err);
-            this._isLoading = false;
-        });
-
         // pagination delegate
         this.paginationDelegate = {
             goToPage: (page: number) => {
-                this.services.route.goToRelationshipsPage(this.idValue, this.filter.encode(), page);
+                this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity), this.filter.encode(), page);
             }
         } as SearchResultPaginationDelegate;
 
@@ -155,6 +130,46 @@ export class RelationshipsComponent extends AbstractPageComponent {
             text: this.filter.get('text', ''),
             sort: this.filter.get('sort', '-')
         });
+
+    }
+
+    public onFindIdentity(identity: IIdentity) {
+
+        this.identity = identity;
+
+        // relationships
+        this.services.rest.searchRelationshipsByIdentity(this.identity.idValue, this.filter.encode(), this.page).subscribe({
+            next: this.onSearchRelationships.bind(this),
+            error: (err) => {
+                this.onServerError(err);
+                this._isLoading = false;
+            }
+        });
+
+    }
+
+    public onSearchRelationships(relationshipRefs: ISearchResult<IHrefValue<IRelationship>>) {
+
+        this.relationshipRefs = relationshipRefs;
+        this.subjectGroupsWithRelationships = [];
+
+        for (const relationshipRef of relationshipRefs.list) {
+            let subjectGroupWithRelationshipsToAddTo: SubjectGroupWithRelationships;
+            const subjectRef = relationshipRef.value.subject;
+            for (const subjectGroupWithRelationships of this.subjectGroupsWithRelationships) {
+                if (subjectGroupWithRelationships.hasSameSubject(subjectRef)) {
+                    subjectGroupWithRelationshipsToAddTo = subjectGroupWithRelationships;
+                }
+            }
+            if (!subjectGroupWithRelationshipsToAddTo) {
+                subjectGroupWithRelationshipsToAddTo = new SubjectGroupWithRelationships();
+                subjectGroupWithRelationshipsToAddTo.subjectRef = subjectRef;
+                this.subjectGroupsWithRelationships.push(subjectGroupWithRelationshipsToAddTo);
+            }
+            subjectGroupWithRelationshipsToAddTo.relationshipRefs.push(relationshipRef);
+        }
+
+        this._isLoading = false;
 
     }
 
@@ -189,23 +204,37 @@ export class RelationshipsComponent extends AbstractPageComponent {
             .encode();
         //console.log('Filter (encoded): ' + filterString);
         //console.log('Filter (decoded): ' + JSON.stringify(FilterParams.decode(filterString), null, 4));
-        this.services.route.goToRelationshipsPage(this.idValue, filterString);
+        this.services.route.goToRelationshipsPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+            filterString
+        );
     }
 
     public goToRelationshipAddPage() {
-        this.services.route.goToAddRelationshipPage(this.idValue);
+        this.services.route.goToAddRelationshipPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+        );
     };
 
     public goToRelationshipEnterCodePage() {
-        this.services.route.goToRelationshipEnterCodePage(this.idValue);
+        // todo refactor to href
+        this.services.route.goToRelationshipEnterCodePage(this.identity.idValue);
     };
 
     public goToRelationshipsContext(partyResource: IHrefValue<IParty>) {
         const defaultIdentityResource = this.services.model.getDefaultIdentityResource(partyResource.value);
         if (defaultIdentityResource) {
-            const identityIdValue = defaultIdentityResource.value.idValue;
-            this.services.route.goToRelationshipsPage(identityIdValue);
+            this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, defaultIdentityResource.value));
         }
+    }
+
+    // todo go to relationship page
+    public goToRelationshipPage(relationshipRef: IHrefValue<IRelationship>) {
+        alert('TODO: Not yet implemented');
+    }
+
+    public isEditRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
+        return this.services.model.hasLinkHrefByType(RAMConstants.Link.MODIFY, relationshipRef.value);
     }
 
 }

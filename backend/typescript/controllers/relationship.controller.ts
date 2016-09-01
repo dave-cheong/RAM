@@ -11,7 +11,6 @@ import {
 } from './helpers';
 import {IPartyModel, PartyModel} from '../models/party.model';
 import {IRelationshipModel, RelationshipStatus, RelationshipModel} from '../models/relationship.model';
-import {Url} from '../models/url';
 import {
     FilterParams,
     IInvitationCodeRelationshipAddDTO,
@@ -19,7 +18,6 @@ import {
     IAttributeDTO
 } from '../../../commons/RamAPI';
 import {Headers} from './headers';
-import {Assert} from '../models/base';
 
 // todo add data security
 export class RelationshipController {
@@ -69,7 +67,7 @@ export class RelationshipController {
         const invitationCode = req.params.invitationCode;
         validateReqSchema(req, schema)
             .then((req:Request) => this.relationshipModel.findByInvitationCode(invitationCode))
-            .then((model) => model ? model.claimPendingInvitation(context.getAuthenticatedIdentity()) : null)
+            .then((model) => model ? model.claimPendingInvitation(context.getAuthenticatedIdentity(), invitationCode) : null)
             .then((model) => model ? model.toDTO(invitationCode) : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -85,9 +83,6 @@ export class RelationshipController {
         };
         validateReqSchema(req, schema)
             .then((req:Request) => this.relationshipModel.findByInvitationCode(req.params.invitationCode))
-            .then((model) => {
-                return model;
-            })
             .then((model) => model ? model.acceptPendingInvitation(context.getAuthenticatedIdentity()) : null)
             .then((model) => model ? model.toDTO(null) : null)
             .then(sendResource(res))
@@ -390,16 +385,6 @@ export class RelationshipController {
     };
 
     private create = async(req:Request, res:Response) => {
-
-        // todo move into somewhere
-        let substringAfter = (searchString: string, href: string) => {
-            let idValue:string = null;
-            if (href.startsWith(searchString)) {
-                idValue = decodeURIComponent(href.substr(searchString.length));
-            }
-            return idValue;
-        };
-
         const schema = {
             'relationshipType.href': {
                 in: 'body',
@@ -408,48 +393,17 @@ export class RelationshipController {
                     errorMessage: 'Relationship type is not valid'
                 }
             },
-            'subject.href': {
-                in: 'body',
-                matches: {
-                    options: ['^/api/v1/party/identity/'],
-                    errorMessage: 'Subject identity id value not valid'
-                }
-            },
-            'delegate.href': {
-                in: 'body',
-                matches: {
-                    options: ['^/api/v1/party/identity/'],
-                    errorMessage: 'Delegate identity id value not valid'
-                }
-            },
             'startTimestamp': {
                 in: 'body',
                 notEmpty: true,
                 isDate: {
-                    errorMessage: 'Start timestamp is not valid'
+                    errorMessage: 'Start timestamp is not a valid date'
                 },
                 errorMessage: 'Start timestamp is not valid'
-            },
-            'endTimestamp': {
-                in: 'body'
             }
         };
-        const subjectIdValue = substringAfter('/api/v1/party/identity/', req.body.subject.href); // todo may need to change as it could be initiated from a delegate
         validateReqSchema(req, schema)
-            .then(async (req:Request) => {
-                const myPrincipal = context.getAuthenticatedPrincipal();
-                const myIdentity = context.getAuthenticatedIdentity();
-                const hasAccess = await this.partyModel.hasAccess(subjectIdValue, myPrincipal, myIdentity);
-                if (!hasAccess) {
-                    throw new Error('403');
-                }
-                return req;
-            })
-            .then(async (req: Request) => {
-                const subjectParty = await PartyModel.findByIdentityIdValue(subjectIdValue);
-                Assert.assertNotNull(subjectParty, 'Subject party not found');
-                return await subjectParty.addRelationship2(req.body);
-            })
+            .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, req.body))
             .then((model) => model ? model.toDTO(null) : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -487,32 +441,14 @@ export class RelationshipController {
             'startTimestamp': {
                 in: 'body',
                 notEmpty: true,
-                // isDate: {
-                //     errorMessage: 'Start timestamp is not valid'
-                // },
-                // todo resolve issue
+                isDate: {
+                    errorMessage: 'Start timestamp is not a valid date'
+                },
                 errorMessage: 'Start timestamp is not valid'
-            },
-            'endTimestamp': {
-                in: 'body'
             }
         };
-        const subjectIdValue = Url.lastPathElement(req.body.subject.href);
         validateReqSchema(req, schema)
-            .then(async (req:Request) => {
-                const myPrincipal = context.getAuthenticatedPrincipal();
-                const myIdentity = context.getAuthenticatedIdentity();
-                const hasAccess = await this.partyModel.hasAccess(subjectIdValue, myPrincipal, myIdentity);
-                if (!hasAccess) {
-                    throw new Error('403');
-                }
-                return req;
-            })
-            .then(async (req: Request) => {
-                let relationship = await RelationshipModel.findByIdentifier(req.params.identifier);
-                Assert.assertNotNull(relationship, 'Relationship not found', 'Could not relationship by param');
-                return await relationship.modify(req.body);
-            })
+            .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, req.body))
             .then((model) => model ? model.toDTO(null) : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -597,7 +533,6 @@ export class RelationshipController {
             context.isAuthenticated,
             this.createUsingInvitation);
 
-        // todo need to add to swagger
         router.post('/v1/relationship',
             context.begin,
             context.isAuthenticated,

@@ -129,7 +129,8 @@ export class Seeder {
     private static exportLDIFMode:boolean = true;
 
     public static full_accessLevel = 'Full access';
-    public static accessLevels = [Seeder.full_accessLevel, 'Limited access', 'No access'];
+    public static limited_accessLevel = 'Limited access';
+    public static accessLevels = [Seeder.full_accessLevel, Seeder.limited_accessLevel];
 
     // relationship types
     public static associate_delegate_relationshipType:IRelationshipType;
@@ -139,23 +140,20 @@ export class Seeder {
 
     // relationship attribute names (other)
     public static permissionCustomisationAllowedInd_relAttributeName:IRelationshipAttributeName;
+    public static accessLevelsDescription_relAttributeName:IRelationshipAttributeName;
     public static delegateManageAuthorisationAllowedInd_relAttributeName:IRelationshipAttributeName;
+    public static delegateManageAuthorisationUserConfigurableInd_relAttributeName:IRelationshipAttributeName;
     public static delegateRelationshipTypeDeclaration_relAttributeName:IRelationshipAttributeName;
     public static subjectRelationshipTypeDeclaration_relAttributeName:IRelationshipAttributeName;
     public static selectedGovernmentServicesList_relAttributeName:IRelationshipAttributeName; // for storing the selected services on an OSP relationship
     public static ssid_relAttributeName:IRelationshipAttributeName;
 
     // relationship attribute names (permission)
-    public static asic_abn_relAttributeName:IRelationshipAttributeName;
-    public static wgea_activate_relAttributeName:IRelationshipAttributeName;
-    public static deptindustry_aba_relAttributeName:IRelationshipAttributeName;
-    public static abr_abr_relAttributeName:IRelationshipAttributeName;
-    public static deptindustry_ats_relAttributeName:IRelationshipAttributeName;
-    public static ntdeptbusiness_avetmiss_relAttributeName:IRelationshipAttributeName;
-    public static ntdeptcorpinfoservices_ims_relAttributeName:IRelationshipAttributeName;
-    public static depthscentrelink_ppl_relAttributeName:IRelationshipAttributeName;
-    public static deptimm_skillselect_relAttributeName:IRelationshipAttributeName;
-    public static deptemp_wageconnect_relAttributeName:IRelationshipAttributeName;
+    public static taxSuperServices_relAttributeName:IRelationshipAttributeName;
+    public static administrativeServices_relAttributeName:IRelationshipAttributeName;
+    public static stateRevenueServices_relAttributeName:IRelationshipAttributeName;
+    public static intermediariesAndQualifiedServices_relAttributeName:IRelationshipAttributeName;
+    public static licenseAndRegistrationServices_relAttributeName:IRelationshipAttributeName;
 
     // role attribute names (other)
     public static ssid_roleAttributeName:IRoleAttributeName;
@@ -350,17 +348,18 @@ export class Seeder {
     }
 
     public static async createRelationshipAttributeNameUsageModels
-    <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string}>(attributeValues:T[]) {
+    <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string, sortOrder:number}>(attributeValues:T[]) {
         const attributeNameUsages:IRelationshipAttributeNameUsage[] = [];
         if (attributeValues) {
             for (let i = 0; i < attributeValues.length; i = i + 1) {
                 const attributeValue = attributeValues[i];
                 const truncatedDefaultValue = truncateString(attributeValue.defaultValue);
-                Seeder.log(`  - ${attributeValue.attribute.code} (${truncatedDefaultValue})`.green);
+                Seeder.log(`  - ${attributeValue.sortOrder} ${attributeValue.attribute.code} (${truncatedDefaultValue})`.green);
                 const attributeNameUsage = await RelationshipAttributeNameUsageModel.create({
                     attributeName: attributeValue.attribute,
                     optionalInd: attributeValue.optionalInd,
-                    defaultValue: attributeValue.defaultValue
+                    defaultValue: attributeValue.defaultValue,
+                    sortOrder: attributeValue.sortOrder
                 });
                 attributeNameUsages.push(attributeNameUsage);
             }
@@ -369,7 +368,7 @@ export class Seeder {
     }
 
     public static async createRelationshipTypeModel
-    <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string}>
+    <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string, sortOrder:number}>
     (values:IRelationshipType, attributeValues:T[]) {
         const code = values.code;
         const existingModel = await RelationshipTypeModel.findByCodeIgnoringDateRange(code);
@@ -523,7 +522,7 @@ export class Seeder {
         Seeder.log(`- ${values.relationshipType.code}`.magenta);
         if (values.attributes) {
             for (let attribute of values.attributes) {
-                let value:[string] = attribute.value;
+                let value:string[] = attribute.value;
                 const truncatedValue = truncateString(value.toString());
                 Seeder.log(`  - ${attribute.attributeName.code} (${truncatedValue})`.green);
             }
@@ -579,6 +578,17 @@ export class Seeder {
                 purposeText: 'Indicator of whether a relationship type allows the user to customise permission levels'
             } as any);
 
+            Seeder.accessLevelsDescription_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'ACCESS_LEVELS_DESCRIPTION',
+                shortDecodeText: 'Access Levels description',
+                longDecodeText: 'Full access: The agency service allows the representative access to all transactions without further steps. For more information see the detail for each service provided in the accordians below.',
+                startDate: now,
+                domain: RelationshipAttributeNameDomain.Null.code,
+                classifier: RelationshipAttributeNameClassifier.Other.code,
+                category: null,
+                purposeText: 'Descriptive text to explain the permission attribute access levels'
+            } as any);
+
             Seeder.delegateManageAuthorisationAllowedInd_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
                 code: 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND',
                 shortDecodeText: 'Do you want this representative to manage authorisations for this organisation?',
@@ -588,6 +598,17 @@ export class Seeder {
                 classifier: RelationshipAttributeNameClassifier.Other.code,
                 category: null,
                 purposeText: 'Indicator of whether a relationship allows the delegate to manage authorisations'
+            } as any);
+
+            Seeder.delegateManageAuthorisationUserConfigurableInd_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND',
+                shortDecodeText: 'System indicator of whether the user can change the manage authorisations value',
+                longDecodeText: 'System indicator of whether the user can change the manage authorisations value',
+                startDate: now,
+                domain: RelationshipAttributeNameDomain.Null.code,
+                classifier: RelationshipAttributeNameClassifier.Other.code,
+                category: null,
+                purposeText: 'Indicator of whether the user can change the manage authorisations value (DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND)'
             } as any);
 
             Seeder.delegateRelationshipTypeDeclaration_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
@@ -634,124 +655,64 @@ export class Seeder {
 
             Seeder.log('\nInserting Relationship Attribute Names (permission):\n'.underline);
 
-            const administrativeServices_category = 'Administrative Services';
+            const permissionServices_category = 'Permission Services';
 
-            Seeder.asic_abn_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'ASIC_ABN_PERMISSION',
-                shortDecodeText: 'Australian Securities and Investments Commission (ASIC)',
-                longDecodeText: 'ABN / BN Project (limited release)',
+            Seeder.taxSuperServices_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'TAX_AND_SUPER_SERVICES_PERMISSION',
+                shortDecodeText: 'Tax and Super Services',
+                longDecodeText: 'Tax and Super Services',
                 startDate: now,
                 domain: RelationshipAttributeNameDomain.SelectSingle.code,
                 classifier: RelationshipAttributeNameClassifier.Permission.code,
-                category: administrativeServices_category,
+                category: permissionServices_category,
                 purposeText: 'A permission for a relationship',
                 permittedValues: Seeder.accessLevels
             } as any);
 
-            Seeder.wgea_activate_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'WGEA_ACTIVATE_PERMISSION',
-                shortDecodeText: 'Workplace Gender Equality Agency (WGEA)',
+            Seeder.administrativeServices_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'ADMINISTRATIVE_SERVICES_PERMISSION',
+                shortDecodeText: 'Administrative Services',
                 longDecodeText: 'Activate',
                 startDate: now,
                 domain: RelationshipAttributeNameDomain.SelectSingle.code,
                 classifier: RelationshipAttributeNameClassifier.Permission.code,
-                category: administrativeServices_category,
+                category: permissionServices_category,
                 purposeText: 'A permission for a relationship',
                 permittedValues: Seeder.accessLevels
             } as any);
 
-            Seeder.deptindustry_aba_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'DEPTOFINDUSTRY_ABA_PERMISSION',
-                shortDecodeText: 'Department of Industry',
-                longDecodeText: 'Australian Business Account (ABA) - ABLIS',
+            Seeder.stateRevenueServices_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'STATE_REVENUE_SERVICES_PERMISSION',
+                shortDecodeText: 'State Revenue Services',
+                longDecodeText: 'State Revenue Services',
                 startDate: now,
                 domain: RelationshipAttributeNameDomain.SelectSingle.code,
                 classifier: RelationshipAttributeNameClassifier.Permission.code,
-                category: administrativeServices_category,
+                category: permissionServices_category,
                 purposeText: 'A permission for a relationship',
                 permittedValues: Seeder.accessLevels
             } as any);
 
-            Seeder.abr_abr_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'ABR_ABR_PERMISSION',
-                shortDecodeText: 'Australian Business Register (ABR)',
-                longDecodeText: 'Australian Business Register',
+            Seeder.intermediariesAndQualifiedServices_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'INTERMEDIARIES_AND_QUALIFIED_SERVICES_PERMISSION',
+                shortDecodeText: 'Intermediaries and Qualified Services',
+                longDecodeText: 'Intermediaries and Qualified Services',
                 startDate: now,
                 domain: RelationshipAttributeNameDomain.SelectSingle.code,
                 classifier: RelationshipAttributeNameClassifier.Permission.code,
-                category: administrativeServices_category,
+                category: permissionServices_category,
                 purposeText: 'A permission for a relationship',
                 permittedValues: Seeder.accessLevels
             } as any);
 
-            Seeder.deptindustry_ats_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'DEPTOFINDUSTRY_ATS_PERMISSION',
-                shortDecodeText: 'Department of Industry',
-                longDecodeText: 'Automotive Transformation Scheme (ATS)',
+            Seeder.licenseAndRegistrationServices_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'LICENSE_AND_REGISTRATION_SERVICES_PERMISSION',
+                shortDecodeText: 'License and Registration Services',
+                longDecodeText: 'License and Registration Services',
                 startDate: now,
                 domain: RelationshipAttributeNameDomain.SelectSingle.code,
                 classifier: RelationshipAttributeNameClassifier.Permission.code,
-                category: administrativeServices_category,
-                purposeText: 'A permission for a relationship',
-                permittedValues: Seeder.accessLevels
-            } as any);
-
-            Seeder.ntdeptbusiness_avetmiss_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'NTDEPTOFBUSINESS_AVETMISS_PERMISSION',
-                shortDecodeText: 'NT Department of Business',
-                longDecodeText: 'AVETMISS Training Portal',
-                startDate: now,
-                domain: RelationshipAttributeNameDomain.SelectSingle.code,
-                classifier: RelationshipAttributeNameClassifier.Permission.code,
-                category: administrativeServices_category,
-                purposeText: 'A permission for a relationship',
-                permittedValues: Seeder.accessLevels
-            } as any);
-
-            Seeder.ntdeptcorpinfoservices_ims_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'NTDEPTOFCORPINFOSERVICES_IMS_PERMISSION',
-                shortDecodeText: 'NT Department of Corporate & Information Services - DCIS',
-                longDecodeText: 'Identity Management System (IMS) - Invoice Portal – Invoice NTG',
-                startDate: now,
-                domain: RelationshipAttributeNameDomain.SelectSingle.code,
-                classifier: RelationshipAttributeNameClassifier.Permission.code,
-                category: administrativeServices_category,
-                purposeText: 'A permission for a relationship',
-                permittedValues: Seeder.accessLevels
-            } as any);
-
-            Seeder.depthscentrelink_ppl_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'DEPTOFHUMANSERVICESCENTRELINK_PPL_PERMISSION',
-                shortDecodeText: 'Department of Human Services - Centrelink',
-                longDecodeText: 'Paid Parental Leave',
-                startDate: now,
-                domain: RelationshipAttributeNameDomain.SelectSingle.code,
-                classifier: RelationshipAttributeNameClassifier.Permission.code,
-                category: administrativeServices_category,
-                purposeText: 'A permission for a relationship',
-                permittedValues: Seeder.accessLevels
-            } as any);
-
-            Seeder.deptimm_skillselect_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'DEPTOFIMMIGRATION_SKILLSELECT_PERMISSION',
-                shortDecodeText: 'Department of Immigration and Border Protection',
-                longDecodeText: 'Skill Select',
-                startDate: now,
-                domain: RelationshipAttributeNameDomain.SelectSingle.code,
-                classifier: RelationshipAttributeNameClassifier.Permission.code,
-                category: administrativeServices_category,
-                purposeText: 'A permission for a relationship',
-                permittedValues: Seeder.accessLevels
-            } as any);
-
-            Seeder.deptemp_wageconnect_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'DEPTEMPLOYMENT_WAGECONNECT_PERMISSION',
-                shortDecodeText: 'Department of Employment',
-                longDecodeText: 'Wage Connect',
-                startDate: now,
-                domain: RelationshipAttributeNameDomain.SelectSingle.code,
-                classifier: RelationshipAttributeNameClassifier.Permission.code,
-                category: administrativeServices_category,
+                category: permissionServices_category,
                 purposeText: 'A permission for a relationship',
                 permittedValues: Seeder.accessLevels
             } as any);
@@ -764,7 +725,7 @@ export class Seeder {
                 longDecodeText: 'Selected Services for OSP',
                 startDate: now,
                 domain: RelationshipAttributeNameDomain.SelectMulti.code,
-                classifier: RelationshipAttributeNameClassifier.Permission.code,
+                classifier: RelationshipAttributeNameClassifier.AgencyService.code,
                 category: ospServices_category,
                 purposeText: 'Selected Services for OSP',
                 permittedValues: null
@@ -885,15 +846,17 @@ export class Seeder {
                 shortDecodeText: 'Associate',
                 longDecodeText: 'Associate',
                 startDate: now,
+                minIdentityStrength: 2,
                 managedExternallyInd: true,
                 autoAcceptIfInitiatedFromDelegate: false,
                 autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
-                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
+                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
+                {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Delegate Universal Representative Declaration'},
+                    defaultValue: 'Markdown for Delegate Universal Representative Declaration', sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: `# This is declaration text
 
@@ -901,17 +864,12 @@ export class Seeder {
 * kept in database
 * relationshipTypeUsage.defaultValue
 * Use seed or admin UI to change it
-                    `},
-                {attribute: Seeder.asic_abn_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.wgea_activate_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.deptindustry_aba_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.abr_abr_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.deptindustry_ats_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.ntdeptbusiness_avetmiss_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.ntdeptcorpinfoservices_ims_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.depthscentrelink_ppl_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.deptimm_skillselect_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.deptemp_wageconnect_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel}
+                    `, sortOrder: 4},
+                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 5},
+                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 6},
+                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 7},
+                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 8},
+                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 9}
             ]);
 
             Seeder.universal_delegate_relationshipType = await Seeder.createRelationshipTypeModel({
@@ -919,56 +877,51 @@ export class Seeder {
                 shortDecodeText: 'Universal Representative',
                 longDecodeText: 'The same level of authorisation as an Associate of the organisation (e.g., Owner, Director). All permissions will be defaulted to maximum access.',
                 startDate: now,
+                minIdentityStrength: 2,
                 managedExternallyInd: false,
                 autoAcceptIfInitiatedFromDelegate: false,
                 autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
-                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
+                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
+                {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Delegate Universal Representative Declaration'},
+                    defaultValue: 'Markdown for Delegate Universal Representative Declaration', sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Subject Universal Representative Declaration'},
-                {attribute: Seeder.asic_abn_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.wgea_activate_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.deptindustry_aba_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.abr_abr_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.deptindustry_ats_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.ntdeptbusiness_avetmiss_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.ntdeptcorpinfoservices_ims_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.depthscentrelink_ppl_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.deptimm_skillselect_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel},
-                {attribute: Seeder.deptemp_wageconnect_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel}
+                    defaultValue: 'Markdown for Subject Universal Representative Declaration', sortOrder: 4},
+                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 5},
+                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 6},
+                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 7},
+                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 8},
+                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 9}
             ]);
 
             Seeder.custom_delegate_relationshipType = await Seeder.createRelationshipTypeModel({
                 code: 'CUSTOM_REPRESENTATIVE',
                 shortDecodeText: 'Custom Representative',
-                longDecodeText: `Select the representative authorisation type if you want to customise access. 
+                longDecodeText: `Select the representative authorisation type if you want to customise access.
                 Select which permissions this representative will have, including restricting access to some services.`,
                 startDate: now,
+                minIdentityStrength: 1,
                 managedExternallyInd: false,
                 autoAcceptIfInitiatedFromDelegate: false,
                 autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
-                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true'},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false'},
+                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 1},
+                {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 2},
+                {attribute: Seeder.delegateManageAuthorisationUserConfigurableInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: -1},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Delegate Custom Representative Declaration'},
+                    defaultValue: 'Markdown for Delegate Custom Representative Declaration', sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Subject Custom Representative Declaration'},
-                {attribute: Seeder.asic_abn_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.wgea_activate_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.deptindustry_aba_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.abr_abr_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.deptindustry_ats_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.ntdeptbusiness_avetmiss_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.ntdeptcorpinfoservices_ims_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.depthscentrelink_ppl_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.deptimm_skillselect_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.deptemp_wageconnect_relAttributeName, optionalInd: false, defaultValue: null}
+                    defaultValue: 'Markdown for Subject Custom Representative Declaration', sortOrder: 4},
+                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 5},
+                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 6},
+                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 7},
+                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 8},
+                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 9}
             ]);
 
             Seeder.osp_delegate_relationshipType = await Seeder.createRelationshipTypeModel({
@@ -976,13 +929,14 @@ export class Seeder {
                 shortDecodeText: 'Online Software Provider',
                 longDecodeText: 'Online Software Provider',
                 startDate: now,
+                minIdentityStrength: 0,
                 managedExternallyInd: false,
                 autoAcceptIfInitiatedFromDelegate: true,
                 autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Notification.code
             } as any, [
-                {attribute: Seeder.selectedGovernmentServicesList_relAttributeName, optionalInd: false, defaultValue: null},
-                {attribute: Seeder.ssid_relAttributeName, optionalInd: false, defaultValue: null},
+                {attribute: Seeder.selectedGovernmentServicesList_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
+                {attribute: Seeder.ssid_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 2},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: `# This is declaration text
 
@@ -990,7 +944,7 @@ export class Seeder {
 * kept in database
 * relationshipTypeUsage.defaultValue
 * Use seed or admin UI to change it
-                    `}
+                    `, sortOrder: 3}
             ]);
 
         } catch (e) {
@@ -1067,6 +1021,7 @@ export class Seeder {
     public static loadMock() {
 
         return Promise.resolve(null)
+
             .then(Seeder.connectIdentityExporters)
 
             // identities
@@ -1099,6 +1054,7 @@ export class Seeder {
             .then(Seeder.exportAgencyUsers)
 
             .then(Seeder.disconnectIdentityExporters);
+
     }
 
 }

@@ -23,7 +23,7 @@ export class RAMRouteService {
         this.router.navigate(['/home/sps']);
     }
 
-    public goToRelationshipsPage(idValue: string, filter?: string, page?: number, msg?: string) {
+    public goToRelationshipsPage(identityHref: string, filter?: string, page?: number, msg?: string) {
         const queryParams = {};
         if (filter) {
             queryParams['filter'] = filter;
@@ -35,21 +35,21 @@ export class RAMRouteService {
             queryParams['msg'] = msg;
         }
         this.router.navigate(['/relationships',
-                this.encodeURIComponent(idValue, false)],
+                this.encodeURIComponent(identityHref, true)],
             {queryParams: queryParams}
         );
     }
 
-    public goToAddRelationshipPage(idValue: string) {
+    public goToAddRelationshipPage(identityHref: string) {
         this.router.navigate(['/relationships/add',
-            this.encodeURIComponent(idValue, false)
+            this.encodeURIComponent(identityHref, true)
         ]);
     }
 
-    public goToEditRelationshipPage(idValue: string, key: string) {
+    public goToEditRelationshipPage(identityHref: string, relationshipHref: string) {
         this.router.navigate(['/relationships/edit',
-            this.encodeURIComponent(idValue, false),
-            this.encodeURIComponent(key, false)
+            this.encodeURIComponent(identityHref, true),
+            this.encodeURIComponent(relationshipHref, true)
         ]);
     }
 

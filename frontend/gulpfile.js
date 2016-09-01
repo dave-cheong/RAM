@@ -72,7 +72,7 @@ gulp.task('copy:jspm-resources', function() {
          .pipe(filter(["**/*.{css,eot,png,ttf,woff,woff2}"]))
          .pipe(gulp.dest('dist'));
 });
-gulp.task("build:jspm", ["copy:systemJsConf", "copy:jspm-resources"], function () {
+gulp.task("build:jspm", ["copy:systemJsConf", "copy:jspm-resources", "ts:compile"], function () {
     return gulp.src('dist/js/frontend/typescript/Boot.js')
     .pipe(jspm_build({
         fileName:   'ram-lib',

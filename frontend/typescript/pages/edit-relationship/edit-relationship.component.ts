@@ -1,4 +1,3 @@
-import {Observable} from 'rxjs/Observable';
 import {Component} from '@angular/core';
 import {ROUTER_DIRECTIVES, Router, ActivatedRoute, Params} from '@angular/router';
 import {FormBuilder} from '@angular/forms';
@@ -9,7 +8,10 @@ import {RAMConstants} from '../../services/ram-constants.service';
 import {RAMServices} from '../../services/ram-services';
 
 import {AccessPeriodComponent, AccessPeriodComponentData} from '../../components/access-period/access-period.component';
-import {AuthorisationPermissionsComponent} from '../../components/authorisation-permissions/authorisation-permissions.component';
+import {
+    AuthorisationPermissionsComponent,
+    AuthorisationPermissionsComponentData
+} from '../../components/authorisation-permissions/authorisation-permissions.component';
 import {
     AuthorisationTypeComponent,
     AuthorisationTypeComponentData
@@ -27,13 +29,22 @@ import {
 } from '../../components/authorisation-management/authorisation-management.component';
 
 import {
-    IAttributeDTO,
     IIdentity,
-    ICreateIdentityDTO,
-    IInvitationCodeRelationshipAddDTO,
+    Identity,
     IRelationshipAttributeNameUsage,
     IRelationshipType,
-    IHrefValue
+    IRelationship,
+    Relationship,
+    Party,
+    Profile,
+    Name,
+    SharedSecret,
+    SharedSecretType,
+    IHrefValue,
+    HrefValue,
+    IRelationshipAttribute,
+    RelationshipAttribute,
+    CodeDecode
 } from '../../../../commons/RamAPI';
 
 @Component({
@@ -53,19 +64,22 @@ import {
 
 export class EditRelationshipComponent extends AbstractPageComponent {
 
-    public idValue: string;
-    public key: string;
+    public identityHref: string;
+    public relationshipHref: string;
 
-    public relationshipTypes$: Observable<IHrefValue<IRelationshipType>[]>;
     public relationshipTypeRefs: IHrefValue<IRelationshipType>[];
+    public permissionAttributeUsagesByType: { [relationshipTypeCode: string]: IRelationshipAttributeNameUsage[] } = {};
+    public permissionAttributeUsages: IRelationshipAttributeNameUsage[];
 
     public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public identity: IIdentity;
+    public relationship: IRelationship;
     public manageAuthAttribute: IRelationshipAttributeNameUsage;
 
     public authType: string = 'choose';
+    public disableAuthMgmt: boolean = true;
 
-    public newRelationship: AddRelationshipComponentData = {
+    public relationshipComponentData: EditRelationshipComponentData = {
         accessPeriod: {
             startDateEnabled: true,
             startDate: new Date(),
@@ -76,17 +90,26 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             authType: 'choose'
         },
         representativeDetails: {
+            isOrganisation: false,
             individual: {
                 givenName: '',
                 familyName: null,
                 dob: null
             },
             organisation: {
-                abn: ''
+                abn: '',
+                organisationName: ''
             }
         },
         authorisationManagement: {
-            value: ''
+            value: 'false'
+        },
+        permissionAttributes: [],
+        authorisationPermissions : {
+            value: '',
+            customisationEnabled: false,
+            accessLevelsDescription: null,
+            enabled: false
         },
         declaration: {
             accepted: false,
@@ -101,117 +124,250 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     public onInit(params: {path: Params, query: Params}) {
 
-        this.idValue = params.path['idValue'];
-        this.key = params.path['key'];
+        this.identityHref = params.path['identityHref'];
+        this.relationshipHref = params.path['relationshipHref'];
 
         // identity in focus
-        this.services.rest.findIdentityByValue(this.idValue).subscribe((identity) => {
-            this.identity = identity;
+        this.services.rest.findIdentityByHref(this.identityHref).subscribe({
+            next: this.onFindIdentity.bind(this),
+            error: this.onServerError.bind(this)
         });
 
         // relationship types
-        this.relationshipTypes$ = this.services.rest.listRelationshipTypes();
-        this.relationshipTypes$.subscribe((relationshipTypeRefs) => {
-            this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
-                return relationshipType.value.managedExternallyInd === false
-                    && relationshipType.value.category === RAMConstants.RelationshipTypeCategory.AUTHORISATION;
-            });
+        this.services.rest.listRelationshipTypes().subscribe({
+            next: this.onListRelationshipTypes.bind(this),
+            error: this.onServerError.bind(this)
         });
-
-        // delegate managed attribute
-        this.resolveManageAuthAttribute('UNIVERSAL_REPRESENTATIVE', 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND');
 
     }
 
-    public back = () => {
-        this.router.navigate(['/relationships', encodeURIComponent(this.idValue)]);
-    };
+    public onFindIdentity(identity: IIdentity) {
 
-    /* tslint:disable:max-func-body-length */
-    public submit = () => {
+        this.identity = identity;
 
-        let delegate: ICreateIdentityDTO;
-
-        if (this.newRelationship.representativeDetails.individual) {
-            const dob = this.newRelationship.representativeDetails.individual.dob;
-            delegate = {
-                partyType: 'INDIVIDUAL',
-                givenName: this.newRelationship.representativeDetails.individual.givenName,
-                familyName: this.newRelationship.representativeDetails.individual.familyName,
-                sharedSecretTypeCode: 'DATE_OF_BIRTH', // TODO: set to date of birth code
-                sharedSecretValue: dob ? dob.toString() : ' ' /* TODO check format of date, currently sending x for space */,
-                identityType: 'INVITATION_CODE',
-                agencyScheme: undefined,
-                agencyToken: undefined,
-                linkIdScheme: undefined,
-                linkIdConsumer: undefined,
-                publicIdentifierScheme: undefined,
-                profileProvider: undefined,
-            };
+        // relationship in focus
+        if (this.relationshipHref) {
+            this.services.rest.findRelationshipByHref(this.relationshipHref).subscribe({
+                next: this.onFindRelationship.bind(this),
+                error: this.onServerError.bind(this)
+            });
         } else {
-            /* TODO handle organisation delegate */
-            alert('NOT YET IMPLEMENTED!');
-            //delegate = {
-            //    partyType: 'ABN',
-            //    unstructuredName: '' ,
-            //    identityType: 'PUBLIC_IDENTIFIER',
-            //    publicIdentifierScheme: 'ABN',
-            //    agencyToken: this.newRelationship.representativeDetails.organisation.abn // // TODO: where does the ABN value go?
-            //};
+            this.onNewRelationship();
         }
 
-        const authorisationManagement: IAttributeDTO = {
-            code: 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND',
-            value: this.newRelationship.authorisationManagement.value
-        };
+    }
 
-        const relationship: IInvitationCodeRelationshipAddDTO = {
-            relationshipType: this.newRelationship.authType.authType,
-            subjectIdValue: this.idValue,
-            delegate: delegate,
-            startTimestamp: this.newRelationship.accessPeriod.startDate,
-            endTimestamp: this.newRelationship.accessPeriod.endDate,
-            attributes: [
-                authorisationManagement
-            ] /* TODO setting the attributes */
-        };
+    // todo refactor to use this.relationship
+    public onFindRelationship(relationship: IRelationship) {
+        this.relationship = relationship;
+    }
 
-        this.services.rest.createRelationship(relationship).subscribe((relationship) => {
-            //console.log(JSON.stringify(relationship, null, 4));
-            this.services.rest.findIdentityByHref(relationship.delegate.value.identities[0].href).subscribe((identity) => {
-                //console.log(JSON.stringify(identity, null, 4));
-                this.services.route.goToRelationshipAddCompletePage(
-                    this.idValue,
-                    identity.rawIdValue,
-                    this.displayName(this.newRelationship.representativeDetails));
-            }, (err) => {
-                this.addGlobalErrorMessages(err);
-            });
-        }, (err) => {
-            this.addGlobalErrorMessages(err);
+    // todo refactor to use this
+    public onNewRelationship() {
+
+        // relationship
+        this.relationship = new Relationship(
+            [],
+            null,
+            new HrefValue(this.identity.party.href, null),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            RAMConstants.RelationshipInitiatedBy.SUBJECT,
+            []
+        );
+
+    }
+
+    public onListRelationshipTypes(relationshipTypeRefs: IHrefValue<IRelationshipType>[]) {
+        // filter the relationship types to those that can be chosen here
+        this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
+            return relationshipType.value.managedExternallyInd === false
+                && relationshipType.value.category === RAMConstants.RelationshipTypeCategory.AUTHORISATION;
         });
+        this.resolveAttributeUsages();
+    }
 
-    };
+    public back() {
+        this.services.route.goToRelationshipsPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+        );
+    }
 
-    public resolveManageAuthAttribute(relationshipTypeCode: string, attributeNameCode: string) {
-        this.relationshipTypes$
-            .subscribe(relationshipTypeHrefValues => {
-                // find the relationship type
-                const relationshipTypeHrefValue = relationshipTypeHrefValues.filter((relationshipTypeHrefValue) => {
-                    return relationshipTypeHrefValue.value.code === relationshipTypeCode;
-                });
+    public submit() {
 
-                // find the attribute name
-                let manageAuthAttributes = relationshipTypeHrefValue[0].value.relationshipAttributeNames
-                    .filter((attributeName) => attributeName.attributeNameDef.value.code === attributeNameCode);
-                if (manageAuthAttributes.length === 1) {
-                    this.manageAuthAttribute = manageAuthAttributes[0];
+        // save
+        if (!this.relationshipHref) {
+
+            // insert relationship
+
+            let partyType = this.relationshipComponentData.representativeDetails.isOrganisation ? RAMConstants.PartyTypeCode.ORGANISATION : RAMConstants.PartyTypeCode.INDIVIDUAL;
+            let relationshipType = CodeDecode.getRefByCode(this.relationshipTypeRefs, this.relationshipComponentData.authType.authType) as IHrefValue<IRelationshipType>;
+
+            // name
+            let name = new Name(
+                this.relationshipComponentData.representativeDetails.individual ? this.relationshipComponentData.representativeDetails.individual.givenName : undefined,
+                this.relationshipComponentData.representativeDetails.individual ? this.relationshipComponentData.representativeDetails.individual.familyName : undefined,
+                this.relationshipComponentData.representativeDetails.organisation ? this.relationshipComponentData.representativeDetails.organisation.organisationName : undefined,
+                null
+            );
+
+            // dob
+            let sharedSecrets: SharedSecret[] = [];
+            if (this.relationshipComponentData.representativeDetails.individual) {
+                let dob = this.relationshipComponentData.representativeDetails.individual.dob;
+                if (dob) {
+                    let dobSharedSecretType = new SharedSecretType(RAMConstants.SharedSecretCode.DATE_OF_BIRTH, null, null, null, null, null);
+                    sharedSecrets.push(new SharedSecret(dob.toString(), dobSharedSecretType));
                 }
+            }
+
+            // profile
+            let profile = new Profile(RAMConstants.ProfileProviderCode.INVITATION, name, sharedSecrets);
+
+            // identity
+            let identityRef = new HrefValue<Identity>(null, new Identity(
+                [],
+                null,
+                null,
+                RAMConstants.IdentityTypeCode.INVITATION_CODE,
+                true,
+                0,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                profile,
+                null
+            ));
+
+            // delegate
+            let delegateRef = new HrefValue(null, new Party(
+                [],
+                partyType,
+                [identityRef]
+            ));
+
+            // meta
+            this.relationship.relationshipType = relationshipType;
+            this.relationship.delegate = delegateRef;
+            this.relationship.startTimestamp = this.relationshipComponentData.accessPeriod.startDate;
+            this.relationship.endTimestamp = this.relationshipComponentData.accessPeriod.endDate;
+            this.relationship.endEventTimestamp = this.relationshipComponentData.accessPeriod.endDate;
+
+            // delegate manage authorisation allowed attribute
+            this.relationship.attributes = [
+                new RelationshipAttribute(
+                    [this.relationshipComponentData.authorisationManagement.value],
+                    relationshipType.value.getAttributeNameRef(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND)
+                )
+            ];
+
+            // permission attributes
+            if (relationshipType.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true') {
+                for (let permissionAttribute of this.relationshipComponentData.permissionAttributes) {
+                    this.relationship.attributes.push(permissionAttribute);
+                }
+            }
+
+            // invoke api
+            let saveHref = this.services.model.getLinkHrefByType(RAMConstants.Link.RELATIONSHIP_CREATE, this.identity);
+            this.services.rest.insertRelationshipByHref(saveHref, this.relationship).subscribe({
+                next: this.onInsert.bind(this),
+                error: this.onServerError.bind(this)
             });
+
+        } else {
+
+            // update relationship
+
+            let relationshipType = CodeDecode.getRefByCode(this.relationshipTypeRefs, this.relationshipComponentData.authType.authType) as IHrefValue<IRelationshipType>;
+            let firstIdentityForDelegate = this.relationship.delegate.value.identities[0];
+            let profile = firstIdentityForDelegate.value.profile;
+            let name = profile.name;
+
+            // meta
+            this.relationship.relationshipType = relationshipType;
+            this.relationship.startTimestamp = this.relationshipComponentData.accessPeriod.startDate;
+            this.relationship.endTimestamp = this.relationshipComponentData.accessPeriod.endDate;
+            this.relationship.endEventTimestamp = this.relationshipComponentData.accessPeriod.endDate;
+
+            // name
+            name.givenName = this.relationshipComponentData.representativeDetails.individual ? this.relationshipComponentData.representativeDetails.individual.givenName : undefined;
+            name.familyName = this.relationshipComponentData.representativeDetails.individual ? this.relationshipComponentData.representativeDetails.individual.familyName : undefined;
+            name.unstructuredName = this.relationshipComponentData.representativeDetails.organisation ? this.relationshipComponentData.representativeDetails.organisation.organisationName : undefined;
+
+            // dob
+            if (this.relationshipComponentData.representativeDetails.individual) {
+                let dob = this.relationshipComponentData.representativeDetails.individual.dob;
+                if (dob) {
+                    let dobSharedSecretType = new SharedSecretType(RAMConstants.SharedSecretCode.DATE_OF_BIRTH, null, null, null, null, null);
+                    profile.insertOrUpdateSharedSecret(new SharedSecret(dob.toString(), dobSharedSecretType));
+                } else {
+                    profile.deleteSharedSecret(RAMConstants.SharedSecretCode.DATE_OF_BIRTH);
+                }
+            }
+
+            // delegate manage authorisation allowed attribute
+            this.relationship.deleteAttribute(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            this.relationship.attributes.push(new RelationshipAttribute(
+                [this.relationshipComponentData.authorisationManagement.value],
+                relationshipType.value.getAttributeNameRef(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND)
+            ));
+
+            // permission attributes
+            // todo this needs to replace any existing permissions
+            if (relationshipType.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true') {
+                for (let permissionAttribute of this.relationshipComponentData.permissionAttributes) {
+                    this.relationship.attributes.push(permissionAttribute);
+                }
+            }
+
+            // invoke api
+            let saveHref = this.services.model.getLinkHrefByType(RAMConstants.Link.MODIFY, this.relationship);
+            this.services.rest.updateRelationshipByHref(saveHref, this.relationship).subscribe({
+                next: this.onUpdate.bind(this),
+                error: this.onServerError.bind(this)
+            });
+
+        }
+
+    }
+
+    // todo change this to use href hateoas instead of the id value
+    public onInsert(relationship: IRelationship) {
+        let delegateIdentity = relationship.delegate.value.identities[0].value;
+        this.services.route.goToRelationshipAddCompletePage(
+            this.identity.idValue,
+            delegateIdentity.rawIdValue,
+            this.displayName(this.relationshipComponentData.representativeDetails)
+        );
+    }
+
+    public onUpdate(relationship: IRelationship) {
+        this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
+    }
+
+    public resolveAttributeUsages() {
+        for (let relTypeRef of this.relationshipTypeRefs) {
+            const attributeNames = relTypeRef.value.relationshipAttributeNames;
+            this.permissionAttributeUsagesByType[relTypeRef.value.code] = attributeNames.filter((attName) => {
+                return attName.attributeNameDef.value.classifier === RAMConstants.RelationshipAttributeNameClassifier.PERMISSION;
+            });
+        }
     }
 
     public displayName(repDetails: RepresentativeDetailsComponentData) {
-        if (repDetails.organisation) {
+        if (repDetails.isOrganisation) {
             return repDetails.organisation.abn;
         } else {
             return repDetails.individual.givenName + (repDetails.individual.familyName ? ' ' + repDetails.individual.familyName : '');
@@ -219,16 +375,59 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     }
 
     public authTypeChange = (data:AuthorisationTypeComponentData) => {
+
         // TODO calculate declaration markdown based on relationship type and services selected
         // TODO update declaration component to show new text
-        this.newRelationship.declaration.markdown = 'TODO '+data.authType;
-    }
+        this.relationshipComponentData.declaration.markdown = 'TODO ' + data.authType;
+
+        // find the selected relationship type by code
+        let selectedRelationshipTypeRef = CodeDecode.getRefByCode(this.relationshipTypeRefs, data.authType) as IHrefValue<IRelationshipType>;
+
+        if (selectedRelationshipTypeRef) {
+
+            const allowManageAuthorisationUsage = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            const canChangeManageAuthorisationUsage = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND);
+
+            this.manageAuthAttribute = allowManageAuthorisationUsage;
+
+            // authorisation permission component
+            this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true';
+            this.relationshipComponentData.authorisationPermissions.enabled = true;
+            this.relationshipComponentData.authorisationPermissions.accessLevelsDescription = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.ACCESS_LEVELS_DESCRIPTION);
+
+            // get the default value for the relationship type
+            this.relationshipComponentData.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
+            // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
+            this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage === null : true;
+
+            this.permissionAttributeUsages = this.permissionAttributeUsagesByType[selectedRelationshipTypeRef.value.code];
+
+            // sort usages
+            let orderedUsages = this.permissionAttributeUsages.slice();
+            orderedUsages.sort(function(a, b) {
+                return a.sortOrder - b.sortOrder;
+            });
+
+            this.relationshipComponentData.permissionAttributes = [];
+            for (let usage of orderedUsages) {
+                let relationshipAttribute = new RelationshipAttribute(usage.defaultValue ? [usage.defaultValue] : [], usage.attributeNameDef);
+                this.relationshipComponentData.permissionAttributes.push(relationshipAttribute);
+            }
+
+        } else {
+            this.disableAuthMgmt = true;
+        }
+
+    };
+
 }
 
-export interface AddRelationshipComponentData {
+export interface EditRelationshipComponentData {
     accessPeriod: AccessPeriodComponentData;
     authType: AuthorisationTypeComponentData;
     representativeDetails: RepresentativeDetailsComponentData;
     authorisationManagement: AuthorisationManagementComponentData;
+    authorisationPermissions: AuthorisationPermissionsComponentData;
+    permissionAttributes: IRelationshipAttribute[];
     declaration: DeclarationComponentData;
 }

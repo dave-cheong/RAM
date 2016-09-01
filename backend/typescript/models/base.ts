@@ -88,6 +88,28 @@ export interface IRAMObject extends mongoose.Document {
     delete(): void;
 }
 
+export interface IRAMObjectContract {
+    _id: any;
+    createdAt: Date;
+    updatedAt: Date;
+    deleteInd: boolean;
+    resourceVersion: string;
+    save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this>;
+}
+
+// exists for type safety only, do not add functions here
+export class RAMObjectContractImpl implements IRAMObjectContract {
+    constructor(public _id: any,
+                public createdAt: Date,
+                public updatedAt: Date,
+                public deleteInd: boolean,
+                public resourceVersion: string) {
+    }
+    public save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this> {
+        return null;
+    }
+}
+
 export const RAMSchema = (schema: Object) => {
 
     //noinspection ReservedWordAsName
@@ -107,6 +129,7 @@ export const RAMSchema = (schema: Object) => {
     });
 
     return result;
+
 };
 
 export interface ICodeDecode extends mongoose.Document {
@@ -115,9 +138,24 @@ export interface ICodeDecode extends mongoose.Document {
     startDate: Date;
     endDate: Date;
     code: string;
+}
 
-    /** Instance methods below */
+export interface ICodeDecodeContract {
+    shortDecodeText: string;
+    longDecodeText: string;
+    startDate: Date;
+    endDate: Date;
+    code: string;
+}
 
+// exists for type safety only, do not add functions here
+export class CodeDecodeContractImpl implements ICodeDecodeContract {
+    constructor(public shortDecodeText: string,
+                public longDecodeText: string,
+                public startDate: Date,
+                public endDate: Date,
+                public code: string) {
+    }
 }
 
 /* tslint:disable:max-func-body-length */
@@ -158,6 +196,39 @@ export const CodeDecodeSchema = (schema: Object) => {
     return result;
 };
 
+export const Model = (name: string, schema: mongoose.Schema, instanceContract: any, staticContract: any) => {
+
+    // console.log('model: ', name);
+
+    // loop through all immediately declared functions and add to the schema
+    Object.getOwnPropertyNames(instanceContract.prototype).forEach((key, index) => {
+        // console.log('  method: ' + key);
+        let value = instanceContract.prototype[key];
+        if (key !== 'constructor') {
+            // console.log(key, value);
+            schema.method(key, value);
+        }
+    });
+
+    // loop through all immediately declared functions and add to the schema
+    Object.getOwnPropertyNames(staticContract.prototype).forEach((key, index) => {
+        // console.log('  static: ' + key);
+        let value = staticContract.prototype[key];
+        if (key !== 'constructor') {
+            // console.log(key, value);
+            schema.static(key, value);
+        }
+    });
+
+    return mongoose.model(name, schema);
+
+};
+
+export const removeFromArray = <T>(mongooseArray: Array<T>, value: Object) => {
+    const typedMongooseArray = mongooseArray as mongoose.Types.DocumentArray<T>;
+    typedMongooseArray.pull(value);
+};
+
 export class Assert {
 
     public static assertNotNull(object: Object, failMessage: string, detail?: string) {
@@ -188,4 +259,7 @@ export class Assert {
         this.assertTrue(condition, failMessage, detail);
     }
 
+    public static assertGreaterThanEqual(value: number, min: number, failMessage: string, detail?: string) {
+        this.assertTrue(value >= min, failMessage, detail);
+    }
 }

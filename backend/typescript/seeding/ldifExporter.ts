@@ -46,7 +46,7 @@ export class LDIFExporter {
 
     public static async exportIdentity(identity: IIdentity) {
         if ((identity.party.partyType === 'INDIVIDUAL') && (identity.identityType === 'LINK_ID')) {
-            await fs.appendFile(LDIFExporter.ldifFileHandle, LDIFExporter.getIdentityLDIF(identity));
+            await fs.appendFile(LDIFExporter.ldifFileName, LDIFExporter.getIdentityLDIF(identity));
             Seeder.log(`\n[LDIFExporter] Exported identity ${identity.idValue}\n`.green);
         } else {
             Seeder.log(`\n[LDIFExporter] Skipped export of identity ${identity.idValue}\n`.gray);
@@ -54,7 +54,7 @@ export class LDIFExporter {
     }
 
     public static async exportAgencyUser(agencyUser: IAgencyUser) {
-        await fs.appendFile(LDIFExporter.ldifFileHandle, LDIFExporter.getAgencyUserLDIF(agencyUser));
+        await fs.appendFile(LDIFExporter.ldifFileName, LDIFExporter.getAgencyUserLDIF(agencyUser));
         Seeder.log(`\n[LDIFExporter] Exported agency user ${agencyUser.id}\n`.green);
     }
 

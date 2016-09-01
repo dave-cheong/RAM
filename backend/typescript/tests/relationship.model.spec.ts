@@ -24,6 +24,7 @@ import {
     RelationshipInitiatedBy
 } from '../models/relationship.model';
 import {IRelationshipType} from '../models/relationshipType.model';
+import {context} from '../providers/context.provider';
 
 /* tslint:disable:max-func-body-length */
 describe('RAM Relationship', () => {
@@ -55,6 +56,7 @@ describe('RAM Relationship', () => {
             .then(async () => {
 
                 try {
+                    context.init();
 
                     relationshipTypeCustom = Seeder.custom_delegate_relationshipType;
 
@@ -104,7 +106,7 @@ describe('RAM Relationship', () => {
                         party: delegateParty1
                     });
 
-                    relationship1 = await RelationshipModel.add2(relationshipTypeCustom,
+                    relationship1 = await RelationshipModel.add(relationshipTypeCustom,
                         subjectParty1,
                         subjectNickName1,
                         delegateIdentity1.party,
@@ -261,17 +263,18 @@ describe('RAM Relationship', () => {
                 '01/01/1999');
             const invitationCode = invitationCodeIdentity.rawIdValue;
 
-            const relationshipToClaim = await RelationshipModel.create({
-                relationshipType: relationshipTypeCustom,
-                subject: subjectParty1,
-                subjectNickName: subjectNickName1,
-                delegate: invitationCodeIdentity.party,
-                delegateNickName: invitationCodeIdentity.profile.name,
-                startTimestamp: new Date(),
-                endTimestamp: new Date(2020, 12, 31),
-                status: RelationshipStatus.Pending.code,
-                initiatedBy: RelationshipInitiatedBy.Subject.code
-            });
+            const relationshipToClaim = await RelationshipModel.add(
+                relationshipTypeCustom,
+                subjectParty1,
+                subjectNickName1,
+                invitationCodeIdentity.party,
+                invitationCodeIdentity.profile.name,
+                new Date(),
+                new Date(2020, 12, 31),
+                RelationshipInitiatedBy.Subject,
+                invitationCodeIdentity,
+                []
+            );
 
             const claimingDelegateIdentity1 = await IdentityModel.create({
                 rawIdValue: 'accepting_delegate_identity_1',
@@ -287,7 +290,7 @@ describe('RAM Relationship', () => {
             expect(preClaimedDelegateIdentity.invitationCodeStatusEnum()).toBe(IdentityInvitationCodeStatus.Pending);
 
             // perform claim
-            await relationshipToClaim.claimPendingInvitation(claimingDelegateIdentity1);
+            await relationshipToClaim.claimPendingInvitation(claimingDelegateIdentity1, invitationCode);
             const retrievedClaimedInstance = await RelationshipModel.findByIdentifier(relationshipToClaim.id);
 
             // delegate should be updated to claimingDelegateIdentity1
@@ -311,7 +314,7 @@ describe('RAM Relationship', () => {
 
             const invitationCodeIdentity = await IdentityModel.createInvitationCodeIdentity('John', 'Delegate 1', '01/01/1999');
 
-            const relationshipToAccept = await RelationshipModel.add2(
+            const relationshipToAccept = await RelationshipModel.add(
                 relationshipTypeCustom,
                 subjectParty1,
                 subjectNickName1,
@@ -330,10 +333,11 @@ describe('RAM Relationship', () => {
                 defaultInd: true,
                 linkIdScheme: IdentityLinkIdScheme.MyGov.code,
                 profile: delegateProfile1,
-                party: delegateParty1
+                party: delegateParty1,
+                strength: 2
             });
 
-            await relationshipToAccept.claimPendingInvitation(acceptingDelegateIdentity1);
+            await relationshipToAccept.claimPendingInvitation(acceptingDelegateIdentity1, invitationCodeIdentity.rawIdValue);
             const acceptedInstance = await relationshipToAccept.acceptPendingInvitation(acceptingDelegateIdentity1);
             const retrievedAcceptedInstance = await RelationshipModel.findByIdentifier(relationshipToAccept.id);
 
@@ -397,21 +401,22 @@ describe('RAM Relationship', () => {
     });
 
     it('rejects pending invitation', async (done) => {
+
         try {
 
             const invitationCodeIdentity = await IdentityModel.createInvitationCodeIdentity('John', 'Delegate 1', '01/01/1999');
-            const relationshipToReject = await RelationshipModel.create({
-                relationshipType: relationshipTypeCustom,
-                subject: subjectParty1,
-                subjectNickName: subjectNickName1,
-                delegate: invitationCodeIdentity.party,
-                delegateNickName: invitationCodeIdentity.profile.name,
-                startTimestamp: new Date(),
-                endTimestamp: new Date(2020, 12, 31),
-                status: RelationshipStatus.Pending.code,
-                initiatedBy: RelationshipInitiatedBy.Subject.code,
-                invitationIdentity: invitationCodeIdentity
-            });
+            const relationshipToReject = await RelationshipModel.add(
+                 relationshipTypeCustom,
+                subjectParty1,
+                subjectNickName1,
+                invitationCodeIdentity.party,
+                invitationCodeIdentity.profile.name,
+                new Date(),
+                new Date(2020, 12, 31),
+                RelationshipInitiatedBy.Subject,
+                invitationCodeIdentity,
+                []
+            );
 
             const acceptingDelegateIdentity1 = await IdentityModel.create({
                 rawIdValue: 'accepting_delegate_identity_1',
@@ -419,10 +424,11 @@ describe('RAM Relationship', () => {
                 defaultInd: true,
                 linkIdScheme: IdentityLinkIdScheme.MyGov.code,
                 profile: delegateProfile1,
-                party: delegateParty1
+                party: delegateParty1,
+                strength: 2
             });
 
-            await relationshipToReject.claimPendingInvitation(acceptingDelegateIdentity1);
+            await relationshipToReject.claimPendingInvitation(acceptingDelegateIdentity1, invitationCodeIdentity.rawIdValue);
 
             await relationshipToReject.rejectPendingInvitation(acceptingDelegateIdentity1);
 

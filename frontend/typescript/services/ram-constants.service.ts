@@ -23,6 +23,19 @@ export const RAMConstants = {
         DEVICE_TYPE: 'DEVICE'
     },
 
+    PartyTypeCode: {
+        INDIVIDUAL: 'INDIVIDUAL',
+        ORGANISATION: 'ORGANISATION'
+    },
+
+    ProfileProviderCode: {
+        INVITATION: 'INVITATION'
+    },
+
+    IdentityTypeCode: {
+        INVITATION_CODE: 'INVITATION_CODE'
+    },
+
     RelationshipTypeCategory: {
         AUTHORISATION: 'AUTHORISATION',
         NOTIFICATION: 'NOTIFICATION'
@@ -37,10 +50,19 @@ export const RAMConstants = {
         OSP: 'OSP'
     },
 
-    RelationshipTypeAttributeCode: {
+    RelationshipAttributeNameClassifier: {
+        PERMISSION: 'PERMISSION',
+        OTHER: 'OTHER'
+    },
+
+    RelationshipAttributeNameCode: {
         SSID: 'SSID',
         SELECTED_GOVERNMENT_SERVICES_LIST: 'SELECTED_GOVERNMENT_SERVICES_LIST',
-        SUBJECT_RELATIONSHIP_TYPE_DECLARATION: 'SUBJECT_RELATIONSHIP_TYPE_DECLARATION'
+        SUBJECT_RELATIONSHIP_TYPE_DECLARATION: 'SUBJECT_RELATIONSHIP_TYPE_DECLARATION',
+        DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND: 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND',
+        DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND: 'DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND',
+        PERMISSION_CUSTOMISATION_ALLOWED_IND: 'PERMISSION_CUSTOMISATION_ALLOWED_IND',
+        ACCESS_LEVELS_DESCRIPTION: 'ACCESS_LEVELS_DESCRIPTION'
     },
 
     RoleStatusCode: {
@@ -49,6 +71,20 @@ export const RAMConstants = {
 
     RoleTypeCode: {
         OSP: 'OSP'
+    },
+
+    RoleAttributeNameClassifier: {
+        AGENCY_SERVICE: 'AGENCY_SERVICE',
+        OTHER: 'OTHER'
+    },
+
+    RoleAttributeNameCode: {
+        PREFERRED_NAME: 'PREFERRED_NAME',
+        DEVICE_AUSKEYS: 'DEVICE_AUSKEYS'
+    },
+
+    SharedSecretCode: {
+        DATE_OF_BIRTH: 'DATE_OF_BIRTH'
     }
 
 };

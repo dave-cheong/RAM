@@ -40,6 +40,7 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     public delegateRelationshipTypeDeclarationAttributeUsage: IRelationshipAttributeNameUsage;
 
     public declineDisplay: boolean = false;
+    public canAccept: boolean;
 
     constructor(route: ActivatedRoute, router: Router, fb: FormBuilder, services: RAMServices) {
         super(route, router, fb, services);
@@ -48,7 +49,6 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
 
     /* tslint:disable:max-func-body-length */
     public onInit(params: {path: Params, query: Params}) {
-
         // extract path and query parameters
         this.idValue = params.path['idValue'];
         this.code = params.path['invitationCode'];
@@ -62,11 +62,14 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
         this.relationship$ = this.services.rest.findPendingRelationshipByInvitationCode(this.code);
         this.relationship$.subscribe((relationship) => {
             this.relationship = relationship;
-            for (let attribute of relationship.attributes) {
-                if (attribute.attributeName.value.code === 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND') {
-                    this.delegateManageAuthorisationAllowedIndAttribute = attribute;
-                }
+            this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            this.canAccept = this.services.model.getLinkByType('accept', this.relationship) !== null;
+            if(!this.canAccept) {
+               this.services.translate.get('acceptRelationship.insufficientStrength').subscribe({
+                    next: (message) => this.addGlobalMessage(message)
+                });
             }
+
             this.relationshipType$ = this.services.rest.findRelationshipTypeByHref(relationship.relationshipType.href);
             this.relationshipType$.subscribe((relationshipType) => {
                 for (let attributeUsage of relationshipType.relationshipAttributeNames) {
@@ -85,38 +88,67 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
 
     }
 
-    public showDeclineConfirmation = () => {
+    public isManageAuthorisationAllowed() {
+        return this.delegateManageAuthorisationAllowedIndAttribute &&
+            this.delegateManageAuthorisationAllowedIndAttribute.value &&
+            'true' === this.delegateManageAuthorisationAllowedIndAttribute.value[0];
+    }
+
+    public showDeclineConfirmation() {
         this.declineDisplay = true;
     };
 
-    public cancelDeclineConfirmation = () => {
+    public cancelDeclineConfirmation() {
         this.declineDisplay = false;
     };
 
-    public confirmDeclineAuthorisation = () => {
-        this.services.rest.rejectPendingRelationshipByInvitationCode(this.relationship).subscribe(() => {
-            this.declineDisplay = false;
-            this.services.route.goToRelationshipsPage(this.idValue, null, 1, RAMConstants.GlobalMessage.DECLINED_RELATIONSHIP);
-        }, (err) => {
-            this.declineDisplay = false;
-            this.addGlobalErrorMessages(err);
+    public confirmDeclineAuthorisation() {
+        this.services.rest.rejectPendingRelationshipByInvitationCode(this.relationship).subscribe({
+            next: this.onDecline.bind(this),
+            error: () => {
+                this.declineDisplay = false;
+                this.onServerError.bind(this);
+            }
         });
     };
 
-    public acceptAuthorisation = () => {
-        this.services.rest.acceptPendingRelationshipByInvitationCode(this.relationship).subscribe(() => {
-            this.services.route.goToRelationshipsPage(this.idValue, null, 1, RAMConstants.GlobalMessage.ACCEPTED_RELATIONSHIP);
-        }, (err) => {
-            this.addGlobalErrorMessages(err);
+    public acceptAuthorisation() {
+        this.services.rest.acceptPendingRelationshipByInvitationCode(this.relationship).subscribe({
+            next: this.onAccept.bind(this),
+            error: this.onServerError.bind(this)
         });
     };
 
-    public goToEnterAuthorisationPage = () => {
+    private onDecline() {
+        this.declineDisplay = false;
+        this.services.route.goToRelationshipsPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+            null,
+            1,
+            RAMConstants.GlobalMessage.DECLINED_RELATIONSHIP
+        );
+    }
+
+    private onAccept() {
+        this.services.route.goToRelationshipsPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+            null,
+            1,
+            RAMConstants.GlobalMessage.ACCEPTED_RELATIONSHIP
+        );
+    }
+
+    public goToEnterAuthorisationPage() {
         this.services.route.goToRelationshipEnterCodePage(this.idValue, RAMConstants.GlobalMessage.INVALID_CODE);
     };
 
-    public goToRelationshipsPage = () => {
-        this.services.route.goToRelationshipsPage(this.idValue, null, 1, RAMConstants.GlobalMessage.CANCEL_ACCEPT_RELATIONSHIP);
+    public goToRelationshipsPage() {
+        this.services.route.goToRelationshipsPage(
+            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+            null,
+            1,
+            RAMConstants.GlobalMessage.CANCEL_ACCEPT_RELATIONSHIP
+        );
     };
 
     // TODO: not sure how to set the locale, Implement as a pipe

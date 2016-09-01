@@ -205,6 +205,7 @@ export class JensCateringRelationshipsSeeder {
 
                 Seeder.log('');
 
+                // TODO link to invitation code
                 Seeder.jenscatering_and_robertsmith_relationship = await Seeder.createRelationshipModel({
                     relationshipType: Seeder.custom_delegate_relationshipType,
                     subject: Seeder.jenscatering_party,

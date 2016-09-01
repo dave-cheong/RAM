@@ -259,8 +259,8 @@ paths:
       tags:
         - Business - Relationship
       operationId: Relationship.findByIdentifier
-      summary: Get Relationship by identifier
-      description: Get Relationship by identifier
+      summary: Get Relationship
+      description: Get Relationship
       parameters:
         - name: id
           type: string
@@ -276,17 +276,21 @@ paths:
           $ref: '#/responses/404'
         500:
           $ref: '#/responses/500'
-    delete:
+    put:
       tags:
         - Business - Relationship
-      operationId: Relationship.deleteByIdentifier
-      summary: Delete Relationship by Identifier
-      description: Delete Relationship by Identifier
+      operationId: Relationship.modify
+      summary: Update Relationship
+      description: Update Relationship
       parameters:
         - name: id
           type: string
           in: path
           required: true
+        - in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Relationship'
       responses:
         200:
           schema:
@@ -295,6 +299,28 @@ paths:
           $ref: '#/responses/400'
         404:
           $ref: '#/responses/404'
+        500:
+          $ref: '#/responses/500'
+
+  /relationship:
+    post:
+      tags:
+        - Business - Relationship
+      operationId: Relationship.create
+      summary: Create Relationship
+      description: Create Relationship
+      parameters:
+        - in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Relationship'
+      responses:
+        200:
+          description: A relationship document
+          schema:
+              $ref: '#/definitions/Relationship'
+        400:
+          $ref: '#/responses/400'
         500:
           $ref: '#/responses/500'
 
@@ -454,35 +480,6 @@ paths:
         200:
           schema:
             $ref: '#/definitions/PartyListResponse'
-        400:
-          $ref: '#/responses/400'
-        500:
-          $ref: '#/responses/500'
-
-  /relationship:
-    post:
-      tags:
-        - Business - Relationship
-      summary: Create Relationship
-      description: Create Relationship
-      parameters:
-        - in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreateRelationship'
-      responses:
-        200:
-          description: A relationship document
-          schema:
-              $ref: '#/definitions/Relationship'
-        400:
-          $ref: '#/responses/400'
-        500:
-          $ref: '#/responses/500'
-      responses:
-        200:
-          schema:
-            $ref: '#/definitions/Relationship'
         400:
           $ref: '#/responses/400'
         500:
@@ -865,9 +862,9 @@ definitions:
         type: boolean
         description: Agency User indicator for this principal
       agencyUser:
-        $ref: AgencyUser
+        $ref: '#/definitions/AgencyUser'
       identity:
-        $ref: Identity
+        $ref: '#/definitions/Identity'
 
   # Profile ...........................................................................................................
 
@@ -1061,6 +1058,9 @@ definitions:
       defaultInd:
         type: boolean
         description: The default indicator
+      strength:
+        type: number
+        description: The strength
       agencyScheme:
         type: string
         description: The agency scheme
@@ -1169,52 +1169,6 @@ definitions:
         description: Indicates where in the lifecycle of relationships; this one is up to.
         enum: ['invalid','pending','active','deleted','cancelled']
 
-  CreateRelationship:
-    type: object
-    properties:
-      rawIdValue:
-        type: string
-        description: The identity raw id value
-      partyType:
-        type: string
-        description: The Party Type
-      givenName:
-        type: string
-        description: The given name
-      familyName:
-        type: string
-        description: The family name
-      unstructuredName:
-        type: string
-        description: The unstructured name
-      sharedSecretTypeCode:
-        type: string
-        description: The shared secret code
-      sharedSecretValue:
-        type: string
-        description: The schared secret value
-      identityType:
-        type: string
-        description: The identity type
-      agencyScheme:
-        type: string
-        description: The agency scheme
-      agencyToken:
-        type: string
-        description: The agency token
-      linkIdScheme:
-        type: string
-        description: The link id scheme
-      linkIdConsumer:
-        type: string
-        description: The link id consumer
-      publicIdentifierScheme:
-        type: string
-        description: The public identifier scheme
-      profileProvider:
-        type: string
-        description: The profile provider
-
   NotifyRelationshipDelegate:
     type: object
     properties:
@@ -1305,11 +1259,23 @@ definitions:
 
   RelationshipTypeDetails:
     type: object
-    required: ["voluntaryInd","relationshipAttributeNames"]
+    required: ["voluntaryInd","managedExternallyInd","relationshipAttributeNames"]
     properties:
+      minCredentialStrength:
+        type: boolean
+        description: The minimum credential strength for accepting
+      minIdentityStrength:
+        type: boolean
+        description: The minimum identity strength for accepting
       voluntaryInd:
         type: boolean
         description: Does the Subject Party get a say whether the delegate may have this relationship?
+      managedExternallyInd:
+        type: boolean
+        description: Is the relationship type managed externally?
+      category:
+        type: string
+        description: The category for the relationship type
       relationshipAttributeNames:
         type: array
         description: Relationship attributes that may be used with this resource
@@ -1335,10 +1301,10 @@ definitions:
 
   RelationshipAttributeNameUsageDetails:
     type: object
-    required: ["mandatory","defaultValue"]
+    required: ["optionalInd","defaultValue","sortOrder"]
     properties:
-      mandatory:
-        description: Indicator of whether the attribute is mandatory or not
+      optionalInd:
+        description: Indicator of whether the attribute is optional or not
         type: boolean
       defaultValue:
         description: The default value of the attribute
@@ -1346,6 +1312,9 @@ definitions:
       attributeNameDef:
         description: The attribute name
         $ref: '#/definitions/RelationshipAttributeNameResourceReference'
+      sortOrder:
+        description: Order/position in which the attribute is displayed
+        type: number
 
   # Relationship Attribute Name .......................................................................................
 
@@ -1365,7 +1334,7 @@ definitions:
 
   RelationshipAttributeNameDetails:
     type: object
-    required: ["mandatory","fieldType"]
+    required: ["optionalInd","fieldType"]
     properties:
       domain:
         description: It is the field type
@@ -1505,10 +1474,10 @@ definitions:
 
   RoleAttributeNameUsageDetails:
     type: object
-    required: ["mandatory","defaultValue"]
+    required: ["optionalInd","defaultValue"]
     properties:
-      mandatory:
-        description: Indicator of whether the attribute is mandatory or not
+      optionalInd:
+        description: Indicator of whether the attribute is optional or not
         type: boolean
       defaultValue:
         description: The default value of the attribute
@@ -1535,7 +1504,7 @@ definitions:
 
   RoleAttributeNameDetails:
     type: object
-    required: ["mandatory","fieldType"]
+    required: ["optionalInd","fieldType"]
     properties:
       domain:
         description: It is the field type

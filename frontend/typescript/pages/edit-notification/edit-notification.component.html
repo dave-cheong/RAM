@@ -12,7 +12,7 @@
             <div class="col-md-12">
                 <h4>Enter the ABN of the software provider:</h4>
             </div>
-            <div *ngIf="!delegateParty" class="form-group">
+            <div *ngIf="!delegateParty || !relationshipHref" class="form-group">
                 <div class="col-md-12">
                     <h4>ABN*</h4>
                     <div class="row">

@@ -37,15 +37,15 @@ export const routes: RouterConfig = [
         component: WelcomeHomeComponent,
     },
     {
-        path: 'relationships/:idValue',
+        path: 'relationships/:identityHref',
         component: RelationshipsComponent
     },
     {
-        path: 'relationships/add/:idValue',
+        path: 'relationships/add/:identityHref',
         component: EditRelationshipComponent
     },
     {
-        path: 'relationships/edit/:idValue/:key',
+        path: 'relationships/edit/:identityHref/:relationshipHref',
         component: EditRelationshipComponent
     },
     {

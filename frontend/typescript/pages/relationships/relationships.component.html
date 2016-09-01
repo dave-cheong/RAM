@@ -99,7 +99,7 @@
                 <td>{{commaSeparatedListOfProviderNames(relationshipRef.value.delegate.value)}}</td>
                 <td>{{services.model.relationshipTypeLabel(relationshipTypeRefs, relationshipRef.value)}}</td>
                 <td>{{services.model.relationshipStatusLabel(relationshipStatusRefs, relationshipRef.value.status)}}</td>
-                <td></td>
+                <td><a class="btn btn-sm btn-secondary align-center" (click)="goToRelationshipPage(relationshipRef)" *ngIf="isEditRelationshipEnabled(relationshipRef)">Manage <span class="caret"></span></a></td>
             </tr>
         </template>
     </tbody>
@@ -111,7 +111,7 @@
 </table>
 
 <search-result-pagination
-        [searchResult]="relationships$|async"
+        [searchResult]="relationshipRefs"
         [delegate]="paginationDelegate">
 </search-result-pagination>
 

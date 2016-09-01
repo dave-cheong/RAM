@@ -1,9 +1,19 @@
 import * as mongoose from 'mongoose';
-import {IRAMObject, RAMSchema} from './base';
+import {IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
 import {
     HrefValue,
     Name as DTO
 } from '../../../commons/RamAPI';
+
+// exports ............................................................................................................
+
+export interface IName extends IRAMObject, INameInstanceContract {
+}
+
+export interface INameModel extends mongoose.Model<IName>, INameStaticContract {
+}
+
+export let NameModel: INameModel;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -35,7 +45,7 @@ const NameSchema = RAMSchema({
     }
 });
 
-NameSchema.pre('validate', function (next:() => void) {
+NameSchema.pre('validate', function (next: () => void) {
     if ((this.givenName || this.familyName) && this.unstructuredName) {
         throw new Error('Given/Family Name and Unstructured Name cannot both be specified');
     } else {
@@ -48,43 +58,55 @@ NameSchema.pre('validate', function (next:() => void) {
     }
 });
 
-// interfaces .........................................................................................................
+// instance ...........................................................................................................
 
-export interface IName extends IRAMObject {
+interface INameInstanceContract extends IRAMObjectContract {
     givenName?: string;
     familyName?: string;
     unstructuredName?: string;
     _displayName?: string;
-    toHrefValue():Promise<HrefValue<DTO>>;
-    toDTO():Promise<DTO>;
+    toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
+    toDTO(): Promise<DTO>;
 }
 
-/* tslint:disable:no-empty-interfaces */
-export interface INameModel extends mongoose.Model<IName> {
+class NameInstanceContractImpl extends RAMObjectContractImpl implements INameInstanceContract {
+
+    public givenName: string;
+    public familyName: string;
+    public unstructuredName: string;
+    public _displayName: string;
+
+    public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
+        return new HrefValue(
+            null, // TODO do these have endpoints?
+            includeValue ? await this.toDTO() : undefined
+        );
+    }
+
+    public async toDTO(): Promise<DTO> {
+        return new DTO(
+            this.givenName,
+            this.familyName,
+            this.unstructuredName,
+            this._displayName
+        );
+    }
+
 }
 
-// instance methods ...................................................................................................
+// static .............................................................................................................
 
-NameSchema.method('toHrefValue', async function (includeValue:boolean) {
-    return new HrefValue(
-        null, // TODO do these have endpoints?
-        includeValue ? this.toDTO() : undefined
-    );
-});
+interface INameStaticContract {
+}
 
-NameSchema.method('toDTO', async function () {
-    return new DTO(
-        this.givenName,
-        this.familyName,
-        this.unstructuredName,
-        this._displayName
-    );
-});
-
-// static methods .....................................................................................................
+class NameStaticContractImpl implements INameStaticContract {
+}
 
 // concrete model .....................................................................................................
 
-export const NameModel = mongoose.model(
+NameModel = Model(
     'Name',
-    NameSchema) as INameModel;
+    NameSchema,
+    NameInstanceContractImpl,
+    NameStaticContractImpl
+) as INameModel;

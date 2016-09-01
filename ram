@@ -13,7 +13,6 @@ DEFAULT_CONF=$DIR/backend/conf/conf-localhost.js
 # (TESTING: push to test-1)
 
 #  test commit 5 on develop
-#
 
 export PATH=./node_modules/.bin:../node_modules/.bin:$PATH
 
@@ -50,7 +49,8 @@ case "$1" in
     echo "Downloading frontend dependencies ..."
     echo ""
     cd frontend
-    npm install && bower install && typings install && ./node_modules/.bin/jspm install
+    rm -rf typings
+    npm install && bower install && typings install
     echo ""
     ;;
 
@@ -59,6 +59,7 @@ case "$1" in
     echo "Downloading backend dependencies ..."
     echo ""
     cd backend
+    rm -rf typings
     npm install && typings install
     echo ""
     ;;
@@ -278,13 +279,15 @@ case "$1" in
   #     ./ram test:backend --test relationshipType.model
   'test:backend')
     echo ""
+    echo "Dropping test database"
+    mongo ram-test --eval "db.dropDatabase()"
     echo "Starting backend tests"
     echo ""
     cd backend
     if [ -z "$3" ]; then
       RAM_CONF=$DIR/backend/conf/conf-test.js gulp test
     else
-      RAM_CONF=$DIR/backend/conf/conf-test.js gulp test "$2" "$3"
+      RAM_CONF=$DIR/backend/conf/conf-test.js gulp test "$2" "$3" --no-lint
     fi
     exit $?
     ;;
@@ -300,7 +303,7 @@ case "$1" in
     if [ -z "$3" ]; then
       gulp test
     else
-      gulp test "$2" "$3"
+      gulp test "$2" "$3" --no-lint
     fi
     exit $?
     ;;
@@ -429,6 +432,7 @@ case "$1" in
     echo "$(tput setaf 3)    deps:frontend                        $(tput sgr0)      Downloads frontend dependencies"
     echo "$(tput setaf 3)    deps:backend                         $(tput sgr0)      Downloads backend dependencies"
     echo "$(tput setaf 3)    deps:test                            $(tput sgr0)      Downloads api test dependencies"
+    echo "$(tput setaf 3)    deps:clean                           $(tput sgr0)      Removes node_modules and typings folders"
     echo "$(tput setaf 3)    jspm                                 $(tput sgr0)      Builds the jspm dist file"
     echo ""
     echo "$(tput setaf 3)    feature:start                        $(tput sgr0)      Creates local and remote feature branch"
