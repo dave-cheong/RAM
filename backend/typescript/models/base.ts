@@ -69,6 +69,7 @@ export interface IRAMObjectContract {
 }
 
 // exists for type safety only, do not add functions here
+// todo rename to RAMObject
 export class RAMObjectContractImpl implements IRAMObjectContract {
     public id: string;
     constructor(public _id: any,
@@ -113,6 +114,7 @@ export const RAMSchema = (schema: Object) => {
  * ICodeDecode defines the common attributes that all lookup documents in RAM will contain. Alongside,
  * IRAMObject, these two interfaces define all the models in the system.
  */
+// todo stop extending from Document
 export interface ICodeDecode extends mongoose.Document {
     shortDecodeText: string;
     longDecodeText: string;
@@ -121,6 +123,7 @@ export interface ICodeDecode extends mongoose.Document {
     code: string;
 }
 
+// todo deprecated
 export interface ICodeDecodeContract {
     id: string;
     _id: any;
@@ -132,6 +135,7 @@ export interface ICodeDecodeContract {
 }
 
 // exists for type safety only, do not add functions here
+// todo rename to CodeDecode
 export class CodeDecodeContractImpl implements ICodeDecodeContract {
     public id: string;
     constructor(public _id: any,
@@ -191,7 +195,7 @@ export const CodeDecodeSchema = (schema: Object) => {
  * @param schema the schema
  * @param instanceContract the instance contract
  * @param staticContract the static contract
- * @returns {Model<T>} the mongoose model
+ * @returns {Model} the mongoose model
  * @constructor
  */
 export const Model = <T extends mongoose.Document>(name: string, schema: mongoose.Schema, instanceContract: any, staticContract?: any): mongoose.Model<T> => {
