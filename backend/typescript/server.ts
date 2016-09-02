@@ -34,7 +34,6 @@ import {TransactController} from './controllers/transact.controller';
 
 import {IdentityModel} from './models/identity.model';
 import {RelationshipModel} from './models/relationship.model';
-import {RelationshipAttributeNameModel} from './models/relationshipAttributeName.model';
 import {AUSkeyProvider} from './providers/auskey.provider';
 import {context} from './providers/context.provider';
 
@@ -106,7 +105,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RelationshipAttributeNameController(RelationshipAttributeNameModel)
+    new RelationshipAttributeNameController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
