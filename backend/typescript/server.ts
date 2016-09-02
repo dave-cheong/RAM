@@ -32,7 +32,6 @@ import {BusinessController} from './controllers/business.controller';
 import {AuskeyController} from './controllers/auskey.controller';
 import {TransactController} from './controllers/transact.controller';
 
-import {RelationshipModel} from './models/relationship.model';
 import {AUSkeyProvider} from './providers/auskey.provider';
 import {context} from './providers/context.provider';
 
