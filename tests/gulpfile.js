@@ -33,7 +33,7 @@ gulp.task('test', ['ts:compile'], function () {
   if (args.test) {
     pattern = ['dist/{**,./}/' + args.test + '.spec.js'];
   }
-  console.log('Running tests with pattern ' + args.test);
+  console.log('\nRunning tests with pattern ' + args.test);
   return gulp.src(pattern).pipe(
     jasmine({
       verbose: true,
