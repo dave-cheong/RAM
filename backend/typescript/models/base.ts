@@ -4,49 +4,14 @@ import * as _ from 'lodash';
 
 /* tslint:disable:no-var-requires */
 const mongooseUniqueValidator = require('mongoose-unique-validator');
-/* tslint:disable:no-var-requires */
 const mongooseIdValidator = require('mongoose-id-validator');
-/* tslint:disable:no-var-requires */
 const mongooseDeepPopulate = require('mongoose-deep-populate')(mongoose);
 
+// RAMEnum ............................................................................................................
+
 /**
- * A convenience class to build a query object, only adding criteria when specified.
- */
-export class Query {
-
-    private data: {[name: string]: Promise<Object>} = {};
-
-    /**
-     * Adds the given filter (name:value) only if 'condition' is truthy.
-     */
-    public when(condition: Object, name: string, callback: () => Promise<Object>) {
-        if (condition) {
-            this.data[name] = callback();
-        }
-        return this;
-    }
-
-    public async build(): Promise<Object> {
-        try {
-            const promises = Object.keys(this.data).map(val => this.data[val]);
-            const values: Object[] = await Promise.all<Object>(promises);
-
-            let i = 0;
-            let result: {[name: string]: Object} = {};
-            for (let key of Object.keys(this.data)) {
-                result[key] = values[i];
-                i = i + 1;
-            }
-
-            return result;
-
-        } catch (e) {
-            throw e;
-        }
-    }
-}
-
-/* RAMEnum is a simple class construct that represents a enumerated type so we can work with classes not strings.
+ * RAMEnum is a simple class construct that represents an enumerated type so we can work with classes not strings
+ * as with traditional languages.
  */
 export class RAMEnum {
 
@@ -69,15 +34,20 @@ export class RAMEnum {
         return null;
     }
 
-    constructor(public code: string, public shortDecodeText: string) {
+    constructor(public code: string,
+                public shortDecodeText: string) {
     }
+
 }
 
-/* A RAMObject defines the common attributes that all objects in the RAM
- * model will contain.
- * Most objects in RAM extend off the RAMObject
- */
+// RAMObject ..........................................................................................................
+
 //noinspection ReservedWordAsName
+
+/**
+ * IRAMObject defines the common attributes that all transactional documents in RAM will contain. Alongside,
+ * ICodeDecode, these two interfaces define all the models in the system.
+ */
 // todo stop extending from Document
 export interface IRAMObject extends mongoose.Document {
     createdAt: Date;
@@ -113,6 +83,8 @@ export class RAMObjectContractImpl implements IRAMObjectContract {
     }
 }
 
+// RAMSchema ..........................................................................................................
+
 export const RAMSchema = (schema: Object) => {
 
     //noinspection ReservedWordAsName
@@ -135,6 +107,12 @@ export const RAMSchema = (schema: Object) => {
 
 };
 
+// CodeDecode .........................................................................................................
+
+/**
+ * ICodeDecode defines the common attributes that all lookup documents in RAM will contain. Alongside,
+ * IRAMObject, these two interfaces define all the models in the system.
+ */
 export interface ICodeDecode extends mongoose.Document {
     shortDecodeText: string;
     longDecodeText: string;
@@ -204,7 +182,19 @@ export const CodeDecodeSchema = (schema: Object) => {
     return result;
 };
 
-export const Model = (name: string, schema: mongoose.Schema, instanceContract: any, staticContract?: any) => {
+// Model ..............................................................................................................
+
+/**
+ * A helper to build a mongoose.model given a name, schema, instance and static contracts.
+ *
+ * @param name the name
+ * @param schema the schema
+ * @param instanceContract the instance contract
+ * @param staticContract the static contract
+ * @returns {Model<T>} the mongoose model
+ * @constructor
+ */
+export const Model = <T extends mongoose.Document>(name: string, schema: mongoose.Schema, instanceContract: any, staticContract?: any): mongoose.Model<T> => {
 
     // console.log('model: ', name);
 
@@ -230,15 +220,26 @@ export const Model = (name: string, schema: mongoose.Schema, instanceContract: a
         });
     }
 
-    return mongoose.model(name, schema);
+    return mongoose.model(name, schema) as mongoose.Model<T>;
 
 };
 
+// helpers ............................................................................................................
+
+/**
+ * A proxy the pull function which only exists in mongoose.Types.DocumentArray.
+ *
+ * @param mongooseArray the mongoose array of type mongoose.Types.DocumentArray
+ * @param value the value to remove
+ */
 export const removeFromArray = <T>(mongooseArray: Array<T>, value: Object) => {
     const typedMongooseArray = mongooseArray as mongoose.Types.DocumentArray<T>;
     typedMongooseArray.pull(value);
 };
 
+/**
+ * A simple assertion utility for things like null, true, equal etc checks.
+ */
 export class Assert {
 
     public static assertNotNull(object: Object, failMessage: string, detail?: string) {
@@ -271,5 +272,44 @@ export class Assert {
 
     public static assertGreaterThanEqual(value: number, min: number, failMessage: string, detail?: string) {
         this.assertTrue(value >= min, failMessage, detail);
+    }
+
+}
+
+/**
+ * A convenience class to build a query object, only adding criteria when specified. This class needs to be
+ * seriously enhanced if it is to be a useful builder for all queries, as the implementation is currently naive.
+ */
+export class Query {
+
+    private data: {[name: string]: Promise<Object>} = {};
+
+    /**
+     * Adds the given filter (name:value) only if 'condition' is truthy.
+     */
+    public when(condition: Object, name: string, callback: () => Promise<Object>) {
+        if (condition) {
+            this.data[name] = callback();
+        }
+        return this;
+    }
+
+    public async build(): Promise<Object> {
+        try {
+            const promises = Object.keys(this.data).map(val => this.data[val]);
+            const values: Object[] = await Promise.all<Object>(promises);
+
+            let i = 0;
+            let result: {[name: string]: Object} = {};
+            for (let key of Object.keys(this.data)) {
+                result[key] = values[i];
+                i = i + 1;
+            }
+
+            return result;
+
+        } catch (e) {
+            throw e;
+        }
     }
 }
