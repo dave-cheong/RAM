@@ -4,14 +4,14 @@ import {sendResource, sendError, sendNotFoundError, validateReqSchema, sendSearc
 import {IAUSkeyProvider} from '../providers/auskey.provider';
 import {AUSkeyType} from '../models/auskey.model';
 import {PartyModel} from '../models/party.model';
-import {IIdentityModel} from '../models/identity.model';
+import {IdentityModel} from '../models/identity.model';
 import {FilterParams} from '../../../commons/RamAPI';
 import {Assert} from '../models/base';
 import {Translator} from '../ram/translator';
 
 export class AuskeyController {
 
-    constructor(private auskeyProvider: IAUSkeyProvider, private identityModel: IIdentityModel) {
+    constructor(private auskeyProvider: IAUSkeyProvider) {
     }
 
     private findAusKey = (req: Request, res: Response) => {
@@ -74,7 +74,7 @@ export class AuskeyController {
                 const auskeyType = filterParams.get('auskeyType');
                 Assert.assertNotNull(auskeyType, 'Filter param auskeyType must be supplied');
 
-                const identity = await this.identityModel.findByIdValue(req.params.idValue);
+                const identity = await IdentityModel.findByIdValue(req.params.idValue);
                 return await this.auskeyProvider.searchByABN(
                     identity.rawIdValue,
                     AUSkeyType.valueOf(auskeyType),
