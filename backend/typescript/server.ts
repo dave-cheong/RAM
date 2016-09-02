@@ -32,7 +32,6 @@ import {BusinessController} from './controllers/business.controller';
 import {AuskeyController} from './controllers/auskey.controller';
 import {TransactController} from './controllers/transact.controller';
 
-import {IdentityModel} from './models/identity.model';
 import {RelationshipModel} from './models/relationship.model';
 import {AUSkeyProvider} from './providers/auskey.provider';
 import {context} from './providers/context.provider';
@@ -141,7 +140,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new TransactController(IdentityModel, RelationshipModel)
+    new TransactController()
         .assignRoutes(express.Router()));
 
 // setup error handlers ...............................................................................................
