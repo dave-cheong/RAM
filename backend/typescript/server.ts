@@ -121,7 +121,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RelationshipController(RelationshipModel)
+    new RelationshipController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
