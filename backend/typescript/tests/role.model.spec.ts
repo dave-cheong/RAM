@@ -186,7 +186,6 @@ describe('RAM Role', () => {
 
             // verify
             const actualRole = await RoleModel.findByIdentifier(role._id);
-            console.log('actualRole = ', actualRole);
             expect(actualRole.attributes.length).toBe(0);
 
             // attribute should no longer exist

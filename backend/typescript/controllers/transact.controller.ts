@@ -4,14 +4,10 @@ import {sendResource, sendError, sendNotFoundError, validateReqSchema} from './h
 import {Url} from '../models/url';
 import {ITransactRequest, TransactResponse} from '../../../commons/RamAPI';
 import {RoleStatus, RoleModel} from '../models/role.model';
-import {IIdentityModel} from '../models/identity.model';
-import {IRelationshipModel, RelationshipStatus} from '../models/relationship.model';
+import {RelationshipStatus, RelationshipModel} from '../models/relationship.model';
+import {IdentityModel} from '../models/identity.model';
 
 export class TransactController {
-
-    constructor(private identityModel: IIdentityModel,
-                private relationshipModel: IRelationshipModel) {
-    }
 
     private allowed = async(req: Request, res: Response) => {
 
@@ -56,7 +52,7 @@ export class TransactController {
                 const ospRole = ospRoles.list[0];
 
                 // ensure client ABN
-                const clientIdentity = await this.identityModel.findByIdValue(clientIdentityIdValue);
+                const clientIdentity = await IdentityModel.findByIdValue(clientIdentityIdValue);
                 if (!clientIdentity) {
                     throw new Error('400:Client ABN does not exist');
                 }
@@ -92,7 +88,7 @@ export class TransactController {
                 }
 
                 // ensure there is a valid OSP relationship between the two parties
-                const acceptedOspRelationshipSearchResult = await this.relationshipModel.searchByIdentitiesInDateRange(clientIdentityIdValue, ospIdentityIdValue, 'OSP', RelationshipStatus.Accepted.code, new Date(), 1, 10);
+                const acceptedOspRelationshipSearchResult = await RelationshipModel.searchByIdentitiesInDateRange(clientIdentityIdValue, ospIdentityIdValue, 'OSP', RelationshipStatus.Accepted.code, new Date(), 1, 10);
                 if (acceptedOspRelationshipSearchResult.list.length === 0) {
                     throw new Error('401:Relationship not found');
                 }

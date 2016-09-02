@@ -173,7 +173,6 @@ describe('RAM Shared Secret', () => {
     it('does not match null value', async (done) => {
         try {
             expect(sharedSecretNoEndDate.matchesValue(null)).toBe(false);
-            console.log('date =', sharedSecretNoEndDate.createdAt);
             done();
         } catch (e) {
             fail('Because ' + e);
