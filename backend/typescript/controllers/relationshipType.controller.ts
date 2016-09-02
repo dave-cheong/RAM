@@ -1,12 +1,9 @@
 import {Router, Request, Response} from 'express';
 import {context} from '../providers/context.provider';
 import {sendResource, sendList, sendError, sendNotFoundError, validateReqSchema} from './helpers';
-import {IRelationshipTypeModel } from '../models/relationshipType.model';
+import {RelationshipTypeModel} from '../models/relationshipType.model';
 
 export class RelationshipTypeController {
-
-    constructor(private relationshipTypeModel:IRelationshipTypeModel) {
-    }
 
     private findByCodeIgnoringDateRange = async (req:Request, res:Response) => {
         const schema = {
@@ -17,7 +14,7 @@ export class RelationshipTypeController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => this.relationshipTypeModel.findByCodeIgnoringDateRange(req.params.code))
+            .then((req:Request) => RelationshipTypeModel.findByCodeIgnoringDateRange(req.params.code))
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -27,7 +24,7 @@ export class RelationshipTypeController {
     private listIgnoringDateRange = async (req:Request, res:Response) => {
         const schema = {};
         validateReqSchema(req, schema)
-            .then((req:Request) => this.relationshipTypeModel.listIgnoringDateRange())
+            .then((req:Request) => RelationshipTypeModel.listIgnoringDateRange())
             .then((results) => results ? results.map((model) => model.toHrefValue(true)) : null)
             .then(sendList(res))
             .then(sendNotFoundError(res))

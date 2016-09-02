@@ -146,6 +146,8 @@ export interface ICodeDecode extends mongoose.Document {
 }
 
 export interface ICodeDecodeContract {
+    id: string;
+    _id: any;
     shortDecodeText: string;
     longDecodeText: string;
     startDate: Date;
@@ -155,11 +157,14 @@ export interface ICodeDecodeContract {
 
 // exists for type safety only, do not add functions here
 export class CodeDecodeContractImpl implements ICodeDecodeContract {
-    constructor(public shortDecodeText: string,
+    public id: string;
+    constructor(public _id: any,
+                public shortDecodeText: string,
                 public longDecodeText: string,
                 public startDate: Date,
                 public endDate: Date,
                 public code: string) {
+        this.id = _id.toString();
     }
 }
 

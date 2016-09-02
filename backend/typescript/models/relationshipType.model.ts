@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, ICodeDecode, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
+import {RAMEnum, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
 import {Url} from './url';
 import {RelationshipAttributeNameModel} from './relationshipAttributeName.model';
 import {IRelationshipAttributeNameUsage, RelationshipAttributeNameUsageModel} from './relationshipAttributeNameUsage.model';
@@ -17,15 +17,9 @@ const _RelationshipAttributeNameModel = RelationshipAttributeNameModel;
 /* tslint:disable:no-unused-variable */
 const _RelationshipAttributeNameUsageModel = RelationshipAttributeNameUsageModel;
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface IRelationshipType extends ICodeDecode, IRelationshipTypeInstanceContract {
-}
-
-export interface IRelationshipTypeModel extends mongoose.Model<IRelationshipType>, IRelationshipTypeStaticContract {
-}
-
-export let RelationshipTypeModel: IRelationshipTypeModel;
+let RelationshipTypeMongooseModel: mongoose.Model<IRelationshipTypeDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -91,7 +85,7 @@ const RelationshipTypeSchema = CodeDecodeSchema({
 
 // interfaces .........................................................................................................
 
-export interface IRelationshipTypeInstanceContract extends ICodeDecodeContract {
+export interface IRelationshipType extends ICodeDecodeContract {
     minCredentialStrength: number;
     minIdentityStrength: number;
     voluntaryInd: boolean;
@@ -106,7 +100,7 @@ export interface IRelationshipTypeInstanceContract extends ICodeDecodeContract {
     toDTO(): Promise<DTO>;
 }
 
-class RelationshipTypeInstanceContractImpl extends CodeDecodeContractImpl implements IRelationshipTypeInstanceContract {
+class RelationshipType extends CodeDecodeContractImpl implements IRelationshipType {
     public minCredentialStrength: number;
     public minIdentityStrength: number;
     public voluntaryInd: boolean;
@@ -162,18 +156,19 @@ class RelationshipTypeInstanceContractImpl extends CodeDecodeContractImpl implem
 
 }
 
-// static .............................................................................................................
-
-interface IRelationshipTypeStaticContract {
-    findByCodeIgnoringDateRange(code: String): Promise<IRelationshipType>;
-    findByCodeInDateRange(code: String, date: Date): Promise<IRelationshipType>;
-    listIgnoringDateRange(): Promise<IRelationshipType[]>;
-    listInDateRange(date: Date): Promise<IRelationshipType[]>;
+interface IRelationshipTypeDocument extends IRelationshipType, mongoose.Document {
 }
 
-class RelationshipTypeStaticContractImpl implements IRelationshipTypeStaticContract {
-    public findByCodeIgnoringDateRange(code: String): Promise<IRelationshipType> {
-        return RelationshipTypeModel
+// static .............................................................................................................
+
+export class RelationshipTypeModel {
+
+    public static async create(source: any): Promise<IRelationshipType> {
+        return RelationshipTypeMongooseModel.create(source);
+    }
+
+    public static findByCodeIgnoringDateRange(code: String): Promise<IRelationshipType> {
+        return RelationshipTypeMongooseModel
             .findOne({
                 code: code
             })
@@ -183,8 +178,8 @@ class RelationshipTypeStaticContractImpl implements IRelationshipTypeStaticContr
             .exec();
     }
 
-    public findByCodeInDateRange(code: String, date: Date): Promise<IRelationshipType> {
-        return RelationshipTypeModel
+    public static findByCodeInDateRange(code: String, date: Date): Promise<IRelationshipType> {
+        return RelationshipTypeMongooseModel
             .findOne({
                 code: code,
                 startDate: {$lte: date},
@@ -196,8 +191,8 @@ class RelationshipTypeStaticContractImpl implements IRelationshipTypeStaticContr
             .exec();
     }
 
-    public listIgnoringDateRange(): Promise<IRelationshipType[]> {
-        return RelationshipTypeModel
+    public static listIgnoringDateRange(): Promise<IRelationshipType[]> {
+        return RelationshipTypeMongooseModel
             .find({})
             .deepPopulate([
                 'attributeNameUsages.attributeName'
@@ -206,8 +201,8 @@ class RelationshipTypeStaticContractImpl implements IRelationshipTypeStaticContr
             .exec();
     }
 
-    public listInDateRange(date: Date): Promise<IRelationshipType[]> {
-        return RelationshipTypeModel
+    public static listInDateRange(date: Date): Promise<IRelationshipType[]> {
+        return RelationshipTypeMongooseModel
             .find({
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
@@ -223,9 +218,8 @@ class RelationshipTypeStaticContractImpl implements IRelationshipTypeStaticContr
 
 // concrete model .....................................................................................................
 
-RelationshipTypeModel = Model(
+RelationshipTypeMongooseModel = Model(
     'RelationshipType',
     RelationshipTypeSchema,
-    RelationshipTypeInstanceContractImpl,
-    RelationshipTypeStaticContractImpl
-) as IRelationshipTypeModel;
+    RelationshipType
+) as mongoose.Model<IRelationshipTypeDocument>;
