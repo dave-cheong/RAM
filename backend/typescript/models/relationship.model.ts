@@ -840,7 +840,7 @@ export class RelationshipModel {
             initiatedBy: initiatedBy.code,
             invitationIdentity: invitationIdentity,
             attributes: attributes
-            } as IRelationship
+            } as any
         );
 
     }
