@@ -362,7 +362,6 @@ class Relationship extends RAMObjectContractImpl implements IRelationship {
     }
 
     public async claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship> {
-        try {
             /* validate */
 
             // validate current status
@@ -374,7 +373,7 @@ class Relationship extends RAMObjectContractImpl implements IRelationship {
             }
 
             // find identity to match user against
-            const invitationIdentities = await IdentityModel.listByPartyId(this.delegate.id);
+            const invitationIdentities = await IdentityModel.listByPartyId(this.delegate._id);
             Assert.assertTrue(
                 invitationIdentities.length === 1,
                 'A pending relationship should only have one delegate identity'
@@ -454,11 +453,7 @@ class Relationship extends RAMObjectContractImpl implements IRelationship {
             // point relationship to the accepting delegate identity
             this.delegate = claimingDelegateIdentity.party;
             await this.save();
-            return Promise.resolve(this as IRelationship);
-        } catch (err) {
-            return Promise.reject(err);
-        }
-
+            return Promise.resolve(this);
     }
 
     public async acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship> {
@@ -770,6 +765,18 @@ export class RelationshipModel {
         }
 
         if (isNewRelationship) {
+            let status = RelationshipStatus.Pending;
+
+            // check subject
+            if (initiatedBy === RelationshipInitiatedBy.Subject && relationshipType.autoAcceptIfInitiatedFromSubject) {
+                status = RelationshipStatus.Accepted;
+            }
+
+            // check delegate
+            if (initiatedBy === RelationshipInitiatedBy.Delegate && relationshipType.autoAcceptIfInitiatedFromDelegate) {
+                status = RelationshipStatus.Accepted;
+            }
+
             return RelationshipModel.create({
                 relationshipType: relationshipType,
                 subject: subjectIdentity.party,
@@ -778,8 +785,9 @@ export class RelationshipModel {
                 delegateNickName: delegateIdentity.profile.name,
                 startTimestamp: startTimestamp,
                 endTimestamp: endTimestamp,
-                initiatedBy: initiatedBy,
+                initiatedBy: initiatedBy.code,
                 invitationIdentity: invitationIdentity,
+                status: status.code,
                 attributes: attributes
                 } as any
             );
@@ -874,6 +882,7 @@ export class RelationshipModel {
                     'delegate',
                     'delegateNickName',
                     'invitationIdentity.profile.name',
+                    'invitationIdentity.profile.sharedSecrets',
                     'attributes.attributeName'
                 ])
                 .exec();
