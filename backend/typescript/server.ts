@@ -110,7 +110,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new IdentityController(IdentityModel)
+    new IdentityController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
