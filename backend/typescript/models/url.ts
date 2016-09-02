@@ -135,7 +135,7 @@ export class Url {
 
     // relationship attribute name ....................................................................................
 
-    public static async forRelationshipAttributeName(model: relationshipAttributeName.IRelationshipAttributeNameInstanceContract): Promise<string> {
+    public static async forRelationshipAttributeName(model: relationshipAttributeName.IRelationshipAttributeName): Promise<string> {
         return '/api/v1/relationshipAttributeName/' + encodeURIComponent(model.code);
     }
 
