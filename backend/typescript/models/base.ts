@@ -84,8 +84,6 @@ export interface IRAMObject extends mongoose.Document {
     updatedAt: Date;
     deleteInd: boolean;
     resourceVersion: string;
-
-    /** Instance methods */
     delete(): void;
 }
 
@@ -108,7 +106,7 @@ export class RAMObjectContractImpl implements IRAMObjectContract {
                 public updatedAt: Date,
                 public deleteInd: boolean,
                 public resourceVersion: string) {
-        this.id = _id.toString();
+        this.id = _id ? _id.toString() : undefined;
     }
     public save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this> {
         return null;

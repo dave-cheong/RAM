@@ -7,11 +7,11 @@ import * as methodOverride from 'method-override';
 import * as mongoose from 'mongoose';
 import {conf} from './bootstrap';
 import {logStream, logger} from './logger';
-import expressValidator = require('express-validator');
 import {sendNotFoundError} from './controllers/helpers';
-
 import {forgeRockSimulator} from './controllers/forgeRock.simulator.middleware';
 import {security} from './controllers/security.middleware';
+
+import expressValidator = require('express-validator');
 
 // DEVELOPMENT CONTROLLERS
 import {AuthenticatorSimulatorController} from './controllers/authenticator.simulator.controller';
@@ -109,7 +109,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new IdentityController(IdentityModel)
+    new IdentityController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
@@ -137,7 +137,7 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new AuskeyController(AUSkeyProvider, IdentityModel)
+    new AuskeyController(AUSkeyProvider)
         .assignRoutes(express.Router()));
 
 server.use('/api/',

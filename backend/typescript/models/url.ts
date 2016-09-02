@@ -62,27 +62,27 @@ export class Url {
         return `PUBLIC_IDENTIFIER:ABN:${abn}`;
     }
 
-    public static async forIdentity(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentity(model: identity.IIdentity): Promise<string> {
         return '/api/v1/identity/' + encodeURIComponent(model.idValue);
     }
 
-    public static async forIdentityRelationshipList(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentityRelationshipList(model: identity.IIdentity): Promise<string> {
         return '/api/v1/relationships/identity/' + encodeURIComponent(model ? model.idValue : 'undefined');
     }
 
-    public static async forIdentityRelationshipCreate(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentityRelationshipCreate(model: identity.IIdentity): Promise<string> {
         return '/api/v1/relationship';
     }
 
-    public static async forIdentityRoleList(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentityRoleList(model: identity.IIdentity): Promise<string> {
         return '/api/v1/roles/identity/' + encodeURIComponent(model.idValue);
     }
 
-    public static async forIdentityRoleCreate(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentityRoleCreate(model: identity.IIdentity): Promise<string> {
         return '/api/v1/role';
     }
 
-    public static async forIdentityAUSkeyList(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentityAUSkeyList(model: identity.IIdentity): Promise<string> {
         return '/api/v1/auskeys/identity/' + encodeURIComponent(model.idValue);
     }
 
