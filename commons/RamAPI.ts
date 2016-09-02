@@ -47,14 +47,19 @@ export class Builder<T> {
     private mapPrimitives(sourceObject: any, targetObject: any) {
         for (let key of Object.keys(sourceObject)) {
             if (this.knownKeys.indexOf(key) === -1) {
-                let value = sourceObject[key];
+                let origValue = sourceObject[key];
+                let value = origValue;
                 if (value !== undefined && value !== null) {
+                    if (Array.isArray(value)) {
+                        let valueArray = value as Object[];
+                        value = valueArray.length > 0 ? valueArray[0] : undefined;
+                    }
                     if (key === 'timestamp' || key.indexOf('Timestamp') !== -1 || key.endsWith('At')) {
                         // date
                         targetObject[key] = new Date(value);
                     } else if (typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean') {
                         // number, string, boolean
-                        targetObject[key] = value;
+                        targetObject[key] = origValue;
                     }
                 }
             }
