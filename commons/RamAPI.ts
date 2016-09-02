@@ -62,7 +62,7 @@ export class Builder<T> {
     }
 
     public build(): T {
-        this.map("_links", Link);
+        this.mapArray("_links", Link);
         this.mapPrimitives(this.sourceObject, this.targetObject);
         return this.targetObject as T;
     }
