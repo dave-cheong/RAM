@@ -48,7 +48,6 @@ export class RAMEnum {
  * IRAMObject defines the common attributes that all transactional documents in RAM will contain. Alongside,
  * ICodeDecode, these two interfaces define all the models in the system.
  */
-// todo stop extending from Document
 export interface IRAMObject {
     _id: any;
     id: string;
@@ -61,7 +60,6 @@ export interface IRAMObject {
 }
 
 // exists for type safety only, do not add function implementations here
-// todo rename to RAMObject
 export class RAMObject implements IRAMObject {
     public id: string;
     constructor(public _id: any,
@@ -109,7 +107,6 @@ export const RAMSchema = (schema: Object) => {
  * ICodeDecode defines the common attributes that all lookup documents in RAM will contain. Alongside,
  * IRAMObject, these two interfaces define all the models in the system.
  */
-// todo stop extending from Document
 export interface ICodeDecode {
     _id: any;
     id: string;
@@ -121,7 +118,6 @@ export interface ICodeDecode {
 }
 
 // exists for type safety only, do not add functions here
-// todo rename to CodeDecode
 export class CodeDecode implements ICodeDecode {
     public id: string;
     constructor(public _id: any,
