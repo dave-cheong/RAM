@@ -186,7 +186,7 @@ export class RAMRestService {
                                        page: number): Observable<ISearchResult<IHrefValue<IParty>>> {
         return this.http
             .get(`/api/v1/relationships/identity/subjects?filter=${filter}&page=${page}`)
-            .map(this.extractData(SearchResult));
+            .map(this.extractData(SearchResult, Party));
     }
 
     public searchRelationshipsByIdentity(idValue: string,
@@ -194,14 +194,14 @@ export class RAMRestService {
                                          page: number): Observable<ISearchResult<IHrefValue<IRelationship>>> {
         return this.http
             .get(new Href(`/api/v1/relationships/identity/${idValue}`).param('filter', filter).param('page', page).toString())
-            .map(this.extractData(SearchResult));
+            .map(this.extractData(SearchResult, Relationship));
     }
 
     public searchDistinctSubjectsBySubjectOrDelegateIdentity(idValue: string,
                                                              page: number): Observable<ISearchResult<IHrefValue<IParty>>> {
         return this.http
             .get(`/api/v1/relationships/identity/${idValue}/subjects?page=${page}`)
-            .map(this.extractData(SearchResult));
+            .map(this.extractData(SearchResult, Party));
     }
 
     public claimRelationshipByInvitationCode(invitationCode: string): Observable<IRelationship> {
@@ -293,7 +293,7 @@ export class RAMRestService {
                              page: number): Observable<ISearchResult<IHrefValue<IRole>>> {
         return this.http
             .get(new Href(href).param('filter', filter).param('page', page).toString())
-            .map(this.extractData(SearchResult));
+            .map(this.extractData(SearchResult, Role));
     }
 
     public findRoleByHref(href: string): Observable<IRole> {
@@ -409,7 +409,7 @@ export class RAMRestService {
         };
     }
 
-    private extractData(targetClass: any) {
+    private extractData(targetClass: any, targetElementClass?: any) {
         return (res: Response) => {
             if (res.status < 200 || res.status >= 300) {
                 throw new Error('Status code is:' + res.status);
@@ -418,12 +418,12 @@ export class RAMRestService {
             if (Array.isArray(payload)) {
                 const result: any[] = [];
                 for (let payloadElement of payload) {
-                    const targetObject = targetClass.build(payloadElement);
+                    const targetObject = targetClass.build(payloadElement, targetElementClass);
                     result.push(targetObject);
                 }
                 return result;
             } else {
-                const targetObject = targetClass.build(payload);
+                const targetObject = targetClass.build(payload, targetElementClass);
                 return targetObject;
             }
         };

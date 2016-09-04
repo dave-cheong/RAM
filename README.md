@@ -136,31 +136,50 @@ Here is a list of support commands:
 
 ```Usage:
 
-    ram <command>
+       ram <command>
 
-Commands:
+   Commands:
 
-    setup                                      Setups local workstation
-    deps                                       Download all dependencies
-    deps:frontend                              Download frontend dependencies
-    deps:backend                               Download backend dependencies
-    deps:test                                  Download api test dependencies
+       setup                                      Setups local workstation
+       deps                                       Downloads all dependencies
+       deps:frontend                              Downloads frontend dependencies
+       deps:backend                               Downloads backend dependencies
+       deps:test                                  Downloads api test dependencies
+       deps:clean                                 Removes node_modules and typings folders
+       jspm                                       Builds the jspm dist file
 
-    test:backend                               Runs backend tests
-    test:api                                   Runs API tests
+       feature:start                              Creates local and remote feature branch
+       feature:checkout                           Fetches then checks out remote feature branch
+       feature:finish                             Opens Github to manually submit pull request
+       feature:cancel                             Deletes local and remote feature branch
+       feature:merge:origin                       Merges origin/develop to current local feature branch
 
-    start:frontend                             Starts local frontend server
-    start:backend                              Starts local backend server
+       lint:frontend                              Runs lint on frontend
+       lint:backend                               Runs lint on backend
 
-    db:drop                                    Drops local database
-    db:seed                                    Seeds local database
+       compile:frontend                           Runs compile on frontend
+       compile:backend                            Runs compile on backend
 
-    clean                                      Cleans all generated files
-    swagger                                    Opens browser to swagger apis on local server
-    staging                                    Opens browser to staging instance
-    github                                     Opens browser to github repository
-    wiki                                       Opens browser to project wiki
-    merge:upstream <branch>                    Merges from upstream, <value> is branch name (eg develop)
+       test:backend                               Runs backend tests
+       test:api                                   Runs API tests
+
+       start:frontend                             Starts local frontend server
+       start:backend                              Starts local backend server
+       start:frontend-no-lint                     Starts local frontend server without linting
+       start:backend-no-lint                      Starts local backend server without linting
+
+       debug:backend                              Starts local backend server without linting and debug port open
+
+       db:seed                                    Seeds local database
+       db:export                                  Exports example data from local database
+
+       chrome                                     Opens chrome in application mode
+       clean                                      Cleans all generated files
+       swagger                                    Opens browser to swagger apis on local server
+       staging                                    Opens browser to staging instance
+       github                                     Opens browser to github repository
+       wiki                                       Opens browser to project wiki
+       merge:upstream <branch>                    Merges from upstream, <value> is branch name (eg develop)
 ```
 
 For the ```test```, you can limit the test by a pattern. For example:

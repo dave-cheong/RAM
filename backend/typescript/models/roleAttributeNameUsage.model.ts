@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMSchema, IRAMObject, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.model';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -7,15 +7,9 @@ import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.mo
 /* tslint:disable:no-unused-variable */
 const _RoleAttributeNameModel = RoleAttributeNameModel;
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface IRoleAttributeNameUsage extends IRAMObject, IRoleAttributeNameUsageInstanceContract {
-}
-
-export interface IRoleAttributeNameUsageModel extends mongoose.Model<IRoleAttributeNameUsage>, IRoleAttributeNameUsageStaticContract {
-}
-
-export let RoleAttributeNameUsageModel: IRoleAttributeNameUsageModel;
+let RoleAttributeNameUsageMongooseModel: mongoose.Model<IRoleAttributeNameUsageDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -40,13 +34,13 @@ const RoleAttributeNameUsageSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-interface IRoleAttributeNameUsageInstanceContract extends IRAMObjectContract {
+export interface IRoleAttributeNameUsage extends IRAMObject {
     optionalInd: boolean;
     defaultValue?: string;
     attributeName: IRoleAttributeName;
 }
 
-class RoleAttributeNameUsageInstanceContractImpl extends RAMObjectContractImpl implements IRoleAttributeNameUsageInstanceContract {
+class RoleAttributeNameUsage extends RAMObject implements IRoleAttributeNameUsage {
 
     public optionalInd: boolean;
     public defaultValue: string;
@@ -54,19 +48,22 @@ class RoleAttributeNameUsageInstanceContractImpl extends RAMObjectContractImpl i
 
 }
 
-// static .............................................................................................................
-
-interface IRoleAttributeNameUsageStaticContract {
+interface IRoleAttributeNameUsageDocument extends IRoleAttributeNameUsage, mongoose.Document {
 }
 
-class RoleAttributeNameUsageStaticContractImpl implements IRoleAttributeNameUsageStaticContract {
+// static .............................................................................................................
+
+export class RoleAttributeNameUsageModel {
+
+    public static async create(source: any): Promise<IRoleAttributeNameUsage> {
+        return RoleAttributeNameUsageMongooseModel.create(source);
+    }
 }
 
 // concrete model .....................................................................................................
 
-RoleAttributeNameUsageModel = Model(
+RoleAttributeNameUsageMongooseModel = Model(
     'RoleAttributeNameUsage',
     RoleAttributeNameUsageSchema,
-    RoleAttributeNameUsageInstanceContractImpl,
-    RoleAttributeNameUsageStaticContractImpl
-) as IRoleAttributeNameUsageModel;
+    RoleAttributeNameUsage
+) as mongoose.Model<IRoleAttributeNameUsageDocument>;

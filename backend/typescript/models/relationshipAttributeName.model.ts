@@ -1,17 +1,11 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, ICodeDecode, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
+import {RAMEnum, CodeDecodeSchema, ICodeDecode, CodeDecode, Model} from './base';
 import {Url} from './url';
 import {HrefValue, RelationshipAttributeName as DTO} from '../../../commons/RamAPI';
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface IRelationshipAttributeName extends ICodeDecode, IRelationshipAttributeNameInstanceContract {
-}
-
-export interface IRelationshipAttributeNameModel extends mongoose.Model<IRelationshipAttributeName>, IRelationshipAttributeNameStaticContract {
-}
-
-export let RelationshipAttributeNameModel: IRelationshipAttributeNameModel;
+let RelationshipAttributeNameMongooseModel: mongoose.Model<IRelationshipAttributeNameDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -91,7 +85,7 @@ const RelationshipAttributeNameSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-export interface IRelationshipAttributeNameInstanceContract extends ICodeDecodeContract {
+export interface IRelationshipAttributeName extends ICodeDecode {
     domain: string;
     classifier: string;
     category?: string;
@@ -103,7 +97,7 @@ export interface IRelationshipAttributeNameInstanceContract extends ICodeDecodeC
     toDTO(): Promise<DTO>;
 }
 
-class RelationshipAttributeNameInstanceContractImpl extends CodeDecodeContractImpl implements IRelationshipAttributeNameInstanceContract {
+class RelationshipAttributeName extends CodeDecode implements IRelationshipAttributeName {
 
     public domain: string;
     public classifier: string;
@@ -144,27 +138,27 @@ class RelationshipAttributeNameInstanceContractImpl extends CodeDecodeContractIm
 
 }
 
-// static .............................................................................................................
-
-interface IRelationshipAttributeNameStaticContract {
-    findByCodeIgnoringDateRange(code: string): Promise<IRelationshipAttributeName>;
-    findByCodeInDateRange(code: string, date: Date): Promise<IRelationshipAttributeName>;
-    listIgnoringDateRange(): Promise<IRelationshipAttributeName[]>;
-    listInDateRange(date: Date): Promise<IRelationshipAttributeName[]>;
+interface IRelationshipAttributeNameDocument extends IRelationshipAttributeName, mongoose.Document {
 }
 
-class RelationshipAttributeNameStaticContractImpl implements IRelationshipAttributeNameStaticContract {
+// static .............................................................................................................
 
-    public findByCodeIgnoringDateRange(code: string): Promise<IRelationshipAttributeName> {
-        return RelationshipAttributeNameModel
+export class RelationshipAttributeNameModel {
+
+    public static async create(source: any): Promise<IRelationshipAttributeName> {
+        return RelationshipAttributeNameMongooseModel.create(source);
+    }
+
+    public static findByCodeIgnoringDateRange(code: string): Promise<IRelationshipAttributeName> {
+        return RelationshipAttributeNameMongooseModel
             .findOne({
                 code: code
             })
             .exec();
     }
 
-    public findByCodeInDateRange(code: string, date: Date): Promise<IRelationshipAttributeName> {
-        return RelationshipAttributeNameModel
+    public static findByCodeInDateRange(code: string, date: Date): Promise<IRelationshipAttributeName> {
+        return RelationshipAttributeNameMongooseModel
             .findOne({
                 code: code,
                 startDate: {$lte: date},
@@ -173,15 +167,15 @@ class RelationshipAttributeNameStaticContractImpl implements IRelationshipAttrib
             .exec();
     }
 
-    public listIgnoringDateRange(): Promise<IRelationshipAttributeName[]> {
-        return RelationshipAttributeNameModel
+    public static listIgnoringDateRange(): Promise<IRelationshipAttributeName[]> {
+        return RelationshipAttributeNameMongooseModel
             .find({})
             .sort({name: 1})
             .exec();
     }
 
-    public listInDateRange(date: Date): Promise<IRelationshipAttributeName[]> {
-        return RelationshipAttributeNameModel
+    public static listInDateRange(date: Date): Promise<IRelationshipAttributeName[]> {
+        return RelationshipAttributeNameMongooseModel
             .find({
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
@@ -194,9 +188,8 @@ class RelationshipAttributeNameStaticContractImpl implements IRelationshipAttrib
 
 // concrete model .....................................................................................................
 
-RelationshipAttributeNameModel = Model(
+RelationshipAttributeNameMongooseModel = Model(
     'RelationshipAttributeName',
     RelationshipAttributeNameSchema,
-    RelationshipAttributeNameInstanceContractImpl,
-    RelationshipAttributeNameStaticContractImpl
-) as IRelationshipAttributeNameModel;
+    RelationshipAttributeName
+) as mongoose.Model<IRelationshipAttributeNameDocument>;

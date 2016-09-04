@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMEnum, RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {Url} from './url';
 import {IName, NameModel} from './name.model';
 import {ISharedSecret, SharedSecretModel} from './sharedSecret.model';
@@ -19,13 +19,7 @@ const _SharedSecretModel = SharedSecretModel;
 
 // exports ............................................................................................................
 
-export interface IProfile extends IRAMObject, IProfileInstanceContract {
-}
-
-export interface IProfileModel extends mongoose.Model<IProfile>, IProfileStaticContract {
-}
-
-export let ProfileModel: IProfileModel;
+let ProfileMongooseModel: mongoose.Model<IProfileDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -87,7 +81,7 @@ const ProfileSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-export interface IProfileInstanceContract extends IRAMObjectContract {
+export interface IProfile extends IRAMObject {
     provider: string;
     name: IName;
     sharedSecrets: ISharedSecret[];
@@ -97,7 +91,7 @@ export interface IProfileInstanceContract extends IRAMObjectContract {
     toDTO(): Promise<DTO>;
 }
 
-class ProfileInstanceContractImpl extends RAMObjectContractImpl implements IProfileInstanceContract {
+class Profile extends RAMObject implements IProfile {
 
     public provider: string;
     public name: IName;
@@ -135,23 +129,23 @@ class ProfileInstanceContractImpl extends RAMObjectContractImpl implements IProf
 
 }
 
-/* tslint:disable:no-empty-interfaces */
-export interface IProfileModel extends mongoose.Model<IProfile> {
+interface IProfileDocument extends IProfile, mongoose.Document {
 }
 
 // static .............................................................................................................
 
-interface IProfileStaticContract {
-}
+export class ProfileModel {
 
-class ProfileStaticContractImpl implements IProfileStaticContract {
+    public static async create(source: any): Promise<IProfile> {
+        return ProfileMongooseModel.create(source);
+    }
+
 }
 
 // concrete model .....................................................................................................
 
-ProfileModel = Model(
+ProfileMongooseModel = Model(
     'Profile',
     ProfileSchema,
-    ProfileInstanceContractImpl,
-    ProfileStaticContractImpl
-) as IProfileModel;
+    Profile
+) as mongoose.Model<IProfileDocument>;

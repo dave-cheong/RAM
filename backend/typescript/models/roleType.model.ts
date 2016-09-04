@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {ICodeDecode, ICodeDecodeContract, CodeDecodeContractImpl, CodeDecodeSchema, Model} from './base';
+import {ICodeDecode, CodeDecode, CodeDecodeSchema, Model} from './base';
 import {Url} from './url';
 import {RoleAttributeNameModel} from './roleAttributeName.model';
 import {IRoleAttributeNameUsage, RoleAttributeNameUsageModel} from './roleAttributeNameUsage.model';
@@ -17,15 +17,9 @@ const _RoleAttributeNameModel = RoleAttributeNameModel;
 /* tslint:disable:no-unused-variable */
 const _RoleAttributeNameUsageModel = RoleAttributeNameUsageModel;
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface IRoleType extends ICodeDecode, IRoleTypeInstanceContract {
-}
-
-export interface IRoleTypeModel extends mongoose.Model<IRoleType>, IRoleTypeStaticContract {
-}
-
-export let RoleTypeModel: IRoleTypeModel;
+let RoleTypeMongooseModel: mongoose.Model<IRoleTypeDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -40,14 +34,16 @@ const RoleTypeSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-export interface IRoleTypeInstanceContract extends ICodeDecodeContract {
+export interface IRoleType extends ICodeDecode {
+    id: string;
     attributeNameUsages: IRoleAttributeNameUsage[];
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
     toDTO(): Promise<DTO>;
 }
 
-class RoleTypeInstanceContractImpl extends CodeDecodeContractImpl implements IRoleTypeInstanceContract {
+class RoleType extends CodeDecode implements IRoleType {
 
+    public id: string;
     public attributeNameUsages: IRoleAttributeNameUsage[];
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
@@ -77,19 +73,19 @@ class RoleTypeInstanceContractImpl extends CodeDecodeContractImpl implements IRo
 
 }
 
-// static .............................................................................................................
-
-export interface IRoleTypeStaticContract {
-    findByCodeIgnoringDateRange(code: String): Promise<IRoleType>;
-    findByCodeInDateRange(code: String, date: Date): Promise<IRoleType>;
-    listIgnoringDateRange(): Promise<IRoleType[]>;
-    listInDateRange(date: Date): Promise<IRoleType[]>;
+interface IRoleTypeDocument extends IRoleType, mongoose.Document {
 }
 
-class RoleTypeStaticContractImpl implements IRoleTypeStaticContract {
+// static .............................................................................................................
 
-    public findByCodeIgnoringDateRange(code: String): Promise<IRoleType> {
-        return RoleTypeModel
+export class RoleTypeModel {
+
+    public static async create(source: any): Promise<IRoleType> {
+        return RoleTypeMongooseModel.create(source);
+    }
+
+    public static findByCodeIgnoringDateRange(code: String): Promise<IRoleType> {
+        return RoleTypeMongooseModel
             .findOne({
                 code: code
             })
@@ -99,8 +95,8 @@ class RoleTypeStaticContractImpl implements IRoleTypeStaticContract {
             .exec();
     }
 
-    public findByCodeInDateRange(code: String, date: Date): Promise<IRoleType> {
-        return RoleTypeModel
+    public static findByCodeInDateRange(code: String, date: Date): Promise<IRoleType> {
+        return RoleTypeMongooseModel
             .findOne({
                 code: code,
                 startDate: {$lte: date},
@@ -112,8 +108,8 @@ class RoleTypeStaticContractImpl implements IRoleTypeStaticContract {
             .exec();
     }
 
-    public listIgnoringDateRange(): Promise<IRoleType[]> {
-        return RoleTypeModel
+    public static listIgnoringDateRange(): Promise<IRoleType[]> {
+        return RoleTypeMongooseModel
             .find({})
             .deepPopulate([
                 'attributeNameUsages.attributeName'
@@ -122,8 +118,8 @@ class RoleTypeStaticContractImpl implements IRoleTypeStaticContract {
             .exec();
     }
 
-    public listInDateRange(date: Date): Promise<IRoleType[]> {
-        return RoleTypeModel
+    public static listInDateRange(date: Date): Promise<IRoleType[]> {
+        return RoleTypeMongooseModel
             .find({
                 startDate: {$lte: date},
                 $or: [{endDate: null}, {endDate: {$gte: date}}]
@@ -139,9 +135,8 @@ class RoleTypeStaticContractImpl implements IRoleTypeStaticContract {
 
 // concrete model .....................................................................................................
 
-RoleTypeModel = Model(
+RoleTypeMongooseModel = Model(
     'RoleType',
     RoleTypeSchema,
-    RoleTypeInstanceContractImpl,
-    RoleTypeStaticContractImpl
-) as IRoleTypeModel;
+    RoleType
+) as mongoose.Model<IRoleTypeDocument>;

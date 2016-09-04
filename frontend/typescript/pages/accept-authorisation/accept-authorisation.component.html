@@ -105,7 +105,7 @@
     <div class="pull-right">
         <button class="btn pull-left" (click)="showDeclineConfirmation()">Decline</button>
         &nbsp;
-        <button class="btn btn-primary pull-left" (click)="acceptAuthorisation()" [disabled]="(!accept) && !canAccept">Accept</button>
+        <button class="btn btn-primary pull-left" (click)="acceptAuthorisation()" [disabled]="(!accept) || !canAccept">Accept</button>
     </div>
 </div>
 

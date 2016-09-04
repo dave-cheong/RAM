@@ -3,15 +3,15 @@ import {context} from '../providers/context.provider';
 import {sendResource, sendError, sendNotFoundError, validateReqSchema, sendSearchResult} from './helpers';
 import {IAUSkeyProvider} from '../providers/auskey.provider';
 import {AUSkeyType} from '../models/auskey.model';
-import {IPartyModel} from '../models/party.model';
-import {IIdentityModel} from '../models/identity.model';
+import {PartyModel} from '../models/party.model';
+import {IdentityModel} from '../models/identity.model';
 import {FilterParams} from '../../../commons/RamAPI';
 import {Assert} from '../models/base';
 import {Translator} from '../ram/translator';
 
 export class AuskeyController {
 
-    constructor(private auskeyProvider: IAUSkeyProvider, private partyModel: IPartyModel, private identityModel: IIdentityModel) {
+    constructor(private auskeyProvider: IAUSkeyProvider) {
     }
 
     private findAusKey = (req: Request, res: Response) => {
@@ -62,7 +62,7 @@ export class AuskeyController {
                 const myPrincipal = context.getAuthenticatedPrincipal();
                 if (!myPrincipal.agencyUserInd) {
                     const myIdentity = context.getAuthenticatedIdentity();
-                    const hasAccess = await this.partyModel.hasAccess(idValue, myPrincipal, myIdentity);
+                    const hasAccess = await PartyModel.hasAccess(idValue, myPrincipal, myIdentity);
                     if (!hasAccess) {
                         console.log('Identity access denied or does not exist', idValue);
                         throw new Error('403');
@@ -74,7 +74,7 @@ export class AuskeyController {
                 const auskeyType = filterParams.get('auskeyType');
                 Assert.assertNotNull(auskeyType, 'Filter param auskeyType must be supplied');
 
-                const identity = await this.identityModel.findByIdValue(req.params.idValue);
+                const identity = await IdentityModel.findByIdValue(req.params.idValue);
                 return await this.auskeyProvider.searchByABN(
                     identity.rawIdValue,
                     AUSkeyType.valueOf(auskeyType),

@@ -62,27 +62,27 @@ export class Url {
         return `PUBLIC_IDENTIFIER:ABN:${abn}`;
     }
 
-    public static async forIdentity(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentity(model: identity.IIdentity): Promise<string> {
         return '/api/v1/identity/' + encodeURIComponent(model.idValue);
     }
 
-    public static async forIdentityRelationshipList(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentityRelationshipList(model: identity.IIdentity): Promise<string> {
         return '/api/v1/relationships/identity/' + encodeURIComponent(model ? model.idValue : 'undefined');
     }
 
-    public static async forIdentityRelationshipCreate(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentityRelationshipCreate(model: identity.IIdentity): Promise<string> {
         return '/api/v1/relationship';
     }
 
-    public static async forIdentityRoleList(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentityRoleList(model: identity.IIdentity): Promise<string> {
         return '/api/v1/roles/identity/' + encodeURIComponent(model.idValue);
     }
 
-    public static async forIdentityRoleCreate(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentityRoleCreate(model: identity.IIdentity): Promise<string> {
         return '/api/v1/role';
     }
 
-    public static async forIdentityAUSkeyList(model: identity.IIdentityInstanceContract): Promise<string> {
+    public static async forIdentityAUSkeyList(model: identity.IIdentity): Promise<string> {
         return '/api/v1/auskeys/identity/' + encodeURIComponent(model.idValue);
     }
 
@@ -92,7 +92,7 @@ export class Url {
         return '/api/v1/partyType/' + encodeURIComponent(model.code);
     }
 
-    public static async forParty(model: party.IPartyInstanceContract): Promise<string> {
+    public static async forParty(model: party.IParty): Promise<string> {
         const defaultIdentity = await identity.IdentityModel.findDefaultByPartyId(model._id);
         if (defaultIdentity) {
             return '/api/v1/party/identity/' + encodeURIComponent(defaultIdentity.idValue);
@@ -113,7 +113,7 @@ export class Url {
         return '/api/v1/relationshipStatus/' + encodeURIComponent(model.code);
     }
 
-    public static async forRelationship(model: relationship.IRelationshipInstanceContract): Promise<string> {
+    public static async forRelationship(model: relationship.IRelationship): Promise<string> {
         return '/api/v1/relationship/' + encodeURIComponent(model._id.toString());
     }
 
@@ -135,13 +135,13 @@ export class Url {
 
     // relationship attribute name ....................................................................................
 
-    public static async forRelationshipAttributeName(model: relationshipAttributeName.IRelationshipAttributeNameInstanceContract): Promise<string> {
+    public static async forRelationshipAttributeName(model: relationshipAttributeName.IRelationshipAttributeName): Promise<string> {
         return '/api/v1/relationshipAttributeName/' + encodeURIComponent(model.code);
     }
 
     // relationship type ..............................................................................................
 
-    public static async forRelationshipType(model: relationshipType.IRelationshipTypeInstanceContract): Promise<string> {
+    public static async forRelationshipType(model: relationshipType.IRelationshipType): Promise<string> {
         return '/api/v1/relationshipType/' + encodeURIComponent(model.code);
     }
 
@@ -151,19 +151,19 @@ export class Url {
         return '/api/v1/roleStatus/' + encodeURIComponent(model.code);
     }
 
-    public static async forRole(model: role.IRoleInstanceContract): Promise<string> {
+    public static async forRole(model: role.IRole): Promise<string> {
         return '/api/v1/role/' + encodeURIComponent(model._id.toString());
     }
 
     // role attribute name ............................................................................................
 
-    public static async forRoleAttributeName(model: roleAttributeName.IRoleAttributeNameInstanceContract): Promise<string> {
+    public static async forRoleAttributeName(model: roleAttributeName.IRoleAttributeName): Promise<string> {
         return '/api/v1/roleAttributeName/' + encodeURIComponent(model.code);
     }
 
     // role type ......................................................................................................
 
-    public static async forRoleType(model: roleType.IRoleTypeInstanceContract): Promise<string> {
+    public static async forRoleType(model: roleType.IRoleType): Promise<string> {
         return '/api/v1/roleType/' + encodeURIComponent(model.code);
     }
 

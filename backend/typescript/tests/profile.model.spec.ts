@@ -48,10 +48,11 @@ describe('RAM Profile', () => {
                 startDate: new Date(),
                 domain: 'domain'
             });
+
             sharedSecret1 = await SharedSecretModel.create({
                 value: sharedSecretValue1,
                 sharedSecretType: sharedSecretType1
-            });
+            } as ISharedSecret);
 
             name1 = await NameModel.create({
                 givenName: 'John',

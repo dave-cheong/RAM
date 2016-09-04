@@ -1,16 +1,13 @@
 import {Router, Request, Response} from 'express';
 import {context} from '../providers/context.provider';
 import {sendResource, sendList, sendSearchResult, sendError, sendNotFoundError, validateReqSchema} from './helpers';
-import {IPartyModel, IParty} from '../models/party.model';
-import {IRoleModel, RoleStatus} from '../models/role.model';
 import {Url} from '../models/url';
 import {FilterParams} from '../../../commons/RamAPI';
+import {RoleModel, RoleStatus} from '../models/role.model';
+import {PartyModel, IParty} from '../models/party.model';
 
 // todo add data security
 export class RoleController {
-
-    constructor(private roleModel:IRoleModel, private partyModel:IPartyModel) {
-    }
 
     private searchByIdentity = async(req:Request, res:Response) => {
         const schema = {
@@ -39,7 +36,7 @@ export class RoleController {
         };
         const filterParams = FilterParams.decode(req.query.filter);
         validateReqSchema(req, schema)
-            .then((req:Request) => this.roleModel.searchByIdentity(
+            .then((req:Request) => RoleModel.searchByIdentity(
                 req.params.identity_id,
                 filterParams.get('roleType'),
                 filterParams.get('status'),
@@ -62,7 +59,7 @@ export class RoleController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => this.roleModel.findByIdentifier(req.params.identifier))
+            .then((req:Request) => RoleModel.findByIdentifier(req.params.identifier))
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -91,12 +88,12 @@ export class RoleController {
                 }
                 const myPrincipal = context.getAuthenticatedPrincipal();
                 const myIdentity = context.getAuthenticatedIdentity();
-                const hasAccess = await this.partyModel.hasAccess(idValue, myPrincipal, myIdentity);
+                const hasAccess = await PartyModel.hasAccess(idValue, myPrincipal, myIdentity);
                 if (!hasAccess) {
                     console.log('Identity access denied or does not exist', idValue);
                     throw new Error('403');
                 }
-                const party = await this.partyModel.findByIdentityIdValue(idValue);
+                const party = await PartyModel.findByIdentityIdValue(idValue);
                 if (!party) {
                     console.log('Party not found for id value', idValue);
                     throw new Error('404');
@@ -135,12 +132,12 @@ export class RoleController {
                 }
                 const myPrincipal = context.getAuthenticatedPrincipal();
                 const myIdentity = context.getAuthenticatedIdentity();
-                const hasAccess = await this.partyModel.hasAccess(idValue, myPrincipal, myIdentity);
+                const hasAccess = await PartyModel.hasAccess(idValue, myPrincipal, myIdentity);
                 if (!hasAccess) {
                     console.log('Identity access denied or does not exist', idValue);
                     throw new Error('403');
                 }
-                const party = await this.partyModel.findByIdentityIdValue(idValue);
+                const party = await PartyModel.findByIdentityIdValue(idValue);
                 if (!party) {
                     console.log('Party not found for id value', idValue);
                     throw new Error('404');

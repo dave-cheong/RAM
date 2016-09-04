@@ -42,21 +42,21 @@ export class ExampleDataExport {
             '_delegateNickNameString' : 'Jennifer Maxims',
             '_subjectNickNameString' : 'Jen\'s Catering Pty Ltd',
             '_relationshipTypeCode' : 'ASSOCIATE'
-        }).exec();
+        });
         this.add(await RelationshipModel.findByIdentifier(associate.id), 'Relationship : Associate');
 
         const custom = await RelationshipModel.findOne({
             '_delegateNickNameString' : 'Jennifer Maxims',
             '_subjectNickNameString' : 'Cakery Bakery Pty Ltd',
             '_relationshipTypeCode' : 'CUSTOM_REPRESENTATIVE'
-        }).exec();
+        });
         this.add(await RelationshipModel.findByIdentifier(custom.id), 'Relationship : Custom Representative');
 
         const universal = await RelationshipModel.findOne({
             '_delegateNickNameString' : 'Zoe Zombie 001',
             '_subjectNickNameString' : 'Jen\'s Catering Pty Ltd',
             '_relationshipTypeCode' : 'UNIVERSAL_REPRESENTATIVE'
-        }).exec();
+        });
         this.add(await RelationshipModel.findByIdentifier(universal.id), 'Relationship : Universal Representative');
 
         this.printData();

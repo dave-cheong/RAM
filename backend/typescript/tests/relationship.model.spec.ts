@@ -202,7 +202,7 @@ describe('RAM Relationship', () => {
                 startTimestamp: new Date(),
                 status: RelationshipStatus.Accepted.code,
                 initiatedBy: RelationshipInitiatedBy.Subject.code
-            });
+            } as any);
 
             expect(instance).not.toBeNull();
             expect(instance.id).not.toBeNull();
@@ -234,7 +234,7 @@ describe('RAM Relationship', () => {
                 endTimestamp: new Date(),
                 status: RelationshipStatus.Accepted.code,
                 initiatedBy: RelationshipInitiatedBy.Subject.code
-            });
+            } as any);
 
             expect(instance).not.toBeNull();
             expect(instance.id).not.toBeNull();
@@ -603,7 +603,7 @@ describe('RAM Relationship', () => {
                 startTimestamp: new Date(),
                 status: RelationshipStatus.Pending.code,
                 initiatedBy: RelationshipInitiatedBy.Subject.code
-            });
+            } as any);
 
             // create another relationship to the same parties (inverted)
             await RelationshipModel.create({
@@ -615,7 +615,7 @@ describe('RAM Relationship', () => {
                 startTimestamp: new Date(),
                 status: RelationshipStatus.Pending.code,
                 initiatedBy: RelationshipInitiatedBy.Subject.code
-            });
+            } as any);
 
             const parties = await RelationshipModel.searchDistinctSubjectsForMe(delegateParty1, null, 'false', null, 'asc', 1, 10);
             expect(parties.totalCount).toBe(1);

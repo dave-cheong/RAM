@@ -67,7 +67,7 @@ describe('RAM Role', () => {
                     roleAttribute1 = await RoleAttributeModel.create({
                         value: ['true'],
                         attributeName: Seeder.usi_roleAttributeName
-                    });
+                    } as IRoleAttribute);
 
                     role1 = await RoleModel.add(
                         roleTypeOsp,
@@ -170,7 +170,7 @@ describe('RAM Role', () => {
             const roleAttribute = await RoleAttributeModel.create({
                 value: ['true'],
                 attributeName: Seeder.usi_roleAttributeName
-            });
+            } as IRoleAttribute);
 
             const role = await RoleModel.add(
                 roleTypeOsp,
@@ -185,8 +185,7 @@ describe('RAM Role', () => {
             await role.deleteAttribute(roleAttribute.attributeName.code, roleAttribute.attributeName.classifier);
 
             // verify
-            const actualRole = await RoleModel.findById(role._id).exec();
-            console.log('actualRole = ', actualRole);
+            const actualRole = await RoleModel.findByIdentifier(role._id);
             expect(actualRole.attributes.length).toBe(0);
 
             // attribute should no longer exist

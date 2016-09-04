@@ -100,7 +100,7 @@ describe('RAM Role Attribute', () => {
             const instance = await RoleAttributeModel.create({
                 value: [value],
                 attributeName: attributeName
-            });
+            } as IRoleAttribute);
 
             expect(instance).not.toBeNull();
             expect(instance.id).not.toBeNull();
@@ -118,9 +118,9 @@ describe('RAM Role Attribute', () => {
     it('fails insert with null attribute name', async (done) => {
         try {
             await RoleAttributeModel.create({
-                value: 'true',
+                value: ['true'],
                 attributeName: null
-            });
+            } as IRoleAttribute);
             fail('should not have inserted with null attribute name');
             done();
         } catch (e) {

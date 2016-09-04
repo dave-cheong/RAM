@@ -7,13 +7,11 @@ import * as methodOverride from 'method-override';
 import * as mongoose from 'mongoose';
 import {conf} from './bootstrap';
 import {logStream, logger} from './logger';
-// import {continueOnlyIfJWTisValid} from './security'
-import expressValidator = require('express-validator');
 import {sendNotFoundError} from './controllers/helpers';
-
 import {forgeRockSimulator} from './controllers/forgeRock.simulator.middleware';
 import {security} from './controllers/security.middleware';
-import {Translator} from './ram/translator';
+
+import expressValidator = require('express-validator');
 
 // DEVELOPMENT CONTROLLERS
 import {AuthenticatorSimulatorController} from './controllers/authenticator.simulator.controller';
@@ -34,14 +32,6 @@ import {BusinessController} from './controllers/business.controller';
 import {AuskeyController} from './controllers/auskey.controller';
 import {TransactController} from './controllers/transact.controller';
 
-import {IdentityModel} from './models/identity.model';
-import {PartyModel} from './models/party.model';
-import {ProfileModel} from './models/profile.model';
-import {RelationshipModel} from './models/relationship.model';
-import {RelationshipTypeModel} from './models/relationshipType.model';
-import {RelationshipAttributeNameModel} from './models/relationshipAttributeName.model';
-import {RoleModel} from './models/role.model';
-import {RoleTypeModel} from './models/roleType.model';
 import {AUSkeyProvider} from './providers/auskey.provider';
 import {context} from './providers/context.provider';
 
@@ -80,8 +70,6 @@ server.use(methodOverride());
 server.use(express.static(path.join(__dirname, conf.frontendDir)));
 server.use(express.static('swagger'));
 
-// server.use(continueOnlyIfJWTisValid(conf.jwtSecretKey,true));
-
 // setup security .....................................................................................................
 
 if (conf.devMode) {
@@ -111,35 +99,35 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RelationshipTypeController(RelationshipTypeModel)
+    new RelationshipTypeController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RelationshipAttributeNameController(RelationshipAttributeNameModel)
+    new RelationshipAttributeNameController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new IdentityController(IdentityModel)
+    new IdentityController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new PartyController(PartyModel)
+    new PartyController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new ProfileController(ProfileModel)
+    new ProfileController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RelationshipController(RelationshipModel, PartyModel)
+    new RelationshipController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RoleController(RoleModel, PartyModel)
+    new RoleController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new RoleTypeController(RoleTypeModel, PartyModel)
+    new RoleTypeController()
         .assignRoutes(express.Router()));
 
 server.use('/api/',
@@ -147,11 +135,11 @@ server.use('/api/',
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new AuskeyController(AUSkeyProvider, PartyModel, IdentityModel)
+    new AuskeyController(AUSkeyProvider)
         .assignRoutes(express.Router()));
 
 server.use('/api/',
-    new TransactController(RoleModel, IdentityModel, RelationshipModel)
+    new TransactController()
         .assignRoutes(express.Router()));
 
 // setup error handlers ...............................................................................................

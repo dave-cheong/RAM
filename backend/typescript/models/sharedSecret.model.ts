@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import {IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {ISharedSecretType, SharedSecretTypeModel} from './sharedSecretType.model';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -8,15 +8,9 @@ import {ISharedSecretType, SharedSecretTypeModel} from './sharedSecretType.model
 /* tslint:disable:no-unused-variable */
 const _SharedSecretTypeModel = SharedSecretTypeModel;
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface ISharedSecret extends IRAMObject, ISharedSecretInstanceContract {
-}
-
-export interface ISharedSecretModel extends mongoose.Model<ISharedSecret>, ISharedSecretStaticContract {
-}
-
-export let SharedSecretModel: ISharedSecretModel;
+let SharedSecretMongooseModel: mongoose.Model<ISharedSecretDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -43,13 +37,13 @@ const SharedSecretSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-interface ISharedSecretInstanceContract extends IRAMObjectContract {
+export interface ISharedSecret extends IRAMObject {
     value: string;
     sharedSecretType: ISharedSecretType;
     matchesValue(candidateValue: string): boolean;
 }
 
-class SharedSecretInstanceContractImpl extends RAMObjectContractImpl implements ISharedSecretInstanceContract {
+class SharedSecret extends RAMObject implements ISharedSecret {
 
     public value: string;
     public sharedSecretType: ISharedSecretType;
@@ -63,19 +57,23 @@ class SharedSecretInstanceContractImpl extends RAMObjectContractImpl implements 
 
 }
 
-// static .............................................................................................................
-
-interface ISharedSecretStaticContract {
+interface ISharedSecretDocument extends ISharedSecret, mongoose.Document {
 }
 
-class SharedSecretStaticContractImpl implements ISharedSecretStaticContract {
+// static .............................................................................................................
+
+export class SharedSecretModel {
+
+    public static async create(source: any): Promise<ISharedSecret> {
+        return SharedSecretMongooseModel.create(source);
+    }
+
 }
 
 // concrete model .....................................................................................................
 
-SharedSecretModel = Model(
+SharedSecretMongooseModel = Model(
     'SharedSecret',
     SharedSecretSchema,
-    SharedSecretInstanceContractImpl,
-    SharedSecretStaticContractImpl
-) as ISharedSecretModel;
+    SharedSecret
+) as mongoose.Model<ISharedSecretDocument>;

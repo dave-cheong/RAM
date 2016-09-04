@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import * as mongooseAutoIncrement from 'mongoose-auto-increment';
 import {conf} from '../bootstrap';
 import * as Hashids from 'hashids';
-import {RAMEnum, IRAMObject, RAMSchema, Model} from './base';
+import {RAMEnum, RAMSchema, Model, IRAMObject, RAMObject} from './base';
 import {Url} from './url';
 import {
     HrefValue,
@@ -16,15 +16,9 @@ import {IProfile, ProfileModel, ProfileProvider} from './profile.model';
 import {IParty, PartyModel, PartyType} from './party.model';
 import {SharedSecretTypeModel, DOB_SHARED_SECRET_TYPE_CODE} from './sharedSecretType.model';
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface IIdentity extends IRAMObject, IIdentityInstanceContract {
-}
-
-export interface IIdentityModel extends mongoose.Model<IIdentity>, IIdentityStaticContract {
-}
-
-export let IdentityModel: IIdentityModel;
+let IdentityMongooseModel: mongoose.Model<IIdentityDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -273,7 +267,7 @@ IdentitySchema.pre('validate', function (next: () => void) {
 
 // instance ...........................................................................................................
 
-export interface IIdentityInstanceContract {
+export interface IIdentity extends IRAMObject {
     idValue: string;
     rawIdValue: string;
     identityType: string;
@@ -299,7 +293,7 @@ export interface IIdentityInstanceContract {
     toDTO(): Promise<DTO>;
 }
 
-class IdentityInstanceContractImpl implements IIdentityInstanceContract {
+class Identity extends RAMObject implements IIdentity {
 
     public idValue: string;
     public rawIdValue: string;
@@ -377,21 +371,16 @@ class IdentityInstanceContractImpl implements IIdentityInstanceContract {
 
 }
 
-// static .............................................................................................................
-
-export interface IIdentityStaticContract {
-    createFromDTO (dto: CreateIdentityDTO): Promise<IIdentity>;
-    createInvitationCodeIdentity(givenName: string, familyName: string, dateOfBirth: string): Promise<IIdentity>;
-    addCompany(abn: string, name: string): Promise<IIdentity>;
-    findByIdValue(idValue: string): Promise<IIdentity>;
-    findByInvitationCode(invitationCode: string): Promise<IIdentity>;
-    findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IIdentity>;
-    findDefaultByPartyId(partyId: string): Promise<IIdentity>;
-    listByPartyId(partyId: string): Promise<IIdentity[]>;
-    searchLinkIds(page: number, pageSize: number): Promise<SearchResult<IIdentity>>;
+interface IIdentityDocument extends IIdentity, mongoose.Document {
 }
 
-class IdentityStaticContractImpl implements IIdentityStaticContract {
+// static .............................................................................................................
+
+export class IdentityModel {
+
+    public static async create(source: any): Promise<IIdentity> {
+        return IdentityMongooseModel.create(source);
+    }
 
     /**
      * Creates an InvitationCode identity required when creating a new relationship. This identity is temporary and will
@@ -399,7 +388,7 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
      * transferred to the authorised identity.
      */
     /* tslint:disable:max-func-body-length */
-    public async createFromDTO(dto: CreateIdentityDTO): Promise<IIdentity> {
+    public static async createFromDTO(dto: CreateIdentityDTO): Promise<IIdentity> {
 
         const name = await NameModel.create({
             givenName: dto.givenName,
@@ -413,14 +402,14 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             sharedSecrets.push(await SharedSecretModel.create({
                 value: dto.sharedSecretValue,
                 sharedSecretType: await SharedSecretTypeModel.findByCodeInDateRange(dto.sharedSecretTypeCode, new Date())
-            }));
+            } as ISharedSecret));
         }
 
         const profile = await ProfileModel.create({
             provider: dto.profileProvider,
             name: name,
             sharedSecrets: sharedSecrets
-        });
+        } as IProfile);
 
         const party = await PartyModel.create({
             partyType: dto.partyType,
@@ -442,30 +431,31 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             linkIdConsumer: dto.linkIdConsumer,
             profile: profile,
             party: party
-        });
+        } as IIdentity);
 
         return identity;
 
     }
 
-    public async createInvitationCodeIdentity(givenName: string, familyName: string, dateOfBirth: string): Promise<IIdentity> {
-        return await IdentityModel.createFromDTO(new CreateIdentityDTO(
-            undefined,
-            PartyType.Individual.code,
-            givenName,
-            familyName,
-            undefined,
-            DOB_SHARED_SECRET_TYPE_CODE,
-            dateOfBirth,
-            IdentityType.InvitationCode.code,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            ProfileProvider.Invitation.code
-        ));
+    public static async createInvitationCodeIdentity(givenName: string, familyName: string, dateOfBirth: string): Promise<IIdentity> {
+        return await IdentityModel
+            .createFromDTO(new CreateIdentityDTO(
+                undefined,
+                PartyType.Individual.code,
+                givenName,
+                familyName,
+                undefined,
+                DOB_SHARED_SECRET_TYPE_CODE,
+                dateOfBirth,
+                IdentityType.InvitationCode.code,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                ProfileProvider.Invitation.code
+            ));
     }
 
     /*
@@ -473,35 +463,36 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
      * then only the name needs be checked and/or added (TBD). Otherwise a new identity and associated party are created. In either case the party idValue is returned (PUBLIC_IDENTIFIER:ABN:nnnnnnnnnnn).
      */
     // todo check Paul Marrington's code regarding the DOB for company
-    public async addCompany(abn: string, name: string): Promise<IIdentity> {
+    public static async addCompany(abn: string, name: string): Promise<IIdentity> {
         const identity = await IdentityModel.findByIdValue(abn);
         if (identity) {
             return addCompanyNameIfNeeded(identity, name);
         } else {
-            const identity = await IdentityModel.createFromDTO(new CreateIdentityDTO(
-                abn,
-                PartyType.ABN.code,
-                undefined,
-                undefined,
-                name,
-                // fun - company has to have a date of birth!!!
-                DOB_SHARED_SECRET_TYPE_CODE,
-                '01/07/1984',
-                IdentityType.PublicIdentifier.code,
-                0,
-                undefined,
-                undefined,
-                undefined,
-                undefined,
-                IdentityPublicIdentifierScheme.ABN.code,
-                ProfileProvider.ABR.code
-            ));
+            const identity = await IdentityModel
+                .createFromDTO(new CreateIdentityDTO(
+                    abn,
+                    PartyType.ABN.code,
+                    undefined,
+                    undefined,
+                    name,
+                    // fun - company has to have a date of birth!!!
+                    DOB_SHARED_SECRET_TYPE_CODE,
+                    '01/07/1984',
+                    IdentityType.PublicIdentifier.code,
+                    0,
+                    undefined,
+                    undefined,
+                    undefined,
+                    undefined,
+                    IdentityPublicIdentifierScheme.ABN.code,
+                    ProfileProvider.ABR.code
+                ));
             return identity;
         }
     }
 
-    public findByIdValue(idValue: string): Promise<IIdentity> {
-        return IdentityModel
+    public static findByIdValue(idValue: string): Promise<IIdentity> {
+        return IdentityMongooseModel
             .findOne({
                 idValue: idValue
             })
@@ -514,8 +505,8 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             .exec();
     }
 
-    public findByInvitationCode(invitationCode: string): Promise<IIdentity> {
-        return IdentityModel
+    public static findByInvitationCode(invitationCode: string): Promise<IIdentity> {
+        return IdentityMongooseModel
             .findOne({
                 rawIdValue: invitationCode,
                 identityType: IdentityType.InvitationCode.code
@@ -528,8 +519,8 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             .exec();
     }
 
-    public findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IIdentity> {
-        return IdentityModel
+    public static findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IIdentity> {
+        return IdentityMongooseModel
             .findOne({
                 rawIdValue: invitationCode,
                 identityType: IdentityType.InvitationCode.code,
@@ -544,8 +535,8 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             .exec();
     }
 
-    public findDefaultByPartyId(partyId: string): Promise<IIdentity> {
-        return IdentityModel
+    public static findDefaultByPartyId(partyId: string): Promise<IIdentity> {
+        return IdentityMongooseModel
             .findOne({
                 'party': partyId,
                 defaultInd: true
@@ -559,8 +550,8 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             .exec();
     }
 
-    public listByPartyId(partyId: string): Promise<IIdentity[]> {
-        return IdentityModel
+    public static listByPartyId(partyId: string): Promise<IIdentity[]> {
+        return IdentityMongooseModel
             .find({
                 'party': partyId
             })
@@ -573,17 +564,17 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
             .exec();
     }
 
-    public searchLinkIds(page: number, reqPageSize: number): Promise<SearchResult<IIdentity>> {
+    public static searchLinkIds(page: number, reqPageSize: number): Promise<SearchResult<IIdentity>> {
         return new Promise<SearchResult<IIdentity>>(async(resolve, reject) => {
             const pageSize: number = reqPageSize ? Math.min(reqPageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
             try {
                 const query = {
                     identityType: IdentityType.LinkId.code
                 };
-                const count = await IdentityModel
+                const count = await IdentityMongooseModel
                     .count(query)
                     .exec();
-                const list = await IdentityModel
+                const list = await IdentityMongooseModel
                     .find(query)
                     .deepPopulate([
                         'profile.name',
@@ -604,9 +595,8 @@ class IdentityStaticContractImpl implements IIdentityStaticContract {
 
 // concrete model .....................................................................................................
 
-IdentityModel = Model(
+IdentityMongooseModel = Model(
     'Identity',
     IdentitySchema,
-    IdentityInstanceContractImpl,
-    IdentityStaticContractImpl
-) as IIdentityModel;
+    Identity
+) as mongoose.Model<IIdentityDocument>;

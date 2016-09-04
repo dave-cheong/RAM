@@ -108,7 +108,7 @@ describe('RAM Relationship Attribute', () => {
                         status: RelationshipStatus.Pending.code,
                         initiatedBy: RelationshipInitiatedBy.Subject.code,
                         attributes: [relationshipAttribute1]
-                    });
+                    } as any);
 
                 } catch (e) {
                     fail('Because ' + e);

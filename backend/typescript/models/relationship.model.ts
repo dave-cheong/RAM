@@ -1,10 +1,10 @@
 import {logger} from '../logger';
 import * as mongoose from 'mongoose';
-import {Model, RAMEnum, IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Query, Assert} from './base';
+import {Model, RAMEnum, RAMSchema, IRAMObject, RAMObject, Query, Assert} from './base';
 import {Url} from './url';
-import {SharedSecretModel} from './sharedSecret.model';
+import {SharedSecretModel, ISharedSecret} from './sharedSecret.model';
 import {DOB_SHARED_SECRET_TYPE_CODE, SharedSecretTypeModel} from './sharedSecretType.model';
-import {IParty, PartyModel, IPartyInstanceContract, PartyType} from './party.model';
+import {IParty, PartyModel, PartyType} from './party.model';
 import {IName, NameModel} from './name.model';
 import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model';
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
@@ -45,6 +45,10 @@ const _RelationshipAttributeNameModel = RelationshipAttributeNameModel;
 const _RelationshipTypeModel = RelationshipTypeModel;
 
 const MAX_PAGE_SIZE = 10;
+
+// mongoose ...........................................................................................................
+
+let RelationshipMongooseModel: mongoose.Model<IRelationshipDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -98,16 +102,6 @@ export class RelationshipInitiatedBy extends RAMEnum {
         super(code, shortDecodeText);
     }
 }
-
-// exports ............................................................................................................
-
-export interface IRelationship extends IRAMObject, IRelationshipInstanceContract {
-}
-
-export interface IRelationshipModel extends mongoose.Model<IRelationship>, IRelationshipStaticContract {
-}
-
-export let RelationshipModel: IRelationshipModel;
 
 // schema .............................................................................................................
 
@@ -268,7 +262,8 @@ RelationshipSchema.pre('validate', function (next: () => void) {
 
 // instance ............................................................................................................
 
-export interface IRelationshipInstanceContract extends IRAMObjectContract {
+export interface IRelationship extends IRAMObject {
+    id: string;
     relationshipType: IRelationshipType;
     subject: IParty;
     subjectNickName: IName;
@@ -300,8 +295,9 @@ export interface IRelationshipInstanceContract extends IRAMObjectContract {
 
 }
 
-class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements IRelationshipInstanceContract {
+class Relationship extends RAMObject implements IRelationship {
 
+    public id: string;
     public relationshipType: IRelationshipType;
     public subject: IParty;
     public subjectNickName: IName;
@@ -366,7 +362,6 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
     }
 
     public async claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship> {
-        try {
             /* validate */
 
             // validate current status
@@ -378,7 +373,7 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
             }
 
             // find identity to match user against
-            const invitationIdentities = await IdentityModel.listByPartyId(this.delegate.id);
+            const invitationIdentities = await IdentityModel.listByPartyId(this.delegate._id);
             Assert.assertTrue(
                 invitationIdentities.length === 1,
                 'A pending relationship should only have one delegate identity'
@@ -458,11 +453,7 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
             // point relationship to the accepting delegate identity
             this.delegate = claimingDelegateIdentity.party;
             await this.save();
-            return Promise.resolve(this as IRelationship);
-        } catch (err) {
-            return Promise.reject(err);
-        }
-
+            return Promise.resolve(this);
     }
 
     public async acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship> {
@@ -539,50 +530,19 @@ class RelationshipInstanceContractImpl extends RAMObjectContractImpl implements 
 
 }
 
-// static ..............................................................................................................
-
-interface IRelationshipStaticContract {
-    addOrModify(identifier: string, dto: DTO): Promise<IRelationship>;
-    add(relationshipType: IRelationshipType,
-        subject: IPartyInstanceContract,
-        subjectNickName: IName,
-        delegate: IParty,
-        delegateNickName: IName,
-        startTimestamp: Date,
-        endTimestamp: Date,
-        initiatedBy: RelationshipInitiatedBy,
-        invitationIdentity: IIdentity,
-        attributes: IRelationshipAttribute[]): Promise<IRelationship>;
-    findByIdentifier(id: string): Promise<IRelationship>;
-    findByInvitationCode(invitationCode: string): Promise<IRelationship>;
-    findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IRelationship>;
-    hasActiveInDateRange1stOr2ndLevelConnection(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<boolean>;
-    search(subjectIdentityIdValue: string, delegateIdentityIdValue: string, page: number, pageSize: number): Promise<SearchResult<IRelationship>>;
-    searchByIdentity(identityIdValue: string,
-                     partyType: string,
-                     relationshipType: string,
-                     relationshipTypeCategory: string,
-                     profileProvider: string,
-                     status: string,
-                     inDateRange: boolean,
-                     text: string,
-                     sort: string,
-                     page: number,
-                     pageSize: number): Promise<SearchResult<IRelationship>>;
-    searchByIdentitiesInDateRange(subjectIdValue: string,
-                                  delegateIdValue: string,
-                                  relationshipType: string,
-                                  status: string,
-                                  date: Date,
-                                  page: number,
-                                  pageSize: number): Promise<SearchResult<IRelationship>>;
-    searchDistinctSubjectsForMe(requestingParty: IParty, partyType: string, authorisationManagement: string, text: string, sort: string, page: number, pageSize: number): Promise<SearchResult<IParty>>;
+interface IRelationshipDocument extends IRelationship, mongoose.Document {
 }
 
-class RelationshipStaticContractImpl implements IRelationshipStaticContract {
+// static ..............................................................................................................
+
+export class RelationshipModel {
+
+    public static async create(source: IRelationship): Promise<IRelationship> {
+        return RelationshipMongooseModel.create(source);
+    }
 
     /* tslint:disable:max-func-body-length */
-    public async addOrModify(identifier: string, dto: DTO): Promise<IRelationship> {
+    public static async addOrModify(identifier: string, dto: DTO): Promise<IRelationship> {
 
         const myPrincipal = context.getAuthenticatedPrincipal();
         const myIdentity = context.getAuthenticatedIdentity();
@@ -683,7 +643,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 const sharedSecret = await SharedSecretModel.create({
                     value: sharedSecretValue,
                     sharedSecretType: sharedSecretType
-                });
+                } as ISharedSecret);
                 delegateIdentity.profile.sharedSecrets.push(sharedSecret);
             }
             invitationIdentity = delegateIdentity;
@@ -805,17 +765,31 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         }
 
         if (isNewRelationship) {
-            return await RelationshipModel.add(
-                relationshipType,
-                subjectIdentity.party,
-                subjectIdentity.profile.name,
-                delegateIdentity.party,
-                delegateIdentity.profile.name,
-                startTimestamp,
-                endTimestamp,
-                initiatedBy,
-                invitationIdentity,
-                attributes
+            let status = RelationshipStatus.Pending;
+
+            // check subject
+            if (initiatedBy === RelationshipInitiatedBy.Subject && relationshipType.autoAcceptIfInitiatedFromSubject) {
+                status = RelationshipStatus.Accepted;
+            }
+
+            // check delegate
+            if (initiatedBy === RelationshipInitiatedBy.Delegate && relationshipType.autoAcceptIfInitiatedFromDelegate) {
+                status = RelationshipStatus.Accepted;
+            }
+
+            return RelationshipModel.create({
+                relationshipType: relationshipType,
+                subject: subjectIdentity.party,
+                subjectNickName: subjectIdentity.profile.name,
+                delegate: delegateIdentity.party,
+                delegateNickName: delegateIdentity.profile.name,
+                startTimestamp: startTimestamp,
+                endTimestamp: endTimestamp,
+                initiatedBy: initiatedBy.code,
+                invitationIdentity: invitationIdentity,
+                status: status.code,
+                attributes: attributes
+                } as any
             );
         } else {
             Assert.assertNotNull(relationship, 'Relationship not found');
@@ -827,11 +801,11 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             relationship.invitationIdentity = invitationIdentity;
             relationship.attributes = attributes;
 
-            return await relationship.save();
+            return relationship.save();
         }
     }
 
-    public async add(relationshipType: IRelationshipType,
+    public static async add(relationshipType: IRelationshipType,
                      subject: IParty,
                      subjectNickName: IName,
                      delegate: IParty,
@@ -854,7 +828,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             status = RelationshipStatus.Accepted;
         }
 
-        return await RelationshipModel.create({
+        return RelationshipModel.create({
             relationshipType: relationshipType,
             subject: subject,
             subjectNickName: subjectNickName,
@@ -866,13 +840,18 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             initiatedBy: initiatedBy.code,
             invitationIdentity: invitationIdentity,
             attributes: attributes
-        });
+            } as any
+        );
 
     }
 
-    public async findByIdentifier(id: string): Promise<IRelationship> {
+    public static async findOne(conditions: any): Promise<IRelationship> {
+        return RelationshipMongooseModel.findOne(conditions).exec();
+    }
+
+    public static async findByIdentifier(id: string): Promise<IRelationship> {
         // TODO migrate from _id to another id
-        return RelationshipModel
+        return RelationshipMongooseModel
             .findOne({
                 _id: id
             })
@@ -888,11 +867,11 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
             .exec();
     }
 
-    public async findByInvitationCode(invitationCode: string): Promise<IRelationship> {
+    public static async findByInvitationCode(invitationCode: string): Promise<IRelationship> {
         const identity = await IdentityModel.findByInvitationCode(invitationCode);
         if (identity) {
             const delegate = identity.party;
-            return await RelationshipModel
+            return RelationshipMongooseModel
                 .findOne({
                     invitationIdentity: identity
                 })
@@ -903,6 +882,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                     'delegate',
                     'delegateNickName',
                     'invitationIdentity.profile.name',
+                    'invitationIdentity.profile.sharedSecrets',
                     'attributes.attributeName'
                 ])
                 .exec();
@@ -910,11 +890,11 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         return null;
     }
 
-    public async findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IRelationship> {
+    public static async findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IRelationship> {
         const identity = await IdentityModel.findPendingByInvitationCodeInDateRange(invitationCode, date);
         if (identity) {
             const delegate = identity.party;
-            return RelationshipModel
+            return RelationshipMongooseModel
                 .findOne({
                     delegate: delegate
                 })
@@ -933,7 +913,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
     }
 
     // todo what about start date?
-    public async hasActiveInDateRange1stOr2ndLevelConnection(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<boolean> {
+    public static async hasActiveInDateRange1stOr2ndLevelConnection(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<boolean> {
 
         const requestedParty = await PartyModel.findByIdentityIdValue(requestedIdValue);
 
@@ -944,7 +924,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
             // 1st level
 
-            const firstLevelRelationship = await RelationshipModel
+            const firstLevelRelationship = await RelationshipMongooseModel
                 .findOne({
                     subject: requestedParty,
                     delegate: requestingParty,
@@ -960,7 +940,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
                 // 2nd level
 
-                const listOfDelegateIds = await RelationshipModel
+                const listOfDelegateIds = await RelationshipMongooseModel
                     .aggregate([
                         {
                             '$match': {
@@ -976,7 +956,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                     ])
                     .exec();
 
-                const listOfSubjectIds = await RelationshipModel
+                const listOfSubjectIds = await RelationshipMongooseModel
                     .aggregate([
                         {
                             '$match': {
@@ -1011,7 +991,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
     }
 
     // todo this search might no longer be useful from SS2
-    public async search(subjectIdentityIdValue: string, delegateIdentityIdValue: string, page: number, pageSize: number): Promise<SearchResult<IRelationship>> {
+    public static async search(subjectIdentityIdValue: string, delegateIdentityIdValue: string, page: number, pageSize: number): Promise<SearchResult<IRelationship>> {
         return new Promise<SearchResult<IRelationship>>(async(resolve, reject) => {
             const thePageSize: number = pageSize ? Math.min(pageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
             try {
@@ -1019,10 +999,10 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                     .when(subjectIdentityIdValue, 'subject', () => PartyModel.findByIdentityIdValue(subjectIdentityIdValue))
                     .when(delegateIdentityIdValue, 'delegate', () => PartyModel.findByIdentityIdValue(delegateIdentityIdValue))
                     .build());
-                const count = await RelationshipModel
+                const count = await RelationshipMongooseModel
                     .count(query)
                     .exec();
-                const list = await RelationshipModel
+                const list = await RelationshipMongooseModel
                     .find(query)
                     .deepPopulate([
                         'relationshipType',
@@ -1043,7 +1023,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         });
     }
 
-    public async searchByIdentity(identityIdValue: string,
+    public static async searchByIdentity(identityIdValue: string,
                                   partyType: string,
                                   relationshipType: string,
                                   relationshipTypeCategory: string,
@@ -1107,10 +1087,10 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 }
                 const where: {[key: string]: Object} = {};
                 where['$and'] = mainAnd;
-                const count = await RelationshipModel
+                const count = await RelationshipMongooseModel
                     .count(where)
                     .exec();
-                const list = await RelationshipModel
+                const list = await RelationshipMongooseModel
                     .find(where)
                     .deepPopulate([
                         'relationshipType',
@@ -1134,7 +1114,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
         });
     }
 
-    public async searchByIdentitiesInDateRange(subjectIdValue: string,
+    public static async searchByIdentitiesInDateRange(subjectIdValue: string,
                                                delegateIdValue: string,
                                                relationshipType: string,
                                                status: string,
@@ -1160,10 +1140,10 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                 mainAnd.push({'$or': [{endTimestamp: null}, {endTimestamp: {$gte: date}}]});
                 const where: {[key: string]: Object} = {};
                 where['$and'] = mainAnd;
-                const count = await RelationshipModel
+                const count = await RelationshipMongooseModel
                     .count(where)
                     .exec();
-                const list = await RelationshipModel
+                const list = await RelationshipMongooseModel
                     .find(where)
                     .deepPopulate([
                         'relationshipType',
@@ -1192,7 +1172,7 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
      *
      * todo need to optional filters (authorisation management)
      */
-    public async searchDistinctSubjectsForMe(requestingParty: IParty, partyType: string, authorisationManagement: string, text: string, sort: string, page: number, pageSize: number): Promise<SearchResult<IParty>> {
+    public static async searchDistinctSubjectsForMe(requestingParty: IParty, partyType: string, authorisationManagement: string, text: string, sort: string, page: number, pageSize: number): Promise<SearchResult<IParty>> {
         return new Promise<SearchResult<IParty>>(async(resolve, reject) => {
             const thePageSize: number = pageSize ? Math.min(pageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
             try {
@@ -1213,13 +1193,13 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
                         ]
                     });
                 }
-                const count = (await RelationshipModel
+                const count = (await RelationshipMongooseModel
                     .aggregate([
                         where,
                         {'$group': {'_id': '$subject'}}
                     ])
                     .exec()).length;
-                const listOfIds = await RelationshipModel
+                const listOfIds = await RelationshipMongooseModel
                     .aggregate([
                         where,
                         {'$group': {'_id': '$subject'}}
@@ -1243,9 +1223,8 @@ class RelationshipStaticContractImpl implements IRelationshipStaticContract {
 
 // concrete model .....................................................................................................
 
-RelationshipModel = Model(
+RelationshipMongooseModel = Model(
     'Relationship',
     RelationshipSchema,
-    RelationshipInstanceContractImpl,
-    RelationshipStaticContractImpl
-) as IRelationshipModel;
+    Relationship
+) as mongoose.Model<IRelationshipDocument>;

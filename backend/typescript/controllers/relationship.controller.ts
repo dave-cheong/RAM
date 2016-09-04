@@ -9,8 +9,8 @@ import {
     validateReqSchema,
     REGULAR_CHARS
 } from './helpers';
-import {IPartyModel, PartyModel} from '../models/party.model';
-import {IRelationshipModel, RelationshipStatus, RelationshipModel} from '../models/relationship.model';
+import {PartyModel} from '../models/party.model';
+import {RelationshipStatus, RelationshipModel} from '../models/relationship.model';
 import {
     FilterParams,
     IInvitationCodeRelationshipAddDTO,
@@ -22,7 +22,7 @@ import {Headers} from './headers';
 // todo add data security
 export class RelationshipController {
 
-    constructor(private relationshipModel:IRelationshipModel, private partyModel:IPartyModel) {
+    constructor() {
     }
 
     private findByIdentifier = async(req:Request, res:Response) => {
@@ -34,7 +34,7 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => this.relationshipModel.findByIdentifier(req.params.identifier))
+            .then((req:Request) => RelationshipModel.findByIdentifier(req.params.identifier))
             .then((model) => model ? model.toDTO(null) : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -50,7 +50,7 @@ export class RelationshipController {
         };
         const invitationCode = req.params.invitationCode;
         validateReqSchema(req, schema)
-            .then((req:Request) => this.relationshipModel.findByInvitationCode(invitationCode))
+            .then((req:Request) => RelationshipModel.findByInvitationCode(invitationCode))
             .then((model) => model ? model.toDTO(invitationCode) : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -66,7 +66,7 @@ export class RelationshipController {
         };
         const invitationCode = req.params.invitationCode;
         validateReqSchema(req, schema)
-            .then((req:Request) => this.relationshipModel.findByInvitationCode(invitationCode))
+            .then((req:Request) => RelationshipModel.findByInvitationCode(invitationCode))
             .then((model) => model ? model.claimPendingInvitation(context.getAuthenticatedIdentity(), invitationCode) : null)
             .then((model) => model ? model.toDTO(invitationCode) : null)
             .then(sendResource(res))
@@ -82,7 +82,7 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => this.relationshipModel.findByInvitationCode(req.params.invitationCode))
+            .then((req:Request) => RelationshipModel.findByInvitationCode(req.params.invitationCode))
             .then((model) => model ? model.acceptPendingInvitation(context.getAuthenticatedIdentity()) : null)
             .then((model) => model ? model.toDTO(null) : null)
             .then(sendResource(res))
@@ -98,7 +98,7 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => this.relationshipModel.findByInvitationCode(req.params.invitationCode))
+            .then((req:Request) => RelationshipModel.findByInvitationCode(req.params.invitationCode))
             .then((model) => model ? model.rejectPendingInvitation(context.getAuthenticatedIdentity()) : null)
             .then((model) => model ? Promise.resolve({}) : null)
             .then(sendResource(res))
@@ -123,7 +123,7 @@ export class RelationshipController {
         };
 
         validateReqSchema(req, schema)
-            .then((req:Request) => this.relationshipModel.findPendingByInvitationCodeInDateRange(req.params.invitationCode, new Date()))
+            .then((req:Request) => RelationshipModel.findPendingByInvitationCodeInDateRange(req.params.invitationCode, new Date()))
             .then((model) => model ? model.notifyDelegate(req.body.email, context.getAuthenticatedIdentity()) : null)
             .then((model) => model ? model.toDTO(null) : null)
             .then(sendResource(res))
@@ -165,7 +165,7 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => this.relationshipModel.search(
+            .then((req:Request) => RelationshipModel.search(
                 req.params.subject_or_delegate === 'subject' ? req.params.identity_id : null,
                 req.params.subject_or_delegate === 'delegate' ? req.params.identity_id : null,
                 parseInt(req.query.page),
@@ -208,13 +208,13 @@ export class RelationshipController {
             .then(async (req:Request) => {
                 const myPrincipal = context.getAuthenticatedPrincipal();
                 const myIdentity = context.getAuthenticatedIdentity();
-                const hasAccess = await this.partyModel.hasAccess(req.params.identity_id, myPrincipal, myIdentity);
+                const hasAccess = await PartyModel.hasAccess(req.params.identity_id, myPrincipal, myIdentity);
                 if (!hasAccess) {
                     throw new Error('403');
                 }
                 return req;
             })
-            .then((req:Request) => this.relationshipModel.searchByIdentity(
+            .then((req:Request) => RelationshipModel.searchByIdentity(
                 req.params.identity_id,
                 filterParams.get('partyType'),
                 filterParams.get('relationshipType'),
@@ -260,7 +260,7 @@ export class RelationshipController {
                 if (principal.agencyUserInd) {
                     throw new Error('403');
                 } else {
-                    return this.relationshipModel.searchDistinctSubjectsForMe(
+                    return RelationshipModel.searchDistinctSubjectsForMe(
                         res.locals[Headers.Identity].party,
                         filterParams.get('partyType'),
                         filterParams.get('authorisationManagement'),
@@ -441,9 +441,10 @@ export class RelationshipController {
             'startTimestamp': {
                 in: 'body',
                 notEmpty: true,
-                isDate: {
-                    errorMessage: 'Start timestamp is not a valid date'
-                },
+                // isDate: {
+                //     errorMessage: 'Start timestamp is not valid'
+                // },
+                // todo resolve issue
                 errorMessage: 'Start timestamp is not valid'
             }
         };

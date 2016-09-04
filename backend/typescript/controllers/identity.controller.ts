@@ -3,11 +3,11 @@ import {context} from '../providers/context.provider';
 import {sendResource, sendError, sendNotFoundError, validateReqSchema, sendSearchResult} from './helpers';
 import {Headers} from './headers';
 import {conf} from '../bootstrap';
-import {IIdentityModel} from '../models/identity.model';
+import {IdentityModel} from '../models/identity.model';
 
 export class IdentityController {
 
-    constructor(private identityModel:IIdentityModel) {
+    constructor() {
     }
 
     private findMe = async (req:Request, res:Response) => {
@@ -30,7 +30,7 @@ export class IdentityController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => this.identityModel.findByIdValue(req.params.idValue))
+            .then((req:Request) => IdentityModel.findByIdValue(req.params.idValue))
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -45,7 +45,7 @@ export class IdentityController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => this.identityModel.findPendingByInvitationCodeInDateRange(req.params.invitationCode, new Date()))
+            .then((req:Request) => IdentityModel.findPendingByInvitationCodeInDateRange(req.params.invitationCode, new Date()))
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -70,7 +70,7 @@ export class IdentityController {
             },
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => this.identityModel.searchLinkIds(
+            .then((req:Request) => IdentityModel.searchLinkIds(
                 parseInt(req.query.page),
                 req.query.pageSize ? parseInt(req.query.pageSize) : null)
             )

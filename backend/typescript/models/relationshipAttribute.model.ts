@@ -4,6 +4,7 @@ import {IRelationshipAttributeName, RelationshipAttributeNameModel} from './rela
 import {
     IRelationshipAttribute as DTO
 } from '../../../commons/RamAPI';
+import {IRAMObject, RAMObject, Model} from './base';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -13,15 +14,19 @@ const _RelationshipModel = RelationshipModel;
 /* tslint:disable:no-unused-variable */
 const _RelationshipAttributeNameModel = RelationshipAttributeNameModel;
 
+// mongoose ...........................................................................................................
+
+let RelationshipAttributeMongooseModel: mongoose.Model<IRelationshipAttributeDocument>;
+
 // enums, utilities, helpers ..........................................................................................
 
 // schema .............................................................................................................
 
 const RelationshipAttributeSchema = new mongoose.Schema({
     value: {
-      type: [String],
-      required: false,
-      trim: true
+        type: [String],
+        required: false,
+        trim: true
     },
     attributeName: {
         type: mongoose.Schema.Types.ObjectId,
@@ -30,41 +35,54 @@ const RelationshipAttributeSchema = new mongoose.Schema({
     }
 });
 
-// interfaces .........................................................................................................
+// instance ...........................................................................................................
 
-export interface IRelationshipAttribute extends mongoose.Document {
+export interface IRelationshipAttribute extends IRAMObject {
     value?: string[];
     attributeName: IRelationshipAttributeName;
-    toDTO():Promise<DTO>;
+    toDTO(): Promise<DTO>;
 }
 
-/* tslint:disable:no-empty-interfaces */
-export interface IRelationshipAttributeModel extends mongoose.Model<IRelationshipAttribute> {
-    add:(value: string[], attributeName: IRelationshipAttributeName) => Promise<IRelationshipAttribute>;
+export class RelationshipAttribute extends RAMObject implements IRelationshipAttribute {
+
+    public value: string[];
+    public attributeName: IRelationshipAttributeName;
+
+    public async toDTO(): Promise<DTO> {
+        const dto: DTO = {
+            value: this.value,
+            attributeName: await this.attributeName.toHrefValue(true)
+        };
+
+        return dto;
+    }
+
 }
 
-// instance methods ...................................................................................................
+interface IRelationshipAttributeDocument extends IRelationshipAttribute, mongoose.Document {
+}
 
-RelationshipAttributeSchema.method('toDTO', async function () {
-    const dto: DTO = {
-        value: this.value,
-        attributeName: await this.attributeName.toHrefValue(true)
-    };
+// static .............................................................................................................
 
-    return dto;
-});
+export class RelationshipAttributeModel {
 
-// static methods .....................................................................................................
+    public static async create(source: any): Promise<IRelationshipAttribute> {
+        return await RelationshipAttributeMongooseModel.create(source);
+    }
 
-RelationshipAttributeSchema.static('add', async (value: [string], attributeName: IRelationshipAttributeName) => {
-    return await this.RelationshipAttributeModel.create({
-        value: value,
-        attributeName: attributeName
-    });
-});
+    public static async add(value: string[], attributeName: IRelationshipAttributeName): Promise<IRelationshipAttribute> {
+        return await RelationshipAttributeMongooseModel.create({
+            value: value,
+            attributeName: attributeName
+        });
+    }
+
+}
 
 // concrete model .....................................................................................................
 
-export const RelationshipAttributeModel = mongoose.model(
+RelationshipAttributeMongooseModel = Model(
     'RelationshipAttribute',
-    RelationshipAttributeSchema) as IRelationshipAttributeModel;
+    RelationshipAttributeSchema,
+    RelationshipAttribute
+) as mongoose.Model<IRelationshipAttributeDocument>;

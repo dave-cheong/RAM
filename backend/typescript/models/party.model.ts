@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, IRAMObject, RAMSchema, Assert, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMEnum, RAMSchema, Assert, IRAMObject, RAMObject, Model} from './base';
 import {Url} from './url';
 import {IIdentity, IdentityModel} from './identity.model';
 import {RelationshipModel, IRelationship, RelationshipInitiatedBy} from './relationship.model';
@@ -30,15 +30,9 @@ const _RoleAttributeModel = RoleAttributeModel;
 /* tslint:disable:no-unused-variable */
 const _RelationshipTypeModel = RelationshipTypeModel;
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface IParty extends IRAMObject, IPartyInstanceContract {
-}
-
-export interface IPartyModel extends mongoose.Model<IParty>, IPartyStaticContract {
-}
-
-export let PartyModel: IPartyModel;
+let PartyMongooseModel: mongoose.Model<IPartyDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -81,7 +75,7 @@ const PartySchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-export interface IPartyInstanceContract extends IRAMObjectContract {
+export interface IParty extends IRAMObject {
     partyType: string;
     partyTypeEnum(): PartyType;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
@@ -92,7 +86,7 @@ export interface IPartyInstanceContract extends IRAMObjectContract {
     modifyRole(role: RoleDTO): Promise<IRole>;
 }
 
-class PartyInstanceContractImpl extends RAMObjectContractImpl implements IPartyInstanceContract {
+class Party extends RAMObject implements IParty {
 
     public partyType: string;
 
@@ -387,23 +381,24 @@ class PartyInstanceContractImpl extends RAMObjectContractImpl implements IPartyI
 
 }
 
-// static .............................................................................................................
-
-/* tslint:disable:no-empty-interfaces */
-export interface IPartyStaticContract {
-    findByIdentityIdValue(idValue: string): Promise<IParty>;
-    hasAccess (requestedIdValue: string, requestingPrincipal: IPrincipal, requestingIdentity: IIdentity): Promise<boolean>;
+interface IPartyDocument extends IParty, mongoose.Document {
 }
 
-class PartyStaticContractImpl implements IPartyStaticContract {
+// static .............................................................................................................
 
-    public async findByIdentityIdValue(idValue: string): Promise<IParty> {
+export class PartyModel {
+
+    public static async create(source: any): Promise<IParty> {
+        return PartyMongooseModel.create(source);
+    }
+
+    public static async findByIdentityIdValue(idValue: string): Promise<IParty> {
         const identity = await
             IdentityModel.findByIdValue(idValue);
         return identity ? identity.party : null;
     }
 
-    public async hasAccess(requestedIdValue: string, requestingPrincipal: IPrincipal, requestingIdentity: IIdentity): Promise<boolean> {
+    public static async hasAccess(requestedIdValue: string, requestingPrincipal: IPrincipal, requestingIdentity: IIdentity): Promise<boolean> {
         const requestedIdentity = await
             IdentityModel.findByIdValue(requestedIdValue);
         if (requestedIdentity) {
@@ -432,13 +427,16 @@ class PartyStaticContractImpl implements IPartyStaticContract {
         return false;
     }
 
+    public static populate(listOfIds: Object[], options: {path: string}) {
+        return PartyMongooseModel.populate(listOfIds, options);
+    }
+
 }
 
 // concrete model .....................................................................................................
 
-PartyModel = Model(
+PartyMongooseModel = Model(
     'Party',
     PartySchema,
-    PartyInstanceContractImpl,
-    PartyStaticContractImpl
-) as IPartyModel;
+    Party
+) as mongoose.Model<IPartyDocument>;

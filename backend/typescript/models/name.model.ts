@@ -1,19 +1,13 @@
 import * as mongoose from 'mongoose';
-import {IRAMObject, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {
     HrefValue,
     Name as DTO
 } from '../../../commons/RamAPI';
 
-// exports ............................................................................................................
+// mongoose ...........................................................................................................
 
-export interface IName extends IRAMObject, INameInstanceContract {
-}
-
-export interface INameModel extends mongoose.Model<IName>, INameStaticContract {
-}
-
-export let NameModel: INameModel;
+let NameMongooseModel: mongoose.Model<INameDocument>;
 
 // enums, utilities, helpers ..........................................................................................
 
@@ -60,7 +54,7 @@ NameSchema.pre('validate', function (next: () => void) {
 
 // instance ...........................................................................................................
 
-interface INameInstanceContract extends IRAMObjectContract {
+export interface IName extends IRAMObject {
     givenName?: string;
     familyName?: string;
     unstructuredName?: string;
@@ -69,7 +63,7 @@ interface INameInstanceContract extends IRAMObjectContract {
     toDTO(): Promise<DTO>;
 }
 
-class NameInstanceContractImpl extends RAMObjectContractImpl implements INameInstanceContract {
+class Name extends RAMObject implements IName {
 
     public givenName: string;
     public familyName: string;
@@ -94,19 +88,23 @@ class NameInstanceContractImpl extends RAMObjectContractImpl implements INameIns
 
 }
 
-// static .............................................................................................................
-
-interface INameStaticContract {
+interface INameDocument extends IName, mongoose.Document {
 }
 
-class NameStaticContractImpl implements INameStaticContract {
+// static .............................................................................................................
+
+export class NameModel {
+
+    public static async create(source: any): Promise<IName> {
+        return NameMongooseModel.create(source);
+    }
+
 }
 
 // concrete model .....................................................................................................
 
-NameModel = Model(
+NameMongooseModel = Model(
     'Name',
     NameSchema,
-    NameInstanceContractImpl,
-    NameStaticContractImpl
-) as INameModel;
+    Name
+) as mongoose.Model<INameDocument>;
