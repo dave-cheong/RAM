@@ -4,7 +4,7 @@ import {IRelationshipAttributeName, RelationshipAttributeNameModel} from './rela
 import {
     IRelationshipAttribute as DTO
 } from '../../../commons/RamAPI';
-import {IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {IRAMObject, RAMObject, Model} from './base';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -37,13 +37,13 @@ const RelationshipAttributeSchema = new mongoose.Schema({
 
 // instance ...........................................................................................................
 
-export interface IRelationshipAttribute extends IRAMObjectContract {
+export interface IRelationshipAttribute extends IRAMObject {
     value?: string[];
     attributeName: IRelationshipAttributeName;
     toDTO(): Promise<DTO>;
 }
 
-export class RelationshipAttribute extends RAMObjectContractImpl implements IRelationshipAttribute {
+export class RelationshipAttribute extends RAMObject implements IRelationshipAttribute {
 
     public value: string[];
     public attributeName: IRelationshipAttributeName;

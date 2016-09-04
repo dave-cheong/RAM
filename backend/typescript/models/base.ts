@@ -49,28 +49,20 @@ export class RAMEnum {
  * ICodeDecode, these two interfaces define all the models in the system.
  */
 // todo stop extending from Document
-export interface IRAMObject extends mongoose.Document {
-    createdAt: Date;
-    updatedAt: Date;
-    deleteInd: boolean;
-    resourceVersion: string;
-    delete(): void;
-}
-
-// todo deprecated
-export interface IRAMObjectContract {
-    id: string;
+export interface IRAMObject {
     _id: any;
+    id: string;
     createdAt: Date;
     updatedAt: Date;
     deleteInd: boolean;
     resourceVersion: string;
     save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this>;
+    delete(): void;
 }
 
-// exists for type safety only, do not add functions here
+// exists for type safety only, do not add function implementations here
 // todo rename to RAMObject
-export class RAMObjectContractImpl implements IRAMObjectContract {
+export class RAMObject implements IRAMObject {
     public id: string;
     constructor(public _id: any,
                 public createdAt: Date,
@@ -80,6 +72,9 @@ export class RAMObjectContractImpl implements IRAMObjectContract {
         this.id = _id ? _id.toString() : undefined;
     }
     public save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this> {
+        return null;
+    }
+    public delete() {
         return null;
     }
 }
@@ -115,18 +110,9 @@ export const RAMSchema = (schema: Object) => {
  * IRAMObject, these two interfaces define all the models in the system.
  */
 // todo stop extending from Document
-export interface ICodeDecode extends mongoose.Document {
-    shortDecodeText: string;
-    longDecodeText: string;
-    startDate: Date;
-    endDate: Date;
-    code: string;
-}
-
-// todo deprecated
-export interface ICodeDecodeContract {
-    id: string;
+export interface ICodeDecode {
     _id: any;
+    id: string;
     shortDecodeText: string;
     longDecodeText: string;
     startDate: Date;
@@ -136,7 +122,7 @@ export interface ICodeDecodeContract {
 
 // exists for type safety only, do not add functions here
 // todo rename to CodeDecode
-export class CodeDecodeContractImpl implements ICodeDecodeContract {
+export class CodeDecode implements ICodeDecode {
     public id: string;
     constructor(public _id: any,
                 public shortDecodeText: string,
@@ -147,6 +133,8 @@ export class CodeDecodeContractImpl implements ICodeDecodeContract {
         this.id = _id.toString();
     }
 }
+
+// CodeDecodeSchema ...................................................................................................
 
 /* tslint:disable:max-func-body-length */
 export const CodeDecodeSchema = (schema: Object) => {

@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {IRelationshipAttributeName, RelationshipAttributeNameModel} from './relationshipAttributeName.model';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -38,14 +38,14 @@ const RelationshipAttributeNameUsageSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-export interface IRelationshipAttributeNameUsage extends IRAMObjectContract {
+export interface IRelationshipAttributeNameUsage extends IRAMObject {
     optionalInd: boolean;
     defaultValue?: string;
     attributeName: IRelationshipAttributeName;
     sortOrder: number;
 }
 
-class RelationshipAttributeNameUsage extends RAMObjectContractImpl implements IRelationshipAttributeNameUsage {
+class RelationshipAttributeNameUsage extends RAMObject implements IRelationshipAttributeNameUsage {
 
     public optionalInd: boolean;
     public defaultValue: string;

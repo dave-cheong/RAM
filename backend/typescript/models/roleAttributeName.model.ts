@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
+import {RAMEnum, CodeDecodeSchema, ICodeDecode, CodeDecode, Model} from './base';
 import {Url} from './url';
 import {HrefValue, RoleAttributeName as DTO} from '../../../commons/RamAPI';
 
@@ -85,7 +85,7 @@ const RoleAttributeNameSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-export interface IRoleAttributeName extends ICodeDecodeContract {
+export interface IRoleAttributeName extends ICodeDecode {
     id: string;
     domain: string;
     classifier: string;
@@ -98,7 +98,7 @@ export interface IRoleAttributeName extends ICodeDecodeContract {
     toDTO(): Promise<DTO>;
 }
 
-class RoleAttributeName extends CodeDecodeContractImpl implements IRoleAttributeName {
+class RoleAttributeName extends CodeDecode implements IRoleAttributeName {
     public id: string;
     public domain: string;
     public classifier: string;

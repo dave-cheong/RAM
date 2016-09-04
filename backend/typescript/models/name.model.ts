@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {
     HrefValue,
     Name as DTO
@@ -54,7 +54,7 @@ NameSchema.pre('validate', function (next: () => void) {
 
 // instance ...........................................................................................................
 
-export interface IName extends IRAMObjectContract {
+export interface IName extends IRAMObject {
     givenName?: string;
     familyName?: string;
     unstructuredName?: string;
@@ -63,7 +63,7 @@ export interface IName extends IRAMObjectContract {
     toDTO(): Promise<DTO>;
 }
 
-class Name extends RAMObjectContractImpl implements IName {
+class Name extends RAMObject implements IName {
 
     public givenName: string;
     public familyName: string;

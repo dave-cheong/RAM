@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model, removeFromArray} from './base';
+import {RAMEnum, RAMSchema, IRAMObject, RAMObject, Model, removeFromArray} from './base';
 import {Url} from './url';
 import {IParty, PartyModel} from './party.model';
 import {IRoleType} from './roleType.model';
@@ -132,7 +132,7 @@ RoleSchema.pre('validate', function (next: () => void) {
 
 // instance ...........................................................................................................
 
-export interface IRole extends IRAMObjectContract {
+export interface IRole extends IRAMObject {
     roleType: IRoleType;
     party: IParty;
     startTimestamp: Date;
@@ -152,7 +152,7 @@ export interface IRole extends IRAMObjectContract {
     toDTO(): Promise<DTO>;
 }
 
-class Role extends RAMObjectContractImpl implements IRole {
+class Role extends RAMObject implements IRole {
     public roleType: IRoleType;
     public party: IParty;
     public startTimestamp: Date;
