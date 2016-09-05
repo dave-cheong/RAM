@@ -40,17 +40,17 @@ describe('Relationship API', () => {
 
     it('can list by delegate', async(done) => {
 
-            try {
-                const identity = authHelper.KNOWN_IDENTITIES['jennifermaxims_identity_1'];
-                await authHelper.logIn(identity);
+        try {
+            const identity = authHelper.KNOWN_IDENTITIES['jennifermaxims_identity_1'];
+            await authHelper.logIn(identity);
 
-                const response = await relationshipHelper.delegate(identity, 1, 10);
-                relationshipHelper.validateRelationshipList(response.body.list);
+            const response = await relationshipHelper.delegate(identity, 1, 10);
+            relationshipHelper.validateRelationshipList(response.body.list);
 
-            } catch (e) {
-                fail(e);
-            }
+        } catch (e) {
+            fail(e);
+        }
 
-            done();
-        });
+        done();
+    });
 });
