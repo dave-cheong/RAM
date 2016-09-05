@@ -255,6 +255,15 @@ case "$1" in
     echo ""
     ;;
 
+  'lint:tests')
+    echo ""
+    echo "Running ts:lint on tests"
+    echo ""
+    cd tests
+    gulp ts:lint
+    echo ""
+    ;;
+
 # COMPILE
 
   'compile:frontend')
@@ -446,6 +455,7 @@ case "$1" in
     echo ""
     echo "$(tput setaf 3)    lint:frontend                        $(tput sgr0)      Runs lint on frontend"
     echo "$(tput setaf 3)    lint:backend                         $(tput sgr0)      Runs lint on backend"
+    echo "$(tput setaf 3)    lint:tests                           $(tput sgr0)      Runs lint on tests"
     echo ""
     echo "$(tput setaf 3)    compile:frontend                     $(tput sgr0)      Runs compile on frontend"
     echo "$(tput setaf 3)    compile:backend                      $(tput sgr0)      Runs compile on backend"
