@@ -1,4 +1,4 @@
-import {Utils} from '../../commons/ram-utils';
+import {Utils} from '../../commons/utils';
 
 /* tslint:disable:max-func-body-length */
 describe('Util tests', () => {

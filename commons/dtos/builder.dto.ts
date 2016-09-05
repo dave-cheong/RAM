@@ -1,6 +1,6 @@
 import {Link} from './link.dto';
 import {HrefValue} from './hrefValue.dto';
-import {Utils} from '../ram-utils';
+import {Utils} from '../utils';
 
 export class Builder<T> {
 

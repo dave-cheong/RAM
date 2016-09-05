@@ -1,5 +1,5 @@
 import {FormControl} from '@angular/forms';
-import {Utils} from '../../../commons/ram-utils';
+import {Utils} from '../../../commons/utils';
 
 export class RAMNgValidators {
 
