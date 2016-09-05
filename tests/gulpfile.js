@@ -22,7 +22,7 @@ gulp.task('default', ['ts:compile', 'test'], function () {
 });
 
 gulp.task('ts:compile',['ts:lint'], function () {
-    return gulp.src(['typescript/{**,./}/*.ts'])
+    return gulp.src(['typescript/{**,./}/*.ts','../commons/{**,./}/*.ts'])
         .pipe(ts(tsProject, { sortOutput: true }))
         .pipe(gulp.dest('dist/'));
 
