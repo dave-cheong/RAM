@@ -2,6 +2,7 @@ import {logger} from '../logger';
 import {Response, Request} from 'express';
 import {ErrorResponse, SearchResult, HrefValue} from '../../../commons/api';
 import * as _ from 'lodash';
+import MappedError = ExpressValidator.MappedError;
 
 export const REGULAR_CHARS = '^([A-Za-z0-9 +&\'\*\-]+)?$';
 
@@ -48,9 +49,10 @@ export function validateReqSchema<T>(req: Request, schema: Object): Promise<Requ
     'use strict';
     return new Promise<Request>((resolve, reject) => {
         req.check(schema);
-        const errors = req.validationErrors(false) as { msg: string }[];
+        const errors = req.validationErrors(false);
         if (errors) {
-            const errorMsgs = errors.map((e) => e.msg);
+            const errorArray = errors as Array<MappedError>;
+            const errorMsgs = errorArray.map((e) => e.msg);
             reject(errorMsgs);
         } else {
             resolve(req);

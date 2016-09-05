@@ -7,7 +7,7 @@
     "express": "registry:dt/express#4.0.0+20160317120654",
     "express-serve-static-core": "registry:dt/express-serve-static-core#0.0.0+20160322035842",
     "express-unless": "registry:dt/express-unless#0.0.0+20160317120654",
-    "express-validator": "registry:dt/express-validator#2.9.0+20160412125233",
+    "express-validator": "registry:dt/express-validator#2.20.4+20160818182338",
     "faker": "registry:dt/faker#0.0.0+20160406111603",
     "hashids": "registry:dt/hashids#1.0.0+20160317120654",
     "jasmine": "registry:dt/jasmine#2.2.0+20160505161446",
