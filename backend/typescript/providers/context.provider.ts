@@ -5,7 +5,7 @@ import {Namespace} from 'continuation-local-storage';
 import {IPrincipal} from '../models/principal.model';
 import {IIdentity} from '../models/identity.model';
 import {IAgencyUser} from '../models/agencyUser.model';
-import {ErrorResponse} from '../../../commons/RamAPI';
+import {ErrorResponse} from '../../../commons/api';
 
 import cls = require('continuation-local-storage');
 import clsDomainsPromise = require('cls-domains-promise');

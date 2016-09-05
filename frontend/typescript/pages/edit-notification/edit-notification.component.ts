@@ -34,7 +34,7 @@ import {
     RelationshipAttribute,
     FilterParams,
     ISearchResult
-} from '../../../../commons/RamAPI';
+} from '../../../../commons/api';
 
 @Component({
     selector: 'ram-osp-notification-add',

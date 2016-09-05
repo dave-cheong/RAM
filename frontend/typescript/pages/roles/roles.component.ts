@@ -17,7 +17,7 @@ import {
     IRole,
     IRoleStatus,
     IRoleType
-} from '../../../../commons/RamAPI';
+} from '../../../../commons/api';
 
 @Component({
     selector: 'ram-roles',

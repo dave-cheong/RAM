@@ -8,6 +8,7 @@ import {Response, Http, Headers} from '@angular/http';
 import {RAMModelService} from './ram-model.service';
 
 import {
+    ABRentry,
     ISearchResult,
     IHrefValue,
     IPrincipal,
@@ -26,8 +27,7 @@ import {
     INotifyDelegateDTO,
     IAUSkey, RoleStatus, HrefValue, RelationshipType, RoleType, Role, Identity, Principal, AgencyUser, Party, PartyType,
     ProfileProvider, RelationshipStatus, Relationship, SearchResult
-} from '../../../commons/RamAPI';
-import {ABRentry} from '../../../commons/abr';
+} from '../../../commons/api';
 
 const assertHref = (href: string) => {
     if (!href) {

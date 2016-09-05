@@ -11,7 +11,7 @@ import {
     RoleStatus as RoleStatusDTO,
     RoleAttribute as RoleAttributeDTO,
     SearchResult
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 import {logger} from '../logger';
 
 const MAX_PAGE_SIZE = 10;

@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 import {RAMServices} from '../../services/ram-services';
 import {RAMConstants} from '../../services/ram-constants.service';
 
-import {IIdentity} from '../../../../commons/RamAPI';
+import {IIdentity} from '../../../../commons/api';
 
 @Component({
     selector: 'page-header',

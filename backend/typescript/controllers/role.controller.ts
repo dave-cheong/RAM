@@ -2,7 +2,7 @@ import {Router, Request, Response} from 'express';
 import {context} from '../providers/context.provider';
 import {sendResource, sendList, sendSearchResult, sendError, sendNotFoundError, validateReqSchema} from './helpers';
 import {Url} from '../models/url';
-import {FilterParams} from '../../../commons/RamAPI';
+import {FilterParams} from '../../../commons/api';
 import {RoleModel, RoleStatus} from '../models/role.model';
 import {PartyModel, IParty} from '../models/party.model';
 

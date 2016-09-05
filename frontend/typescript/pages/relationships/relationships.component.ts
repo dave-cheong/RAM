@@ -20,7 +20,7 @@ import {
     IRelationshipStatus,
     IHrefValue,
     FilterParams
-} from '../../../../commons/RamAPI';
+} from '../../../../commons/api';
 
 @Component({
     selector: 'list-relationships',

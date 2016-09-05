@@ -2,7 +2,7 @@ import {Router, Request, Response} from 'express';
 import {context} from '../providers/context.provider';
 import {sendResource, sendError, sendNotFoundError, validateReqSchema} from './helpers';
 import {Url} from '../models/url';
-import {ITransactRequest, TransactResponse} from '../../../commons/RamAPI';
+import {ITransactRequest, TransactResponse} from '../../../commons/api';
 import {RoleStatus, RoleModel} from '../models/role.model';
 import {RelationshipStatus, RelationshipModel} from '../models/relationship.model';
 import {IdentityModel} from '../models/identity.model';

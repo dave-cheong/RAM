@@ -1,4 +1,4 @@
-import {AUSkey as AUSkeyDTO, HrefValue} from '../../../commons/RamAPI';
+import {AUSkey as AUSkeyDTO, HrefValue} from '../../../commons/api';
 import {RAMEnum} from './base';
 
 // enums, utilities, helpers ..........................................................................................

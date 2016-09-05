@@ -4,7 +4,7 @@ import {Validators, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, FormContro
 import {
     IRelationshipType,
     IHrefValue
-} from '../../../../commons/RamAPI';
+} from '../../../../commons/api';
 
 @Component({
     selector: 'authorisation-type',

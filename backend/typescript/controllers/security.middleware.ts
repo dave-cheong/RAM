@@ -2,7 +2,7 @@ import {logger} from '../logger';
 import * as colors from 'colors';
 import {Request, Response} from 'express';
 import {Headers} from './headers';
-import {ErrorResponse, CreateIdentityDTO} from '../../../commons/RamAPI';
+import {ErrorResponse, CreateIdentityDTO} from '../../../commons/api';
 import {AgencyUser, IAgencyUserProgramRole, AgencyUserProgramRole} from '../models/agencyUser.model';
 import {Principal} from '../models/principal.model';
 import {IIdentity, IdentityModel} from '../models/identity.model';

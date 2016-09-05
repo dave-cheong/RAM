@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs/Observable';
 import {Injectable} from '@angular/core';
 import {RAMRestService} from './ram-rest.service';
-import {IIdentity, IName} from '../../../commons/RamAPI';
+import {IIdentity, IName} from '../../../commons/api';
 
 @Injectable()
 export class RAMIdentityService {

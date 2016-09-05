@@ -3,7 +3,7 @@ import {Component} from '@angular/core';
 
 import {RAMServices} from '../../services/ram-services';
 
-import {IPrincipal} from '../../../../commons/RamAPI';
+import {IPrincipal} from '../../../../commons/api';
 import {DROPDOWN_DIRECTIVES} from 'ng2-bootstrap';
 
 @Component({

@@ -4,7 +4,7 @@ import {RoleModel} from './role.model';
 import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.model';
 import {
     RoleAttribute as DTO
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 

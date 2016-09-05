@@ -45,7 +45,7 @@ import {
     IRelationshipAttribute,
     RelationshipAttribute,
     CodeDecode
-} from '../../../../commons/RamAPI';
+} from '../../../../commons/api';
 
 @Component({
     selector: 'edit-relationship',

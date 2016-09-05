@@ -1,7 +1,7 @@
 import {Url} from './url';
 import {IAgencyUser} from './agencyUser.model';
 import {IIdentity} from './identity.model';
-import {Principal as PrincipalDTO} from '../../../commons/RamAPI';
+import {Principal as PrincipalDTO} from '../../../commons/api';
 
 export interface IPrincipal {
     id: string;
