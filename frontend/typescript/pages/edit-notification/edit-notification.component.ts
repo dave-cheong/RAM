@@ -196,6 +196,7 @@ export class EditNotificationComponent extends AbstractPageComponent {
             null,
             null,
             RAMConstants.RelationshipInitiatedBy.SUBJECT,
+            null,
             []
         );
 
