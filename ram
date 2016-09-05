@@ -50,7 +50,7 @@ case "$1" in
     echo ""
     cd frontend
     rm -rf typings
-    npm install && bower install && typings install
+    npm install && bower install && typings install && ./node_modules/.bin/jspm install
     echo ""
     ;;
 
@@ -95,7 +95,6 @@ case "$1" in
     echo "Building jspm dist files"
     echo ""
     cd frontend
-    node ./node_modules/jspm/jspm.js install
     gulp build:jspm
     echo ""
     ;;
