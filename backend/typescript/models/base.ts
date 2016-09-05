@@ -72,7 +72,7 @@ export class RAMObject implements IRAMObject {
     public save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this> {
         return null;
     }
-    public delete() {
+    public delete(): void {
         return null;
     }
 }
