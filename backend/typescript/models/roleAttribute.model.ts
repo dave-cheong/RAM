@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMSchema, Model, RAMObjectContractImpl, IRAMObjectContract} from './base';
+import {RAMSchema, Model, RAMObject, IRAMObject} from './base';
 import {RoleModel} from './role.model';
 import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.model';
 import {
@@ -37,14 +37,14 @@ const RoleAttributeSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-export interface IRoleAttribute extends IRAMObjectContract {
+export interface IRoleAttribute extends IRAMObject {
     value: string[];
     attributeName: IRoleAttributeName;
     toDTO(): Promise<DTO>;
     delete(callback?: (err: any) => void): Promise<void>;
 }
 
-class RoleAttribute extends RAMObjectContractImpl implements IRoleAttribute {
+class RoleAttribute extends RAMObject implements IRoleAttribute {
     public value: string[];
     public attributeName: IRoleAttributeName;
 

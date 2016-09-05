@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {ICodeDecodeContract, CodeDecodeContractImpl, CodeDecodeSchema, Model} from './base';
+import {ICodeDecode, CodeDecode, CodeDecodeSchema, Model} from './base';
 import {Url} from './url';
 import {RoleAttributeNameModel} from './roleAttributeName.model';
 import {IRoleAttributeNameUsage, RoleAttributeNameUsageModel} from './roleAttributeNameUsage.model';
@@ -34,14 +34,14 @@ const RoleTypeSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-export interface IRoleType extends ICodeDecodeContract {
+export interface IRoleType extends ICodeDecode {
     id: string;
     attributeNameUsages: IRoleAttributeNameUsage[];
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
     toDTO(): Promise<DTO>;
 }
 
-class RoleType extends CodeDecodeContractImpl implements IRoleType {
+class RoleType extends CodeDecode implements IRoleType {
 
     public id: string;
     public attributeNameUsages: IRoleAttributeNameUsage[];

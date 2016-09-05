@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.model';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -34,13 +34,13 @@ const RoleAttributeNameUsageSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-export interface IRoleAttributeNameUsage extends IRAMObjectContract {
+export interface IRoleAttributeNameUsage extends IRAMObject {
     optionalInd: boolean;
     defaultValue?: string;
     attributeName: IRoleAttributeName;
 }
 
-class RoleAttributeNameUsage extends RAMObjectContractImpl implements IRoleAttributeNameUsage {
+class RoleAttributeNameUsage extends RAMObject implements IRoleAttributeNameUsage {
 
     public optionalInd: boolean;
     public defaultValue: string;

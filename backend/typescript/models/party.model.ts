@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, RAMSchema, Assert, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMEnum, RAMSchema, Assert, IRAMObject, RAMObject, Model} from './base';
 import {Url} from './url';
 import {IIdentity, IdentityModel} from './identity.model';
 import {RelationshipModel, IRelationship, RelationshipInitiatedBy} from './relationship.model';
@@ -75,7 +75,7 @@ const PartySchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-export interface IParty extends IRAMObjectContract {
+export interface IParty extends IRAMObject {
     partyType: string;
     partyTypeEnum(): PartyType;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
@@ -86,7 +86,7 @@ export interface IParty extends IRAMObjectContract {
     modifyRole(role: RoleDTO): Promise<IRole>;
 }
 
-class Party extends RAMObjectContractImpl implements IParty {
+class Party extends RAMObject implements IParty {
 
     public partyType: string;
 

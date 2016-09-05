@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
+import {RAMEnum, CodeDecodeSchema, ICodeDecode, CodeDecode, Model} from './base';
 import {Url} from './url';
 import {RelationshipAttributeNameModel} from './relationshipAttributeName.model';
 import {IRelationshipAttributeNameUsage, RelationshipAttributeNameUsageModel} from './relationshipAttributeNameUsage.model';
@@ -85,7 +85,7 @@ const RelationshipTypeSchema = CodeDecodeSchema({
 
 // interfaces .........................................................................................................
 
-export interface IRelationshipType extends ICodeDecodeContract {
+export interface IRelationshipType extends ICodeDecode {
     minCredentialStrength: number;
     minIdentityStrength: number;
     voluntaryInd: boolean;
@@ -100,7 +100,7 @@ export interface IRelationshipType extends ICodeDecodeContract {
     toDTO(): Promise<DTO>;
 }
 
-class RelationshipType extends CodeDecodeContractImpl implements IRelationshipType {
+class RelationshipType extends CodeDecode implements IRelationshipType {
     public minCredentialStrength: number;
     public minIdentityStrength: number;
     public voluntaryInd: boolean;

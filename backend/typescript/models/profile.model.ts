@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {RAMEnum, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMEnum, RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {Url} from './url';
 import {IName, NameModel} from './name.model';
 import {ISharedSecret, SharedSecretModel} from './sharedSecret.model';
@@ -81,7 +81,7 @@ const ProfileSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-export interface IProfile extends IRAMObjectContract {
+export interface IProfile extends IRAMObject {
     provider: string;
     name: IName;
     sharedSecrets: ISharedSecret[];
@@ -91,7 +91,7 @@ export interface IProfile extends IRAMObjectContract {
     toDTO(): Promise<DTO>;
 }
 
-class Profile extends RAMObjectContractImpl implements IProfile {
+class Profile extends RAMObject implements IProfile {
 
     public provider: string;
     public name: IName;

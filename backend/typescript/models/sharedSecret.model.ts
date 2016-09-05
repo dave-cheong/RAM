@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import {RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Model} from './base';
+import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {ISharedSecretType, SharedSecretTypeModel} from './sharedSecretType.model';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -37,13 +37,13 @@ const SharedSecretSchema = RAMSchema({
 
 // instance ...........................................................................................................
 
-export interface ISharedSecret extends IRAMObjectContract {
+export interface ISharedSecret extends IRAMObject {
     value: string;
     sharedSecretType: ISharedSecretType;
     matchesValue(candidateValue: string): boolean;
 }
 
-class SharedSecret extends RAMObjectContractImpl implements ISharedSecret {
+class SharedSecret extends RAMObject implements ISharedSecret {
 
     public value: string;
     public sharedSecretType: ISharedSecretType;

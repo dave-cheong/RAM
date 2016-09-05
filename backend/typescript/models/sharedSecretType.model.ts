@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {CodeDecodeSchema, ICodeDecodeContract, CodeDecodeContractImpl, Model} from './base';
+import {CodeDecodeSchema, ICodeDecode, CodeDecode, Model} from './base';
 
 // mongoose ...........................................................................................................
 
@@ -21,11 +21,11 @@ const SharedSecretTypeSchema = CodeDecodeSchema({
 
 // instance ...........................................................................................................
 
-export interface ISharedSecretType extends ICodeDecodeContract {
+export interface ISharedSecretType extends ICodeDecode {
     domain: string;
 }
 
-class SharedSecretType extends CodeDecodeContractImpl implements ISharedSecretType {
+class SharedSecretType extends CodeDecode implements ISharedSecretType {
 
     public domain: string;
 

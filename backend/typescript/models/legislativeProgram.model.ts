@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import {CodeDecodeSchema, Model, ICodeDecodeContract, CodeDecodeContractImpl} from './base';
+import {CodeDecodeSchema, Model, ICodeDecode, CodeDecode} from './base';
 
 // mongoose ...........................................................................................................
 
@@ -13,10 +13,10 @@ const LegislativeProgramSchema = CodeDecodeSchema({});
 
 // instance ...........................................................................................................
 
-export interface ILegislativeProgram extends ICodeDecodeContract {
+export interface ILegislativeProgram extends ICodeDecode {
 }
 
-class LegislativeProgram extends CodeDecodeContractImpl implements ILegislativeProgram {
+class LegislativeProgram extends CodeDecode implements ILegislativeProgram {
 }
 
 interface ILegislativeProgramDocument extends ILegislativeProgram, mongoose.Document {

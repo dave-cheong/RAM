@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import * as mongooseAutoIncrement from 'mongoose-auto-increment';
 import {conf} from '../bootstrap';
 import * as Hashids from 'hashids';
-import {RAMEnum, RAMSchema, Model, IRAMObjectContract, RAMObjectContractImpl} from './base';
+import {RAMEnum, RAMSchema, Model, IRAMObject, RAMObject} from './base';
 import {Url} from './url';
 import {
     HrefValue,
@@ -267,7 +267,7 @@ IdentitySchema.pre('validate', function (next: () => void) {
 
 // instance ...........................................................................................................
 
-export interface IIdentity extends IRAMObjectContract {
+export interface IIdentity extends IRAMObject {
     idValue: string;
     rawIdValue: string;
     identityType: string;
@@ -293,7 +293,7 @@ export interface IIdentity extends IRAMObjectContract {
     toDTO(): Promise<DTO>;
 }
 
-class Identity extends RAMObjectContractImpl implements IIdentity {
+class Identity extends RAMObject implements IIdentity {
 
     public idValue: string;
     public rawIdValue: string;

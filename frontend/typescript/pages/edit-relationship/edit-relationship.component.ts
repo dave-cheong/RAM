@@ -404,7 +404,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // sort usages
             let orderedUsages = this.permissionAttributeUsages.slice();
-            orderedUsages.sort(function(a, b) {
+            orderedUsages.sort((a, b) => {
                 return a.sortOrder - b.sortOrder;
             });
 

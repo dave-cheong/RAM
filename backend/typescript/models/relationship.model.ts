@@ -1,6 +1,6 @@
 import {logger} from '../logger';
 import * as mongoose from 'mongoose';
-import {Model, RAMEnum, RAMSchema, IRAMObjectContract, RAMObjectContractImpl, Query, Assert} from './base';
+import {Model, RAMEnum, RAMSchema, IRAMObject, RAMObject, Query, Assert} from './base';
 import {Url} from './url';
 import {SharedSecretModel, ISharedSecret} from './sharedSecret.model';
 import {DOB_SHARED_SECRET_TYPE_CODE, SharedSecretTypeModel} from './sharedSecretType.model';
@@ -262,7 +262,7 @@ RelationshipSchema.pre('validate', function (next: () => void) {
 
 // instance ............................................................................................................
 
-export interface IRelationship extends IRAMObjectContract {
+export interface IRelationship extends IRAMObject {
     id: string;
     relationshipType: IRelationshipType;
     subject: IParty;
@@ -295,7 +295,7 @@ export interface IRelationship extends IRAMObjectContract {
 
 }
 
-class Relationship extends RAMObjectContractImpl implements IRelationship {
+class Relationship extends RAMObject implements IRelationship {
 
     public id: string;
     public relationshipType: IRelationshipType;
