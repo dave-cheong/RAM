@@ -1,5 +1,6 @@
 // builder ............................................................................................................
 
+import {Utils} from './ram-utils';
 export class Builder<T> {
 
     private targetObject: any;
@@ -54,7 +55,7 @@ export class Builder<T> {
                         let valueArray = value as Object[];
                         value = valueArray.length > 0 ? valueArray[0] : undefined;
                     }
-                    if (key === 'timestamp' || key.indexOf('Timestamp') !== -1 || key.endsWith('At')) {
+                    if (key === 'timestamp' || key.indexOf('Timestamp') !== -1 || Utils.endsWith(key, 'At')) {
                         // date
                         targetObject[key] = new Date(value);
                     } else if (typeof value === 'number' || typeof value === 'string' || typeof value === 'boolean') {
