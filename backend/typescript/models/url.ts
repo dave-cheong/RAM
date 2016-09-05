@@ -7,7 +7,7 @@ import * as relationshipType from './relationshipType.model';
 import * as role from './role.model';
 import * as roleAttributeName from './roleAttributeName.model';
 import * as roleType from './roleType.model';
-import {Link} from '../../../commons/RamAPI';
+import {Link} from '../../../commons/api';
 
 export class UrlLinks {
 

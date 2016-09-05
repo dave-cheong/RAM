@@ -5,7 +5,7 @@ import {IAUSkeyProvider} from '../providers/auskey.provider';
 import {AUSkeyType} from '../models/auskey.model';
 import {PartyModel} from '../models/party.model';
 import {IdentityModel} from '../models/identity.model';
-import {FilterParams} from '../../../commons/RamAPI';
+import {FilterParams} from '../../../commons/api';
 import {Assert} from '../models/base';
 import {Translator} from '../ram/translator';
 

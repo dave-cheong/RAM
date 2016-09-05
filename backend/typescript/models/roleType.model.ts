@@ -7,7 +7,7 @@ import {
     HrefValue,
     RoleType as DTO,
     RoleAttributeNameUsage as RoleAttributeNameUsageDTO
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 

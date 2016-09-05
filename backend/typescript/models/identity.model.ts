@@ -9,7 +9,7 @@ import {
     Identity as DTO,
     SearchResult,
     CreateIdentityDTO
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 import {NameModel} from './name.model';
 import {SharedSecretModel, ISharedSecret} from './sharedSecret.model';
 import {IProfile, ProfileModel, ProfileProvider} from './profile.model';

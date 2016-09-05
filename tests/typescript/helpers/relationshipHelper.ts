@@ -1,6 +1,6 @@
 import {RestCalls} from '../support/rest';
 import {config} from '../bootstrap';
-import {HrefValue, Relationship} from '../../../commons/RamAPI';
+import {HrefValue, Relationship} from '../../../commons/api';
 
 const rest = new RestCalls(config.host, config.port);
 

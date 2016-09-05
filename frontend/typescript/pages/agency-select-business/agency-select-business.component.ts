@@ -12,7 +12,7 @@ import {AbstractPageComponent} from '../abstract-page/abstract-page.component';
 import {PageHeaderAgencyComponent} from '../../components/page-header/page-header-agency.component';
 import {RAMServices} from '../../services/ram-services';
 import { BusinessSelectComponent } from '../../components/business-select/business-select.component';
-import {ABRentry} from '../../../../commons/RamAPI';
+import {ABRentry} from '../../../../commons/api';
 import {RAMConstants} from '../../services/ram-constants.service';
 
 @Component({

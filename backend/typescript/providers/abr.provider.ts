@@ -37,7 +37,7 @@
  */
 
 import * as request from 'superagent';
-import { ABRentry } from '../../../commons/RamAPI';
+import { ABRentry } from '../../../commons/api';
 /* tslint:disable:no-var-requires */
 const xml2js = require('xml2js').parseString;
 import { conf } from '../bootstrap';

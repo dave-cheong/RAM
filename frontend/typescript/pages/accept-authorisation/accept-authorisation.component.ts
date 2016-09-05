@@ -17,7 +17,7 @@ import {
     IRelationshipType,
     IRelationshipAttribute,
     IRelationshipAttributeNameUsage
-} from '../../../../commons/RamAPI';
+} from '../../../../commons/api';
 
 @Component({
     selector: 'accept-authorisation',

@@ -17,7 +17,7 @@ import {
     IHrefValue,
     FilterParams,
     IPrincipal, IParty
-} from '../../../../commons/RamAPI';
+} from '../../../../commons/api';
 
 @Component({
     selector: 'ram-osp-notifications',

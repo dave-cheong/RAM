@@ -25,7 +25,7 @@ import {
     IRelationshipAttributeNameUsage,
     IRoleAttribute,
     IRelationshipAttribute
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 
 @Injectable()
 export class RAMModelService {

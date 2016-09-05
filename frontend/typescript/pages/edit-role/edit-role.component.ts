@@ -25,7 +25,7 @@ import {
     IRoleAttributeNameUsage,
     IAUSkey,
     IRoleAttribute
-} from '../../../../commons/RamAPI';
+} from '../../../../commons/api';
 
 @Component({
     selector: 'ram-edit-role',

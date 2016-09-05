@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import {RAMEnum, CodeDecodeSchema, ICodeDecode, CodeDecode, Model} from './base';
 import {Url} from './url';
-import {HrefValue, RoleAttributeName as DTO} from '../../../commons/RamAPI';
+import {HrefValue, RoleAttributeName as DTO} from '../../../commons/api';
 
 // mongoose ...........................................................................................................
 

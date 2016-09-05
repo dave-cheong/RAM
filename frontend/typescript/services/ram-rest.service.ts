@@ -27,7 +27,7 @@ import {
     INotifyDelegateDTO,
     IAUSkey, RoleStatus, HrefValue, RelationshipType, RoleType, Role, Identity, Principal, AgencyUser, Party, PartyType,
     ProfileProvider, RelationshipStatus, Relationship, SearchResult
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 
 const assertHref = (href: string) => {
     if (!href) {

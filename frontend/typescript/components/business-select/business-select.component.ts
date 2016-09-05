@@ -16,7 +16,7 @@
  */
 import {Output, Input, EventEmitter, Component} from '@angular/core';
 import {REACTIVE_FORM_DIRECTIVES, FORM_DIRECTIVES } from '@angular/forms';
-import {ABRentry} from '../../../../commons/RamAPI';
+import {ABRentry} from '../../../../commons/api';
 import {RAMRestService} from '../../services/ram-rest.service';
 import {Observable} from 'rxjs/Observable';
 
