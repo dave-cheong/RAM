@@ -85,6 +85,9 @@ case "$1" in
     rm -rf frontend/typings/*
     rm -rf tests/typings/*
     echo ""
+    echo "Cleaning jspm ..."
+    rm -rf frontend/jspm_packages/*
+    echo ""
     ;;
 
   'jspm')
@@ -92,6 +95,7 @@ case "$1" in
     echo "Building jspm dist files"
     echo ""
     cd frontend
+    node ./node_modules/jspm/jspm.js install
     gulp build:jspm
     echo ""
     ;;
