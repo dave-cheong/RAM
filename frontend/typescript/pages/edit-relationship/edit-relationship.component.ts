@@ -178,6 +178,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             null,
             null,
             RAMConstants.RelationshipInitiatedBy.SUBJECT,
+            null,
             []
         );
 

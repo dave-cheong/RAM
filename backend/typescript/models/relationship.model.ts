@@ -166,6 +166,10 @@ const RelationshipSchema = RAMSchema({
         trim: true,
         enum: RelationshipInitiatedBy.valueStrings()
     },
+    supersededBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Relationship'
+    },
     attributes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'RelationshipAttribute'
@@ -275,6 +279,7 @@ export interface IRelationship extends IRAMObject {
     endEventTimestamp?: Date;
     status: string;
     initiatedBy: string;
+    supersededBy: IRelationship;
     attributes: IRelationshipAttribute[];
     _subjectNickNameString: string;
     _delegateNickNameString: string;
@@ -309,6 +314,7 @@ class Relationship extends RAMObject implements IRelationship {
     public endEventTimestamp: Date;
     public status: string;
     public initiatedBy: string;
+    public supersededBy: IRelationship;
     public attributes: IRelationshipAttribute[];
     public _subjectNickNameString: string;
     public _delegateNickNameString: string;
@@ -354,6 +360,7 @@ class Relationship extends RAMObject implements IRelationship {
             this.endEventTimestamp,
             this.status,
             this.initiatedBy,
+            await this.supersededBy.toHrefValue(true),
             await Promise.all<RelationshipAttributeDTO>(this.attributes.map(
                 async(attribute: IRelationshipAttribute) => {
                     return await attribute.toDTO();

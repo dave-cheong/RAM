@@ -17,6 +17,7 @@ export interface IRelationship extends IHasLinks {
     endEventTimestamp?: Date;
     status: string;
     initiatedBy: string;
+    supersededBy: IHrefValue<IRelationship>;
     attributes: IRelationshipAttribute[];
     getAttribute(code: string): IRelationshipAttribute;
     insertOrUpdateAttribute(attribute: IRelationshipAttribute): void;
@@ -30,6 +31,7 @@ export class Relationship implements IRelationship {
             .mapHref('relationshipType', RelationshipType)
             .mapHref('subject', Party)
             .mapHref('delegate', Party)
+            .mapHref('supersededBy', Relationship)
             .map('subjectNickName', Name)
             .map('delegateNickName', Name)
             .mapArray('attributes', RelationshipAttribute)
@@ -47,6 +49,7 @@ export class Relationship implements IRelationship {
                 public endEventTimestamp: Date,
                 public status: string,
                 public initiatedBy: string,
+                public supersededBy: IHrefValue<IRelationship>,
                 public attributes: IRelationshipAttribute[]) {
     }
 
