@@ -1,6 +1,6 @@
 import {conf} from '../bootstrap';
 import {IAUSkey, AUSkey, AUSkeyType} from '../models/auskey.model';
-import {SearchResult} from '../../../commons/RamAPI';
+import {SearchResult} from '../../../commons/api';
 
 const useMock = conf.auskeyProviderMock;
 const MAX_PAGE_SIZE = 10;

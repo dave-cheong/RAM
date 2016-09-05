@@ -25,7 +25,7 @@ import {
     IInvitationCodeRelationshipAddDTO,
     ICreateInvitationCodeDTO,
     IAttributeDTO
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 
 /* tslint:disable:max-func-body-length */
 describe('RAM Party', () => {

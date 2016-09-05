@@ -11,8 +11,6 @@ export interface IRamConf {
     httpPort: number;
     mongoURL: string;
     devMode: boolean;
-    jwtSecretKey: string;
-    jwtExpiryInMSec: number;
     hashIdsSalt: string;
     exportLDIFFileName: string;
     abrAuthenticationGuid: string;

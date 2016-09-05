@@ -2,7 +2,7 @@ import {
     HrefValue,
     AgencyUser as AgencyUserDTO,
     AgencyUserProgramRole as AgencyUserProgramRoleDTO
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 
 export interface IAgencyUser {
     id: string;

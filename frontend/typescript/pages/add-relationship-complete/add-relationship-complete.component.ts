@@ -8,7 +8,7 @@ import {RAMNgValidators} from '../../commons/ram-ng-validators';
 import {RAMServices} from '../../services/ram-services';
 import {RAMConstants} from '../../services/ram-constants.service';
 
-import {IIdentity, INotifyDelegateDTO} from '../../../../commons/RamAPI';
+import {IIdentity, INotifyDelegateDTO} from '../../../../commons/api';
 
 @Component({
     selector: 'add-relationship-complete',

@@ -24,7 +24,7 @@ import {
     RelationshipStatus as RelationshipStatusDTO,
     RelationshipAttribute as RelationshipAttributeDTO,
     SearchResult
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 import {Translator} from '../ram/translator';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)

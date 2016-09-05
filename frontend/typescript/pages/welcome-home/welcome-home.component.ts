@@ -6,7 +6,7 @@ import {AbstractPageComponent} from '../abstract-page/abstract-page.component';
 import {RAMServices} from '../../services/ram-services';
 import {RAMConstants} from '../../services/ram-constants.service';
 
-import {IPrincipal} from '../../../../commons/RamAPI';
+import {IPrincipal} from '../../../../commons/api';
 
 @Component({
     selector: 'landing-home',

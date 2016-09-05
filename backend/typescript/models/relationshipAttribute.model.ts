@@ -3,7 +3,7 @@ import {RelationshipModel} from './relationship.model';
 import {IRelationshipAttributeName, RelationshipAttributeNameModel} from './relationshipAttributeName.model';
 import {
     IRelationshipAttribute as DTO
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 import {IRAMObject, RAMObject, Model} from './base';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)

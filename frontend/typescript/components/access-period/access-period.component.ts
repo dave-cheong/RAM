@@ -7,7 +7,7 @@ import {
     FormControl,
     FORM_DIRECTIVES
 } from '@angular/forms';
-import {Utils} from '../../../../commons/ram-utils';
+import {Utils} from '../../../../commons/utils';
 import {RAMNgValidators} from '../../commons/ram-ng-validators';
 import {Calendar} from 'primeng/primeng';
 

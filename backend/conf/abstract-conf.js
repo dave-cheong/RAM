@@ -4,8 +4,6 @@ module.exports = {
     "httpPort": 3000,
     "mongoURL": undefined,
     "devMode": true,
-    "jwtSecretKey": "my-top-secret-key-shhhhh",
-    "jwtExpiryInMinutes": 5,
     "hashIdsSalt": "3a9bf065-1738-4246-904f-5282bfc8fef4",
     "abrAuthenticationGuid": "cd30d8cc-3180-4afa-a16b-7faea008fa1c",
     "auskeyProviderMock": true

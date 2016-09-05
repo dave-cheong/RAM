@@ -49,4 +49,14 @@ export class Utils {
         }
         return null;
     };
+
+    public static endsWith(str: string, searchString: string):boolean {
+        const position = str.length - searchString.length;
+        if (position < 0) {
+            return false;
+        } else {
+            var lastIndex = str.indexOf(searchString, position);
+            return lastIndex !== -1 && lastIndex === position;
+        }
+    }
 }

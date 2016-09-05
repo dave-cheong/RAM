@@ -16,7 +16,7 @@ import {
     IInvitationCodeRelationshipAddDTO,
     ICreateInvitationCodeDTO,
     IAttributeDTO
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 import {Headers} from './headers';
 
 // todo add data security

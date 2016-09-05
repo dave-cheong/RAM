@@ -1,5 +1,5 @@
 import {Input, Component} from '@angular/core';
-import {IRelationshipAttributeNameUsage} from '../../../../commons/RamAPI';
+import {IRelationshipAttributeNameUsage} from '../../../../commons/api';
 
 @Component({
     selector: 'authorisation-management',

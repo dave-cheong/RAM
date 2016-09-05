@@ -3,7 +3,7 @@ import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {
     HrefValue,
     Name as DTO
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 
 // mongoose ...........................................................................................................
 

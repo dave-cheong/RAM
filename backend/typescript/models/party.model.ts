@@ -20,7 +20,7 @@ import {
     IInvitationCodeRelationshipAddDTO,
     IRole as RoleDTO,
     IRelationship as IRelationshipDTO
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 import {context} from '../providers/context.provider';
 import {logger} from '../logger';
 

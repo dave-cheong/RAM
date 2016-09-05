@@ -4,7 +4,7 @@ import { Observable }           from 'rxjs/Rx';
 import {
     IRelationshipType,
     IRelationshipAttributeNameUsage
-} from '../../../commons/RamAPI';
+} from '../../../commons/api';
 
 // TODO: remove listRelatiohsipTypes from relationships.component.
 
