@@ -3,7 +3,7 @@ import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {IRelationshipAttributeName, RelationshipAttributeNameModel} from './relationshipAttributeName.model';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
-import {PermissionBuilders} from '../permissions/allPermission.builders';
+import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -56,7 +56,7 @@ class RelationshipAttributeNameUsage extends RAMObject implements IRelationshipA
     public sortOrder: number;
 
     public getPermissions(): Promise<Permissions> {
-        return this.buildPermissions(PermissionTemplates.relationshipAttributeNameUsage, PermissionBuilders.relationshipAttributeNameUsage);
+        return this.enforcerPermissions(PermissionTemplates.relationshipAttributeNameUsage, PermissionEnforcers.relationshipAttributeNameUsage);
     }
 
 }

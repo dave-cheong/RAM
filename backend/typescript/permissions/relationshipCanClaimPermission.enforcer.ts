@@ -1,4 +1,4 @@
-import {PermissionBuilder, Assert} from '../models/base';
+import {PermissionEnforcer, Assert} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
@@ -8,14 +8,14 @@ import {Translator} from '../ram/translator';
 import {context} from '../providers/context.provider';
 import {IdentityType, IdentityInvitationCodeStatus, IdentityModel} from '../models/identity.model';
 
-export class RelationshipCanClaimPermissionBuilder extends PermissionBuilder<IRelationship> {
+export class RelationshipCanClaimPermissionEnforcer extends PermissionEnforcer<IRelationship> {
 
     constructor() {
         super(RelationshipCanClaimPermission);
     }
 
     // todo this needs to check party access
-    public async build(relationship: IRelationship): Promise<IPermission> {
+    public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
         let permission = new Permission(this.template.code, this.template.description, this.template.value);
         let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;

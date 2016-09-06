@@ -4,7 +4,7 @@ import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {ISharedSecretType, SharedSecretTypeModel} from './sharedSecretType.model';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
-import {PermissionBuilders} from '../permissions/allPermission.builders';
+import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -52,7 +52,7 @@ class SharedSecret extends RAMObject implements ISharedSecret {
     public sharedSecretType: ISharedSecretType;
 
     public async getPermissions(): Promise<Permissions> {
-        return this.buildPermissions(PermissionTemplates.sharedSecret, PermissionBuilders.sharedSecret);
+        return this.enforcerPermissions(PermissionTemplates.sharedSecret, PermissionEnforcers.sharedSecret);
     }
 
     public matchesValue(candidateValue: string): boolean {

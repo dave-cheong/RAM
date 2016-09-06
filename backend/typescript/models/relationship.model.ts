@@ -2,7 +2,7 @@ import {logger} from '../logger';
 import * as mongoose from 'mongoose';
 import {Model, RAMEnum, RAMSchema, IRAMObject, RAMObject, Query, Assert} from './base';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
-import {PermissionBuilders} from '../permissions/allPermission.builders';
+import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
 import {Url} from './url';
 import {SharedSecretModel, ISharedSecret} from './sharedSecret.model';
 import {DOB_SHARED_SECRET_TYPE_CODE, SharedSecretTypeModel} from './sharedSecretType.model';
@@ -28,10 +28,10 @@ import {
     SearchResult
 } from '../../../commons/api';
 import {Permissions} from '../../../commons/dtos/permission.dto';
-import {RelationshipCanClaimPermissionBuilder} from '../permissions/relationshipCanClaimPermission.builder';
-import {RelationshipCanNotifyDelegatePermissionBuilder} from '../permissions/relationshipCanNotifyDelegatePermission.builder';
-import {RelationshipCanRejectPermissionBuilder} from '../permissions/relationshipCanRejectPermission.builder';
-import {RelationshipCanAcceptPermissionBuilder} from '../permissions/relationshipCanAcceptPermission.builder';
+import {RelationshipCanClaimPermissionEnforcer} from '../permissions/relationshipCanClaimPermission.enforcer';
+import {RelationshipCanNotifyDelegatePermissionEnforcer} from '../permissions/relationshipCanNotifyDelegatePermission.enforcer';
+import {RelationshipCanRejectPermissionEnforcer} from '../permissions/relationshipCanRejectPermission.enforcer';
+import {RelationshipCanAcceptPermissionEnforcer} from '../permissions/relationshipCanAcceptPermission.enforcer';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -337,7 +337,7 @@ class Relationship extends RAMObject implements IRelationship {
     }
 
     public getPermissions(): Promise<Permissions> {
-        return this.buildPermissions(PermissionTemplates.relationship, PermissionBuilders.relationship);
+        return this.enforcePermissions(PermissionTemplates.relationship, PermissionEnforcers.relationship);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
@@ -376,7 +376,7 @@ class Relationship extends RAMObject implements IRelationship {
     public async claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship> {
 
         // evaluate permissions
-        await new RelationshipCanClaimPermissionBuilder().assert(this);
+        await new RelationshipCanClaimPermissionEnforcer().assert(this);
 
         // if the user is already the delegate then there is nothing to do
         if (this.delegate.id === claimingDelegateIdentity.party.id) {
@@ -405,7 +405,7 @@ class Relationship extends RAMObject implements IRelationship {
     public async acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship> {
 
         // evaluate permissions
-        await new RelationshipCanAcceptPermissionBuilder().assert(this);
+        await new RelationshipCanAcceptPermissionEnforcer().assert(this);
 
         // mark relationship as active
         this.status = RelationshipStatus.Accepted.code;
@@ -420,7 +420,7 @@ class Relationship extends RAMObject implements IRelationship {
     public async rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship> {
 
         // evaluate permissions
-        await new RelationshipCanRejectPermissionBuilder().assert(this);
+        await new RelationshipCanRejectPermissionEnforcer().assert(this);
 
         // confirm the delegate is the user accepting
         Assert.assertTrue(rejectingDelegateIdentity.party.id === this.delegate.id, 'Not allowed');
@@ -438,7 +438,7 @@ class Relationship extends RAMObject implements IRelationship {
     public async notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship> {
 
         // evaluate permissions
-        await new RelationshipCanNotifyDelegatePermissionBuilder().assert(this);
+        await new RelationshipCanNotifyDelegatePermissionEnforcer().assert(this);
 
         // update email address
         const identity = this.invitationIdentity;

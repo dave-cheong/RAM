@@ -10,7 +10,7 @@ import {
 } from '../../../commons/api';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
-import {PermissionBuilders} from '../permissions/allPermission.builders';
+import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -116,7 +116,7 @@ class Profile extends RAMObject implements IProfile {
     }
 
     public getPermissions(): Promise<Permissions> {
-        return this.buildPermissions(PermissionTemplates.profile, PermissionBuilders.profile);
+        return this.enforcerPermissions(PermissionTemplates.profile, PermissionEnforcers.profile);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {

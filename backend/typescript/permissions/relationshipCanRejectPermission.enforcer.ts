@@ -1,4 +1,4 @@
-import {PermissionBuilder} from '../models/base';
+import {PermissionEnforcer} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
@@ -7,7 +7,7 @@ import {IRelationship, RelationshipStatus} from '../models/relationship.model';
 import {Translator} from '../ram/translator';
 import {context} from '../providers/context.provider';
 
-export class RelationshipCanRejectPermissionBuilder extends PermissionBuilder<IRelationship> {
+export class RelationshipCanRejectPermissionEnforcer extends PermissionEnforcer<IRelationship> {
 
     constructor() {
         super(RelationshipCanRejectPermission);
@@ -16,7 +16,7 @@ export class RelationshipCanRejectPermissionBuilder extends PermissionBuilder<IR
     // todo this needs to check party access
     // todo confirm the delegate is the user accepting
     // todo check identity strength
-    public async build(relationship: IRelationship): Promise<IPermission> {
+    public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
         let permission = new Permission(this.template.code, this.template.description, this.template.value);
         let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;

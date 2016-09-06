@@ -13,7 +13,7 @@ import {
     SearchResult
 } from '../../../commons/api';
 import {logger} from '../logger';
-import {PermissionBuilders} from '../permissions/allPermission.builders';
+import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 
@@ -239,7 +239,7 @@ class Role extends RAMObject implements IRole {
     }
 
     public async getPermissions(): Promise<Permissions> {
-        return this.buildPermissions(PermissionTemplates.role, PermissionBuilders.role);
+        return this.enforcerPermissions(PermissionTemplates.role, PermissionEnforcers.role);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {

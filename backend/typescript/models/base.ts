@@ -58,7 +58,7 @@ export interface IRAMObject {
     resourceVersion: string;
     save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this>;
     delete(): void;
-    buildPermissions(templates: Permissions, builders: IPermissionBuilder<any>[]): Promise<Permissions>;
+    enforcePermissions(templates: Permissions, enforcers: IPermissionEnforcer<any>[]): Promise<Permissions>;
     getPermissions(): Promise<Permissions>;
 }
 
@@ -83,7 +83,7 @@ export abstract class RAMObject implements IRAMObject {
         return null;
     }
 
-    public buildPermissions(templates: Permissions, builders: IPermissionBuilder<any>[]): Promise<Permissions> {
+    public enforcePermissions(templates: Permissions, enforcers: IPermissionEnforcer<any>[]): Promise<Permissions> {
         return null;
     }
 
@@ -111,18 +111,18 @@ export const RAMSchema = (schema: Object) => {
         (this as IRAMObject).save();
     });
 
-    result.method('buildPermissions', async function(templates: Permissions, builders: IPermissionBuilder<any>[]): Promise<Permissions> {
+    result.method('enforcePermissions', async function(templates: Permissions, enforcers: IPermissionEnforcer<any>[]): Promise<Permissions> {
         let permissions = new Permissions();
         for (let template of templates.toArray()) {
-            let builder: IPermissionBuilder<any>;
-            for (let aBuilder of builders) {
-                if (aBuilder.template && aBuilder.template.code === template.code) {
-                    builder = aBuilder;
+            let enforcer: IPermissionEnforcer<any>;
+            for (let anEnforcer of enforcers) {
+                if (anEnforcer.template && anEnforcer.template.code === template.code) {
+                    enforcer = anEnforcer;
                     break;
                 }
             }
-            if (builder) {
-                permissions.push(await builder.build(this));
+            if (enforcer) {
+                permissions.push(await enforcer.evaluate(this));
             } else {
                 permissions.push(template);
             }
@@ -246,11 +246,10 @@ export const Model = <T extends mongoose.Document>(name: string, schema: mongoos
 
 };
 
-// permission builder .................................................................................................
+// permission enforcer ................................................................................................
 
-export interface IPermissionBuilder<T> {
+export interface IPermissionEnforcer<T> {
     template: IPermission;
-    build(source: T): Promise<IPermission>;
     evaluate(source: T): Promise<IPermission>;
     assert(source: T): Promise<void>;
     isAllowed(source: T): Promise<boolean>;
@@ -258,32 +257,28 @@ export interface IPermissionBuilder<T> {
     getLinkHref(source: T): Promise<string>;
 }
 
-export abstract class PermissionBuilder<T> implements IPermissionBuilder<T> {
+export abstract class PermissionEnforcer<T> implements IPermissionEnforcer<T> {
 
     constructor(public template: IPermission) {
     }
 
-    public abstract build(source: T): Promise<IPermission>;
-
-    public async evaluate(source: T): Promise<IPermission> {
-        return await this.build(source);
-    }
+    public abstract evaluate(source: T): Promise<IPermission>;
 
     public async assert(source: T): Promise<void> {
-        let permission = await this.build(source);
+        let permission = await this.evaluate(source);
         Assert.assertPermission(permission);
     }
 
     public async isAllowed(source: T): Promise<boolean> {
-        return (await this.build(source)).isAllowed();
+        return (await this.evaluate(source)).isAllowed();
     }
 
     public async isDenied(source: T): Promise<boolean> {
-        return (await this.build(source)).isDenied();
+        return (await this.evaluate(source)).isDenied();
     }
 
     public async getLinkHref(source: T): Promise<string> {
-        let link = (await this.build(source)).link;
+        let link = (await this.evaluate(source)).link;
         return link ? link.href : undefined;
     }
 

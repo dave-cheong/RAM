@@ -17,7 +17,7 @@ import {IParty, PartyModel, PartyType} from './party.model';
 import {SharedSecretTypeModel, DOB_SHARED_SECRET_TYPE_CODE} from './sharedSecretType.model';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
-import {PermissionBuilders} from '../permissions/allPermission.builders';
+import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
 
 // mongoose ...........................................................................................................
 
@@ -336,7 +336,7 @@ class Identity extends RAMObject implements IIdentity {
     }
 
     public getPermissions(): Promise<Permissions> {
-        return this.buildPermissions(PermissionTemplates.identity, PermissionBuilders.identity);
+        return this.enforcerPermissions(PermissionTemplates.identity, PermissionEnforcers.identity);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {

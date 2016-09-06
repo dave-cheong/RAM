@@ -6,7 +6,7 @@ import {
 } from '../../../commons/api';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
-import {PermissionBuilders} from '../permissions/allPermission.builders';
+import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
 
 // mongoose ...........................................................................................................
 
@@ -74,7 +74,7 @@ class Name extends RAMObject implements IName {
     public _displayName: string;
 
     public getPermissions(): Promise<Permissions> {
-        return this.buildPermissions(PermissionTemplates.iname, PermissionBuilders.iname);
+        return this.enforcerPermissions(PermissionTemplates.iname, PermissionEnforcers.iname);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {

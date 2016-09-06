@@ -25,7 +25,7 @@ import {context} from '../providers/context.provider';
 import {logger} from '../logger';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
-import {PermissionBuilders} from '../permissions/allPermission.builders';
+import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
 
 /* tslint:disable:no-unused-variable */
 const _RoleAttributeModel = RoleAttributeModel;
@@ -98,7 +98,7 @@ class Party extends RAMObject implements IParty {
     }
 
     public async getPermissions(): Promise<Permissions> {
-        return this.buildPermissions(PermissionTemplates.party, PermissionBuilders.party);
+        return this.enforcerPermissions(PermissionTemplates.party, PermissionEnforcers.party);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
