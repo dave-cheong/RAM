@@ -16,8 +16,14 @@ export class RelationshipCanAcceptPermissionBuilder extends PermissionBuilder<IR
     public async build(relationship: IRelationship): Promise<IPermission> {
 
         let permission = new Permission(this.template.code, this.template.description, this.template.value);
+        let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
 
-        // validate status
+        // validate authenticated
+        if (!authenticatedIdentity) {
+            permission.messages.push(Translator.get('security.notAuthenticated'));
+        }
+
+        // validate relationship status
         if (relationship.statusEnum() !== RelationshipStatus.Pending) {
             permission.messages.push(Translator.get('relationship.accept.notPending'));
         }

@@ -3,7 +3,10 @@ import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
 import {RelationshipCanNotifyDelegatePermissionTemplate} from '../../../commons/permissions/relationshipPermission.templates';
-import {IRelationship} from '../models/relationship.model';
+import {IRelationship, RelationshipStatus} from '../models/relationship.model';
+import {context} from '../providers/context.provider';
+import {Translator} from '../ram/translator';
+import {IdentityType, IdentityInvitationCodeStatus} from '../models/identity.model';
 
 export class RelationshipCanNotifyDelegatePermissionBuilder extends PermissionBuilder<IRelationship> {
 
@@ -12,15 +15,46 @@ export class RelationshipCanNotifyDelegatePermissionBuilder extends PermissionBu
     }
 
     // todo this needs to check party access
-    // todo confirm the delegate is the user accepting
-    // todo check identity strength
     public async build(relationship: IRelationship): Promise<IPermission> {
+
         let permission = new Permission(this.template.code, this.template.description, this.template.value);
-        permission.value = await relationship.isPendingInvitation();
-        if (permission.value) {
-            permission.link = new Link('notifyDelegate', Url.POST, await Url.forRelationshipNotifyDelegate(relationship.invitationIdentity.rawIdValue));
+        let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
+        let invitationIdentity = relationship.invitationIdentity;
+
+        // validate authenticated
+        if (!authenticatedIdentity) {
+            permission.messages.push(Translator.get('security.notAuthenticated'));
         }
+
+        // validate invitation
+        if (!invitationIdentity) {
+            permission.messages.push(Translator.get('relationship.notifyDelegate.notInvitation'));
+        } else if (invitationIdentity.identityTypeEnum() !== IdentityType.InvitationCode) {
+            permission.messages.push(Translator.get('relationship.notifyDelegate.notInvitation'));
+        }
+
+        // validate relationship status
+        if (relationship.statusEnum() !== RelationshipStatus.Pending) {
+            permission.messages.push(Translator.get('relationship.accept.notPending'));
+        }
+
+        // validate invitation status
+        if (invitationIdentity) {
+            if (invitationIdentity.invitationCodeStatusEnum() !== IdentityInvitationCodeStatus.Pending) {
+                permission.messages.push(Translator.get('relationship.notifyDelegate.invalidInvitationStatus'));
+            }
+        }
+
+        // set value and link
+        if (permission.messages.length === 0) {
+            permission.value = true;
+            permission.link = new Link('notifyDelegate', Url.POST, await Url.forRelationshipNotifyDelegate(relationship.invitationIdentity.rawIdValue));
+        } else {
+            permission.value = false;
+        }
+
         return permission;
+
     }
 
 }

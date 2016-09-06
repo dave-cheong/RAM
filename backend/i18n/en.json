@@ -1,8 +1,10 @@
 {
 
   "HELLO" : "Hi there",
+
   "Party Type" : "Party Type",
   "Authorisation Type" : "Authorisation Type",
+
   "error.identityIdInvalid" : "Identity Id is not valid",
   "error.pageInvalid" : "Page is not valid",
   "error.pageSizeInvalid" : "Page Size is not valid",
@@ -19,6 +21,12 @@
   "relationship.accept.notPending" : "Unable to accept a non-pending relationship",
   "relationship.accept.notInvitation" : "Unable to accept a non-invitation relationship",
   "relationship.accept.notDelegate" : "Unable to accept a relationship you are not the delegate of",
-  "relationship.accept.insufficientStrength" : "YOUR CREDENTIAL CANNOT ACCEPT THIS AUTHORISATION. The identity in your credential has not been verified to the level required to accept a universal representative authorisation. To accept this authorisation you need to verify the identity of your credential or use a credential with a verified identity. See Help for instructions."
+  "relationship.accept.insufficientStrength" : "YOUR CREDENTIAL CANNOT ACCEPT THIS AUTHORISATION. The identity in your credential has not been verified to the level required to accept a universal representative authorisation. To accept this authorisation you need to verify the identity of your credential or use a credential with a verified identity. See Help for instructions.",
+
+  "relationship.reject.notPending": "Unable to reject a non-pending relationship",
+
+  "relationship.notifyDelegate.notInvitation" : "Unable to notify delegate for a non-invitation relationship",
+
+  "BYE" : "Bye"
 
 }

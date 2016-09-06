@@ -18,11 +18,11 @@ export class RelationshipCanClaimPermissionBuilder extends PermissionBuilder<IRe
     public async build(relationship: IRelationship): Promise<IPermission> {
 
         let permission = new Permission(this.template.code, this.template.description, this.template.value);
-        let claimingDelegateIdentity = context.getAuthenticatedPrincipal().identity;
+        let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
         let invitationIdentity = relationship.invitationIdentity;
 
         // validate authenticated
-        if (!claimingDelegateIdentity) {
+        if (!authenticatedIdentity) {
             permission.messages.push(Translator.get('security.notAuthenticated'));
         }
 
@@ -56,8 +56,8 @@ export class RelationshipCanClaimPermissionBuilder extends PermissionBuilder<IRe
         // validate identity match
         // todo shared secret (dob) is not current checked
         if (invitationIdentity) {
-            if (!Assert.checkCaseInsensitiveEqual(claimingDelegateIdentity.profile.name.givenName, invitationIdentity.profile.name.givenName) ||
-                !Assert.checkCaseInsensitiveEqual(claimingDelegateIdentity.profile.name.familyName, invitationIdentity.profile.name.familyName)) {
+            if (!Assert.checkCaseInsensitiveEqual(authenticatedIdentity.profile.name.givenName, invitationIdentity.profile.name.givenName) ||
+                !Assert.checkCaseInsensitiveEqual(authenticatedIdentity.profile.name.familyName, invitationIdentity.profile.name.familyName)) {
                 permission.messages.push(Translator.get('relationship.claim.mismatchedName'));
             }
         }

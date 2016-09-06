@@ -29,7 +29,8 @@ import {
 } from '../../../commons/api';
 import {
     RelationshipCanAcceptPermissionTemplate,
-    RelationshipCanClaimPermissionTemplate
+    RelationshipCanClaimPermissionTemplate, RelationshipCanRejectPermissionTemplate,
+    RelationshipCanNotifyDelegatePermissionTemplate
 } from '../../../commons/permissions/relationshipPermission.templates';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 
@@ -395,12 +396,12 @@ class Relationship extends RAMObject implements IRelationship {
         // point relationship to the accepting delegate identity
         this.delegate = claimingDelegateIdentity.party;
         await this.save();
-        return Promise.resolve(this);
+
+        return this;
 
     }
 
     public async acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship> {
-        logger.debug('Attempting to accept relationship by ', acceptingDelegateIdentity.idValue);
 
         await this.assertPermissions([RelationshipCanAcceptPermissionTemplate]);
 
@@ -410,12 +411,13 @@ class Relationship extends RAMObject implements IRelationship {
 
         // TODO notify relevant parties
 
-        return Promise.resolve(this as IRelationship);
+        return this;
 
     }
 
     public async rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship> {
-        Assert.assertTrue(this.statusEnum() === RelationshipStatus.Pending, 'Unable to reject a non-pending relationship');
+
+        await this.assertPermissions([RelationshipCanRejectPermissionTemplate]);
 
         // confirm the delegate is the user accepting
         Assert.assertTrue(rejectingDelegateIdentity.party.id === this.delegate.id, 'Not allowed');
@@ -426,27 +428,23 @@ class Relationship extends RAMObject implements IRelationship {
 
         // TODO notify relevant parties
 
-        return this as IRelationship;
+        return this;
+
     }
 
     public async notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship> {
-        const identity = this.invitationIdentity;
-        // TODO Assert that the user is an administrator of the subject
-        // Assert.assertEqual(notifyingIdentity.party.id, this.subject.id, 'Not allowed');
-        Assert.assertTrue(this.statusEnum() === RelationshipStatus.Pending, 'Unable to update relationship with delegate email');
-        Assert.assertTrue(identity.identityTypeEnum() === IdentityType.InvitationCode, 'Unable to update relationship with delegate email');
-        Assert.assertTrue(
-            identity.invitationCodeStatusEnum() === IdentityInvitationCodeStatus.Pending,
-            'Unable to update relationship with delegate email'
-        );
 
+        await this.assertPermissions([RelationshipCanNotifyDelegatePermissionTemplate]);
+
+        // update email address
+        const identity = this.invitationIdentity;
         identity.invitationCodeTemporaryEmailAddress = email;
         await identity.save();
 
         // TODO notify relevant parties
-        //logger.debug(`TODO Send notification to ${email}`);
 
-        return Promise.resolve(this as IRelationship);
+        return this;
+
     }
 
 }
