@@ -25,15 +25,15 @@ const RelationshipAttributeNameUsageSchema = RAMSchema({
         required: [true, 'Optional Indicator is required']
     },
     defaultValue: {
-      type: String,
-      required: false,
-      trim: true
+        type: String,
+        required: false,
+        trim: true
     },
     attributeName: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'RelationshipAttributeName'
     },
-    sortOrder : {
+    sortOrder: {
         type: Number,
         required: true
     }

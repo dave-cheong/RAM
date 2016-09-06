@@ -32,7 +32,7 @@ export class RelationshipAttributeNameDomain extends RAMEnum {
         RelationshipAttributeNameDomain.SelectMulti
     ];
 
-    constructor(code:string, shortDecodeText:string) {
+    constructor(code: string, shortDecodeText: string) {
         super(code, shortDecodeText);
     }
 }
@@ -49,7 +49,7 @@ export class RelationshipAttributeNameClassifier extends RAMEnum {
         RelationshipAttributeNameClassifier.AgencyService
     ];
 
-    constructor(code:string, shortDecodeText:string) {
+    constructor(code: string, shortDecodeText: string) {
         super(code, shortDecodeText);
     }
 }
@@ -93,7 +93,7 @@ export interface IRelationshipAttributeName extends ICodeDecode {
     permittedValues: string[];
     domainEnum(): RelationshipAttributeNameDomain;
     isInDateRange(): boolean;
-    toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>>;
+    toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
     toDTO(): Promise<DTO>;
 }
 
@@ -114,7 +114,7 @@ class RelationshipAttributeName extends CodeDecode implements IRelationshipAttri
         return this.startDate <= date && (this.endDate === null || this.endDate === undefined || this.endDate >= date);
     }
 
-    public async toHrefValue(includeValue:boolean): Promise<HrefValue<DTO>> {
+    public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
         return new HrefValue(
             await Url.forRelationshipAttributeName(this),
             includeValue ? await this.toDTO() : undefined

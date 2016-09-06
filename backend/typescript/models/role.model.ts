@@ -283,11 +283,11 @@ export class RoleModel {
     }
 
     public static async add(roleType: IRoleType,
-                     party: IParty,
-                     startTimestamp: Date,
-                     endTimestamp: Date,
-                     roleStatus: RoleStatus,
-                     attributes: IRoleAttribute[]): Promise<IRole> {
+                            party: IParty,
+                            startTimestamp: Date,
+                            endTimestamp: Date,
+                            roleStatus: RoleStatus,
+                            attributes: IRoleAttribute[]): Promise<IRole> {
         return await RoleMongooseModel.create({
             roleType: roleType,
             party: party,
@@ -327,11 +327,11 @@ export class RoleModel {
     }
 
     public static searchByIdentity(identityIdValue: string,
-                            roleType: string,
-                            status: string,
-                            inDateRange: boolean,
-                            page: number,
-                            reqPageSize: number): Promise<SearchResult<IRole>> {
+                                   roleType: string,
+                                   status: string,
+                                   inDateRange: boolean,
+                                   page: number,
+                                   reqPageSize: number): Promise<SearchResult<IRole>> {
         return new Promise<SearchResult<IRole>>(async(resolve, reject) => {
             const pageSize: number = reqPageSize ? Math.min(reqPageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
             try {
@@ -374,8 +374,8 @@ export class RoleModel {
     }
 
     public static async findActiveByIdentityInDateRange(identityIdValue: string,
-                                                 roleType: string,
-                                                 date: Date): Promise<IRole> {
+                                                        roleType: string,
+                                                        date: Date): Promise<IRole> {
         const party = await PartyModel.findByIdentityIdValue(identityIdValue);
         return RoleMongooseModel
             .findOne({

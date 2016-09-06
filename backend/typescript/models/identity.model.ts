@@ -4,12 +4,7 @@ import {conf} from '../bootstrap';
 import * as Hashids from 'hashids';
 import {RAMEnum, RAMSchema, Model, IRAMObject, RAMObject} from './base';
 import {Url} from './url';
-import {
-    HrefValue,
-    Identity as DTO,
-    SearchResult,
-    CreateIdentityDTO
-} from '../../../commons/api';
+import {HrefValue, Identity as DTO, SearchResult, CreateIdentityDTO} from '../../../commons/api';
 import {NameModel} from './name.model';
 import {SharedSecretModel, ISharedSecret} from './sharedSecret.model';
 import {IProfile, ProfileModel, ProfileProvider} from './profile.model';

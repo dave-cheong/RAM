@@ -1,9 +1,7 @@
 import * as mongoose from 'mongoose';
 import {RelationshipModel} from './relationship.model';
 import {IRelationshipAttributeName, RelationshipAttributeNameModel} from './relationshipAttributeName.model';
-import {
-    IRelationshipAttribute as DTO
-} from '../../../commons/api';
+import {IRelationshipAttribute as DTO} from '../../../commons/api';
 import {IRAMObject, RAMObject, Model} from './base';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';

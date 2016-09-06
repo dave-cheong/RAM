@@ -2,7 +2,10 @@ import * as mongoose from 'mongoose';
 import {RAMEnum, CodeDecodeSchema, ICodeDecode, CodeDecode, Model} from './base';
 import {Url} from './url';
 import {RelationshipAttributeNameModel} from './relationshipAttributeName.model';
-import {IRelationshipAttributeNameUsage, RelationshipAttributeNameUsageModel} from './relationshipAttributeNameUsage.model';
+import {
+    IRelationshipAttributeNameUsage,
+    RelationshipAttributeNameUsageModel
+} from './relationshipAttributeNameUsage.model';
 import {
     HrefValue,
     RelationshipType as DTO,

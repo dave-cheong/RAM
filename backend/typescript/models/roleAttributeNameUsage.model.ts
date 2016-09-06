@@ -25,9 +25,9 @@ const RoleAttributeNameUsageSchema = RAMSchema({
         required: [true, 'Optional Indicator is required']
     },
     defaultValue: {
-      type: String,
-      required: false,
-      trim: true
+        type: String,
+        required: false,
+        trim: true
     },
     attributeName: {
         type: mongoose.Schema.Types.ObjectId,

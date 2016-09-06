@@ -2,9 +2,7 @@ import * as mongoose from 'mongoose';
 import {RAMSchema, Model, RAMObject, IRAMObject} from './base';
 import {RoleModel} from './role.model';
 import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.model';
-import {
-    RoleAttribute as DTO
-} from '../../../commons/api';
+import {RoleAttribute as DTO} from '../../../commons/api';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
 import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
