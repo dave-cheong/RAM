@@ -21,6 +21,11 @@ export class RelationshipCanClaimPermissionBuilder extends PermissionBuilder<IRe
         let claimingDelegateIdentity = context.getAuthenticatedPrincipal().identity;
         let invitationIdentity = relationship.invitationIdentity;
 
+        // validate authenticated
+        if (!claimingDelegateIdentity) {
+            permission.messages.push(Translator.get('security.notAuthenticated'));
+        }
+
         // validate status
         if (relationship.statusEnum() !== RelationshipStatus.Pending) {
             permission.messages.push(Translator.get('relationship.claim.notPending'));
