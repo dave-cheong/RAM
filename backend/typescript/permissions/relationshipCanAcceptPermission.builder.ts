@@ -2,7 +2,7 @@ import {PermissionBuilder} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
-import {RelationshipCanAcceptPermissionTemplate} from '../../../commons/permissions/relationshipPermission.templates';
+import {RelationshipCanAcceptPermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship, RelationshipStatus} from '../models/relationship.model';
 import {context} from '../providers/context.provider';
 import {Translator} from '../ram/translator';
@@ -10,7 +10,7 @@ import {Translator} from '../ram/translator';
 export class RelationshipCanAcceptPermissionBuilder extends PermissionBuilder<IRelationship> {
 
     constructor() {
-        super(RelationshipCanAcceptPermissionTemplate);
+        super(RelationshipCanAcceptPermission);
     }
 
     public async build(relationship: IRelationship): Promise<IPermission> {

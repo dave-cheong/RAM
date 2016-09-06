@@ -20,8 +20,8 @@ import {
 } from '../../../../commons/api';
 import {PermissionTemplates} from '../../../../commons/permissions/allPermission.templates';
 import {
-    RelationshipPermissionTemplates,
-    RelationshipCanAcceptPermissionTemplate
+    Relationships,
+    RelationshipCanAcceptPermission
 } from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
@@ -69,7 +69,7 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
             this.relationship = relationship;
             this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
 
-            let permission = this.relationship.get(RelationshipCanAcceptPermissionTemplate);
+            let permission = this.relationship.get(RelationshipCanAcceptPermission);
             this.canAccept = permission.isAllowed();
             if (!permission.isAllowed()) {
                 this.addGlobalMessages(permission.messages);

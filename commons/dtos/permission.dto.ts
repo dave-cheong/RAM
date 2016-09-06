@@ -8,6 +8,7 @@ export interface IPermission {
     messages: string[];
     link: ILink;
     isAllowed(): boolean;
+    isDenied(): boolean;
 }
 
 export class Permission implements IPermission {
@@ -29,6 +30,10 @@ export class Permission implements IPermission {
 
     public isAllowed(): boolean {
         return this.value;
+    }
+
+    public isDenied(): boolean {
+        return !this.isAllowed();
     }
 
 }

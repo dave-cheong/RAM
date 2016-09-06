@@ -60,7 +60,6 @@ export interface IRAMObject {
     delete(): void;
     buildPermissions(templates: Permissions, builders: IPermissionBuilder<any>[]): Promise<Permissions>;
     getPermissions(): Promise<Permissions>;
-    assertPermissions(templates: IPermission[]): Promise<void>;
 }
 
 // exists for type safety only, do not add function implementations here
@@ -89,10 +88,6 @@ export abstract class RAMObject implements IRAMObject {
     }
 
     public abstract getPermissions(): Promise<Permissions>;
-
-    public assertPermissions(templates: IPermission[]): Promise<void> {
-        return null;
-    }
 
 }
 
@@ -133,15 +128,6 @@ export const RAMSchema = (schema: Object) => {
             }
         }
         return permissions;
-    });
-
-    result.method('assertPermissions', async function (templates: IPermission[]): Promise<void> {
-        let permissions =  await (this as IRAMObject).getPermissions();
-        let deniedPermissions = permissions.getDenied(templates);
-        if (deniedPermissions.length > 0) {
-            let firstDeniedPermission = deniedPermissions[0];
-            throw new Error(firstDeniedPermission.messages.length > 0 ? firstDeniedPermission.messages[0] : undefined);
-        }
     });
 
     return result;
@@ -265,6 +251,7 @@ export const Model = <T extends mongoose.Document>(name: string, schema: mongoos
 export interface IPermissionBuilder<T> {
     template: IPermission;
     build(source: T): Promise<IPermission>;
+    assert(source: T): Promise<void>;
     getLinkHref(source: T): Promise<string>;
 }
 
@@ -274,6 +261,11 @@ export abstract class PermissionBuilder<T> implements IPermissionBuilder<T> {
     }
 
     public abstract build(source: T): Promise<IPermission>;
+
+    public async assert(source: T) {
+        let permission = await this.build(source);
+        Assert.assertPermission(permission);
+    }
 
     public async getLinkHref(source: T): Promise<string> {
         let link = (await this.build(source)).link;

@@ -1,3 +1,3 @@
 import {Permissions} from '../dtos/permission.dto';
 
-export const RelationshipAttributePermissionTemplates = new Permissions();
+export const RelationshipAttributePermissions = new Permissions();

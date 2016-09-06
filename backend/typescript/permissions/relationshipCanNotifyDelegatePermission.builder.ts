@@ -2,7 +2,7 @@ import {PermissionBuilder} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
-import {RelationshipCanNotifyDelegatePermissionTemplate} from '../../../commons/permissions/relationshipPermission.templates';
+import {RelationshipCanNotifyDelegatePermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship, RelationshipStatus} from '../models/relationship.model';
 import {context} from '../providers/context.provider';
 import {Translator} from '../ram/translator';
@@ -11,7 +11,7 @@ import {IdentityType, IdentityInvitationCodeStatus} from '../models/identity.mod
 export class RelationshipCanNotifyDelegatePermissionBuilder extends PermissionBuilder<IRelationship> {
 
     constructor() {
-        super(RelationshipCanNotifyDelegatePermissionTemplate);
+        super(RelationshipCanNotifyDelegatePermission);
     }
 
     // todo this needs to check party access

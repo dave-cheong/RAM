@@ -2,7 +2,7 @@ import {PermissionBuilder, Assert} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
-import {RelationshipCanClaimPermissionTemplate} from '../../../commons/permissions/relationshipPermission.templates';
+import {RelationshipCanClaimPermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship, RelationshipStatus} from '../models/relationship.model';
 import {Translator} from '../ram/translator';
 import {context} from '../providers/context.provider';
@@ -11,7 +11,7 @@ import {IdentityType, IdentityInvitationCodeStatus, IdentityModel} from '../mode
 export class RelationshipCanClaimPermissionBuilder extends PermissionBuilder<IRelationship> {
 
     constructor() {
-        super(RelationshipCanClaimPermissionTemplate);
+        super(RelationshipCanClaimPermission);
     }
 
     // todo this needs to check party access

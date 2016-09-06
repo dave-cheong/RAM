@@ -2,13 +2,13 @@ import {PermissionBuilder} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
-import {RelationshipCanViewPermissionTemplate} from '../../../commons/permissions/relationshipPermission.templates';
+import {RelationshipCanViewPermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship} from '../models/relationship.model';
 
 export class RelationshipCanViewPermissionBuilder extends PermissionBuilder<IRelationship> {
 
     constructor() {
-        super(RelationshipCanViewPermissionTemplate);
+        super(RelationshipCanViewPermission);
     }
 
     // todo this needs to check party access

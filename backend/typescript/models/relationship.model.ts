@@ -27,13 +27,11 @@ import {
     RelationshipAttribute as RelationshipAttributeDTO,
     SearchResult
 } from '../../../commons/api';
-import {
-    RelationshipCanAcceptPermissionTemplate,
-    RelationshipCanClaimPermissionTemplate,
-    RelationshipCanRejectPermissionTemplate,
-    RelationshipCanNotifyDelegatePermissionTemplate
-} from '../../../commons/permissions/relationshipPermission.templates';
 import {Permissions} from '../../../commons/dtos/permission.dto';
+import {RelationshipCanClaimPermissionBuilder} from '../permissions/relationshipCanClaimPermission.builder';
+import {RelationshipCanNotifyDelegatePermissionBuilder} from '../permissions/relationshipCanNotifyDelegatePermission.builder';
+import {RelationshipCanRejectPermissionBuilder} from '../permissions/relationshipCanRejectPermission.builder';
+import {RelationshipCanAcceptPermissionBuilder} from '../permissions/relationshipCanAcceptPermission.builder';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -377,13 +375,14 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship> {
 
-        await this.assertPermissions([RelationshipCanClaimPermissionTemplate]);
+        await new RelationshipCanClaimPermissionBuilder().assert(this);
 
         // if the user is already the delegate then there is nothing to do
         if (this.delegate.id === claimingDelegateIdentity.party.id) {
             return this as IRelationship;
         }
 
+        // ensure invitation code matches
         Assert.assertTrue(
             this.invitationIdentity.rawIdValue === invitationCode,
             'Invitation code does not match'
@@ -404,7 +403,7 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship> {
 
-        await this.assertPermissions([RelationshipCanAcceptPermissionTemplate]);
+        await new RelationshipCanAcceptPermissionBuilder().assert(this);
 
         // mark relationship as active
         this.status = RelationshipStatus.Accepted.code;
@@ -418,7 +417,7 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship> {
 
-        await this.assertPermissions([RelationshipCanRejectPermissionTemplate]);
+        await new RelationshipCanRejectPermissionBuilder().assert(this);
 
         // confirm the delegate is the user accepting
         Assert.assertTrue(rejectingDelegateIdentity.party.id === this.delegate.id, 'Not allowed');
@@ -435,7 +434,7 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship> {
 
-        await this.assertPermissions([RelationshipCanNotifyDelegatePermissionTemplate]);
+        await new RelationshipCanNotifyDelegatePermissionBuilder().assert(this);
 
         // update email address
         const identity = this.invitationIdentity;

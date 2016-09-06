@@ -2,7 +2,7 @@ import {PermissionBuilder} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
-import {RelationshipCanRejectPermissionTemplate} from '../../../commons/permissions/relationshipPermission.templates';
+import {RelationshipCanRejectPermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship, RelationshipStatus} from '../models/relationship.model';
 import {Translator} from '../ram/translator';
 import {context} from '../providers/context.provider';
@@ -10,7 +10,7 @@ import {context} from '../providers/context.provider';
 export class RelationshipCanRejectPermissionBuilder extends PermissionBuilder<IRelationship> {
 
     constructor() {
-        super(RelationshipCanRejectPermissionTemplate);
+        super(RelationshipCanRejectPermission);
     }
 
     // todo this needs to check party access
