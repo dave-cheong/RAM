@@ -12,6 +12,8 @@ export class Resource implements IResource {
     public _links: ILink[] = [];
     public _perms: IPermission[] = [];
 
+    // todo add the other meta fields (https://github.com/atogov/RAM/wiki/ReST-JSON-payloads)
+
     constructor(permissions: Permissions) {
         if (permissions) {
             for (let permission of permissions.toArray()) {
