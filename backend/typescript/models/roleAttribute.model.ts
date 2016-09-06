@@ -5,6 +5,9 @@ import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.mo
 import {
     RoleAttribute as DTO
 } from '../../../commons/api';
+import {Permissions} from '../../../commons/dtos/permission.dto';
+import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
+import {PermissionBuilders} from '../permissions/allPermission.builders';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -47,6 +50,10 @@ export interface IRoleAttribute extends IRAMObject {
 class RoleAttribute extends RAMObject implements IRoleAttribute {
     public value: string[];
     public attributeName: IRoleAttributeName;
+
+    public getPermissions(): Promise<Permissions> {
+        return this.buildPermissions(PermissionTemplates.roleAttribute, PermissionBuilders.roleAttribute);
+    }
 
     public async toDTO(): Promise<DTO> {
         return new DTO(

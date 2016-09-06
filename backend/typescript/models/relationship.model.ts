@@ -27,7 +27,8 @@ import {
     RelationshipAttribute as RelationshipAttributeDTO,
     SearchResult
 } from '../../../commons/api';
-import {Translator} from '../ram/translator';
+import {RelationshipCanAcceptPermissionTemplate} from '../../../commons/permissions/relationshipPermission.templates';
+import {Permissions} from '../../../commons/dtos/permission.dto';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -332,6 +333,10 @@ class Relationship extends RAMObject implements IRelationship {
         return RelationshipStatus.valueOf(this.status) as RelationshipStatus;
     }
 
+    public getPermissions(): Promise<Permissions> {
+        return this.buildPermissions(PermissionTemplates.relationship, PermissionBuilders.relationship);
+    }
+
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
         return new HrefValue(
             await Url.forRelationship(this),
@@ -341,7 +346,7 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async toDTO(): Promise<DTO> {
         return new DTO(
-            await this.buildPermissions(PermissionTemplates.relationship, PermissionBuilders.relationship),
+            await this.getPermissions(),
             await this.relationshipType.toHrefValue(false),
             await this.subject.toHrefValue(true),
             await this.subjectNickName.toDTO(),
@@ -463,19 +468,7 @@ class Relationship extends RAMObject implements IRelationship {
     public async acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship> {
         logger.debug('Attempting to accept relationship by ', acceptingDelegateIdentity.idValue);
 
-        Assert.assertTrue(this.statusEnum() === RelationshipStatus.Pending, 'Unable to accept a non-pending relationship');
-
-        // confirm the delegate is the user accepting
-        Assert.assertTrue(acceptingDelegateIdentity.party.id === this.delegate.id, 'Not allowed');
-
-        // check identity strength
-        logger.info(`checking strength -> identity=${acceptingDelegateIdentity.strength} relationshipType=${this.relationshipType.minIdentityStrength}`);
-        Assert.assertGreaterThanEqual(
-            acceptingDelegateIdentity.strength,
-            this.relationshipType.minIdentityStrength,
-            Translator.get('acceptRelationship.insufficientStrength'),
-            `${acceptingDelegateIdentity.strength} < ${this.relationshipType.minIdentityStrength}`
-        );
+        this.assertPermissions([RelationshipCanAcceptPermissionTemplate]);
 
         // mark relationship as active
         this.status = RelationshipStatus.Accepted.code;
@@ -484,6 +477,7 @@ class Relationship extends RAMObject implements IRelationship {
         // TODO notify relevant parties
 
         return Promise.resolve(this as IRelationship);
+
     }
 
     public async rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship> {

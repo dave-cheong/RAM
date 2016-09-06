@@ -5,6 +5,9 @@ import {
     IRelationshipAttribute as DTO
 } from '../../../commons/api';
 import {IRAMObject, RAMObject, Model} from './base';
+import {Permissions} from '../../../commons/dtos/permission.dto';
+import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
+import {PermissionBuilders} from '../permissions/allPermission.builders';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -47,6 +50,10 @@ export class RelationshipAttribute extends RAMObject implements IRelationshipAtt
 
     public value: string[];
     public attributeName: IRelationshipAttributeName;
+
+    public getPermissions(): Promise<Permissions> {
+        return this.buildPermissions(PermissionTemplates.relationshipAttribute, PermissionBuilders.relationshipAttribute);
+    }
 
     public async toDTO(): Promise<DTO> {
         const dto: DTO = {

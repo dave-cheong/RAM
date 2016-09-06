@@ -1,6 +1,9 @@
 import * as mongoose from 'mongoose';
 import {RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {IRoleAttributeName, RoleAttributeNameModel} from './roleAttributeName.model';
+import {Permissions} from '../../../commons/dtos/permission.dto';
+import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
+import {PermissionBuilders} from '../permissions/allPermission.builders';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 
@@ -45,6 +48,10 @@ class RoleAttributeNameUsage extends RAMObject implements IRoleAttributeNameUsag
     public optionalInd: boolean;
     public defaultValue: string;
     public attributeName: IRoleAttributeName;
+
+    public getPermissions(): Promise<Permissions> {
+        return this.buildPermissions(PermissionTemplates.roleAttributeNameUsage, PermissionBuilders.roleAttributeNameUsage);
+    }
 
 }
 

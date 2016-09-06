@@ -4,6 +4,9 @@ import {
     HrefValue,
     Name as DTO
 } from '../../../commons/api';
+import {Permissions} from '../../../commons/dtos/permission.dto';
+import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
+import {PermissionBuilders} from '../permissions/allPermission.builders';
 
 // mongoose ...........................................................................................................
 
@@ -69,6 +72,10 @@ class Name extends RAMObject implements IName {
     public familyName: string;
     public unstructuredName: string;
     public _displayName: string;
+
+    public getPermissions(): Promise<Permissions> {
+        return this.buildPermissions(PermissionTemplates.iname, PermissionBuilders.iname);
+    }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
         return new HrefValue(

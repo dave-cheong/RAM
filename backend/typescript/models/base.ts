@@ -58,11 +58,13 @@ export interface IRAMObject {
     resourceVersion: string;
     save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this>;
     delete(): void;
-    buildPermissions(templates: Permissions, builders: IPermissionBuilder<this>[]): Permissions;
+    buildPermissions(templates: Permissions, builders: IPermissionBuilder<any>[]): Promise<Permissions>;
+    getPermissions(): Promise<Permissions>;
+    assertPermissions(templates: IPermission[]): Promise<void>;
 }
 
 // exists for type safety only, do not add function implementations here
-export class RAMObject implements IRAMObject {
+export abstract class RAMObject implements IRAMObject {
 
     public id: string;
 
@@ -82,7 +84,13 @@ export class RAMObject implements IRAMObject {
         return null;
     }
 
-    public buildPermissions(templates: Permissions, builders: IPermissionBuilder<this>[]): Permissions {
+    public buildPermissions(templates: Permissions, builders: IPermissionBuilder<any>[]): Promise<Permissions> {
+        return null;
+    }
+
+    public abstract getPermissions(): Promise<Permissions>;
+
+    public assertPermissions(templates: IPermission[]): Promise<void> {
         return null;
     }
 
@@ -105,7 +113,7 @@ export const RAMSchema = (schema: Object) => {
 
     result.method('delete', async function() {
         this.deleteInd = true;
-        // this.save();
+        (this as IRAMObject).save();
     });
 
     result.method('buildPermissions', async function(templates: Permissions, builders: IPermissionBuilder<any>[]): Promise<Permissions> {
@@ -125,6 +133,15 @@ export const RAMSchema = (schema: Object) => {
             }
         }
         return permissions;
+    });
+
+    result.method('assertPermissions', async function (templates: IPermission[]): Promise<void> {
+        let permissions =  await (this as IRAMObject).getPermissions();
+        let deniedPermissions = permissions.getDenied(templates);
+        if (deniedPermissions.length > 0) {
+            let firstDeniedPermission = deniedPermissions[0];
+            throw new Error(firstDeniedPermission.messages.length > 0 ? firstDeniedPermission.messages[0] : undefined);
+        }
     });
 
     return result;
@@ -313,6 +330,12 @@ export class Assert {
 
     public static assertGreaterThanEqual(value: number, min: number, failMessage: string, detail?: string) {
         this.assertTrue(value >= min, failMessage, detail);
+    }
+
+    public static assertPermission(permission: IPermission) {
+        if (!permission.isAllowed()) {
+            throw new Error(permission.messages.length > 0 ? permission.messages[0] : undefined);
+        }
     }
 
 }

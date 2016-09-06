@@ -23,6 +23,9 @@ import {
 } from '../../../commons/api';
 import {context} from '../providers/context.provider';
 import {logger} from '../logger';
+import {Permissions} from '../../../commons/dtos/permission.dto';
+import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
+import {PermissionBuilders} from '../permissions/allPermission.builders';
 
 /* tslint:disable:no-unused-variable */
 const _RoleAttributeModel = RoleAttributeModel;
@@ -92,6 +95,10 @@ class Party extends RAMObject implements IParty {
 
     public partyTypeEnum(): PartyType {
         return PartyType.valueOf(this.partyType) as PartyType;
+    }
+
+    public async getPermissions(): Promise<Permissions> {
+        return this.buildPermissions(PermissionTemplates.party, PermissionBuilders.party);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {

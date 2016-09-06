@@ -26,10 +26,10 @@ export class Resource implements IResource {
         }
     }
 
-    public isAllowed(template: IPermission): boolean {
+    public isAllowed(templates: IPermission[]): boolean {
         return new Permissions()
             .pushAll(this._perms)
-            .isAllowed(template);
+            .isAllowed(templates);
     }
 
 }

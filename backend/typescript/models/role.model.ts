@@ -13,6 +13,9 @@ import {
     SearchResult
 } from '../../../commons/api';
 import {logger} from '../logger';
+import {PermissionBuilders} from '../permissions/allPermission.builders';
+import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
+import {Permissions} from '../../../commons/dtos/permission.dto';
 
 const MAX_PAGE_SIZE = 10;
 
@@ -233,6 +236,10 @@ class Role extends RAMObject implements IRole {
             }
         });
         return agencyServiceAttributes;
+    }
+
+    public async getPermissions(): Promise<Permissions> {
+        return this.buildPermissions(PermissionTemplates.role, PermissionBuilders.role);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {

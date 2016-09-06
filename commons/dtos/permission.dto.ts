@@ -7,6 +7,7 @@ export interface IPermission {
     value: boolean;
     messages: string[];
     link: ILink;
+    isAllowed(): boolean;
 }
 
 export class Permission implements IPermission {
@@ -24,6 +25,10 @@ export class Permission implements IPermission {
         if (!messages) {
             this.messages = [];
         }
+    }
+
+    public isAllowed(): boolean {
+        return this.value;
     }
 
 }
@@ -50,13 +55,30 @@ export class Permissions {
         return this;
     }
 
-    public isAllowed(template: IPermission): boolean {
-        for (let permission of this.array) {
-            if (permission.code === template.code) {
-                return permission.value;
+    public isAllowed(templates: IPermission[]): boolean {
+        return this.getDenied(templates).length === 0;
+    }
+
+    public getDenied(templates: IPermission[]): IPermission[] {
+        let notAllowedPermissions: IPermission[] = [];
+        if (templates) {
+            for (let template of templates) {
+                let found = false;
+                for (let permission of this.array) {
+                    if (template.code === permission.code) {
+                        found = true;
+                        if (!permission.isAllowed()) {
+                            notAllowedPermissions.push(permission);
+                        }
+                        break;
+                    }
+                }
+                if (!found) {
+                    throw new Error('Permission not found: ' + template.code);
+                }
             }
+            return notAllowedPermissions;
         }
-        return false;
     }
 
     public toArray(): IPermission[] {

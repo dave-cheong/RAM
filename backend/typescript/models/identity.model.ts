@@ -15,6 +15,9 @@ import {SharedSecretModel, ISharedSecret} from './sharedSecret.model';
 import {IProfile, ProfileModel, ProfileProvider} from './profile.model';
 import {IParty, PartyModel, PartyType} from './party.model';
 import {SharedSecretTypeModel, DOB_SHARED_SECRET_TYPE_CODE} from './sharedSecretType.model';
+import {Permissions} from '../../../commons/dtos/permission.dto';
+import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
+import {PermissionBuilders} from '../permissions/allPermission.builders';
 
 // mongoose ...........................................................................................................
 
@@ -332,6 +335,10 @@ class Identity extends RAMObject implements IIdentity {
         return IdentityLinkIdScheme.valueOf(this.linkIdScheme);
     }
 
+    public getPermissions(): Promise<Permissions> {
+        return this.buildPermissions(PermissionTemplates.identity, PermissionBuilders.identity);
+    }
+
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
         return new HrefValue(
             await Url.forIdentity(this),
@@ -339,6 +346,7 @@ class Identity extends RAMObject implements IIdentity {
         );
     }
 
+    // TODO use perms to generate links
     public async toDTO(): Promise<DTO> {
         const links = Url.links()
             .push('self', Url.GET, await Url.forIdentity(this))
