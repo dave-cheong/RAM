@@ -12,8 +12,8 @@ export class RelationshipCanClaimPermissionBuilder extends PermissionBuilder<IRe
     }
 
     // todo this needs to check party access
-    // todo confirm the delegate is the user accepting
-    // todo check identity strength
+    // todo confirm the identities match
+    // todo confirm the invitation non expired
     public async build(relationship: IRelationship): Promise<IPermission> {
         let permission = new Permission(this.template.code, this.template.description, this.template.value);
         permission.value = await relationship.isPendingInvitation();
