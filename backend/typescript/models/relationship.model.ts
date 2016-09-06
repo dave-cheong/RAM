@@ -29,7 +29,8 @@ import {
 } from '../../../commons/api';
 import {
     RelationshipCanAcceptPermissionTemplate,
-    RelationshipCanClaimPermissionTemplate, RelationshipCanRejectPermissionTemplate,
+    RelationshipCanClaimPermissionTemplate,
+    RelationshipCanRejectPermissionTemplate,
     RelationshipCanNotifyDelegatePermissionTemplate
 } from '../../../commons/permissions/relationshipPermission.templates';
 import {Permissions} from '../../../commons/dtos/permission.dto';
