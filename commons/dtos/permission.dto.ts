@@ -7,11 +7,14 @@ export interface IPermission {
     value: boolean;
     messages: string[];
     link: ILink;
+    linkType: string;
     isAllowed(): boolean;
     isDenied(): boolean;
 }
 
 export class Permission implements IPermission {
+
+    public linkType: string;
 
     public static build(sourceObject: any): IPermission {
         return new Builder<IPermission>(sourceObject, this)
@@ -25,6 +28,9 @@ export class Permission implements IPermission {
                 public link?: ILink) {
         if (!messages) {
             this.messages = [];
+        }
+        if (link) {
+            this.linkType = link.type;
         }
     }
 

@@ -17,15 +17,17 @@ export class Resource implements IResource {
     constructor(permissions: Permissions) {
         if (permissions) {
             for (let permission of permissions.toArray()) {
-                this._perms.push(new Permission(
+                let clonedPermission = new Permission(
                     permission.code,
                     permission.description,
                     permission.value,
                     permission.messages,
                     undefined
-                ));
+                );
+                this._perms.push(clonedPermission);
                 if (permission.value && permission.link) {
                     this._links.push(permission.link);
+                    clonedPermission.linkType = permission.link.type;
                 }
             }
         }
