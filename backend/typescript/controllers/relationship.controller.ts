@@ -31,7 +31,7 @@ export class RelationshipController {
         };
         validateReqSchema(req, schema)
             .then((req:Request) => RelationshipModel.findByIdentifier(req.params.identifier))
-            .then((model) => model ? model.toDTO(null) : null)
+            .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
             .catch(sendError(res));
@@ -47,7 +47,7 @@ export class RelationshipController {
         const invitationCode = req.params.invitationCode;
         validateReqSchema(req, schema)
             .then((req:Request) => RelationshipModel.findByInvitationCode(invitationCode))
-            .then((model) => model ? model.toDTO(invitationCode) : null)
+            .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
             .catch(sendError(res));
@@ -292,7 +292,7 @@ export class RelationshipController {
         };
         validateReqSchema(req, schema)
             .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, req.body))
-            .then((model) => model ? model.toDTO(null) : null)
+            .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
             .catch(sendError(res));
@@ -338,7 +338,7 @@ export class RelationshipController {
         };
         validateReqSchema(req, schema)
             .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, req.body))
-            .then((model) => model ? model.toDTO(null) : null)
+            .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
             .catch(sendError(res));

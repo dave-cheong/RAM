@@ -294,7 +294,7 @@ export interface IRelationship extends IRAMObject {
     _delegateProfileProviderCodes: string[];
     statusEnum(): RelationshipStatus;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
-    toDTO(invitationCode?: string): Promise<DTO>;
+    toDTO(): Promise<DTO>;
     isPendingInvitation(): Promise<boolean>;
     claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship>;
     acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship>;
@@ -335,14 +335,11 @@ class Relationship extends RAMObject implements IRelationship {
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
         return new HrefValue(
             await Url.forRelationship(this),
-            includeValue ? await this.toDTO(null) : undefined
+            includeValue ? await this.toDTO() : undefined
         );
     }
 
-    public async toDTO(invitationCode?: string): Promise<DTO> {
-        const pendingWithInvitationCode = invitationCode && this.statusEnum() === RelationshipStatus.Pending;
-
-        // todo need to use security context to drive the links
+    public async toDTO(): Promise<DTO> {
         return new DTO(
             await this.buildPermissions(PermissionTemplates.relationship, PermissionBuilders.relationship),
             await this.relationshipType.toHrefValue(false),
