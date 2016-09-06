@@ -17,7 +17,6 @@ import {
     IParty,
     IPartyType,
     IProfileProvider,
-    IInvitationCodeRelationshipAddDTO,
     IRelationship,
     IRelationshipType,
     IRelationshipStatus,

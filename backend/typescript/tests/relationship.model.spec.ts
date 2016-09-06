@@ -154,6 +154,8 @@ describe('RAM Relationship', () => {
 
             await retrievedInstance.toDTO();
 
+            expect(dto).not.toBeNull();
+
             done();
 
         } catch (e) {
