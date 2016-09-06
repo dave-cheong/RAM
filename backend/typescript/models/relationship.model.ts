@@ -486,17 +486,6 @@ class Relationship extends RAMObject implements IRelationship {
         return Promise.resolve(this as IRelationship);
     }
 
-    // TODO need to include this as part of the PERMISSONS payload
-    // TODO refactor to have this logic only once
-    private canAccept(): boolean {
-        const acceptingDelegateIdentity = context.getAuthenticatedPrincipal().identity;
-        return (
-            this.statusEnum() === RelationshipStatus.Pending
-            && acceptingDelegateIdentity.party.id === this.delegate.id
-            && acceptingDelegateIdentity.strength >= this.relationshipType.minIdentityStrength
-        );
-    }
-
     public async rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship> {
         Assert.assertTrue(this.statusEnum() === RelationshipStatus.Pending, 'Unable to reject a non-pending relationship');
 
