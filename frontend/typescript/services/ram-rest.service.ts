@@ -242,14 +242,6 @@ export class RAMRestService {
             .map(this.extractData(Relationship));
     }
 
-    public createRelationship(relationship: IInvitationCodeRelationshipAddDTO): Observable<IRelationship> {
-        return this.http
-            .post(`/api/v1/relationship-by-invitation`, JSON.stringify(relationship), {
-                headers: this.headersForJson()
-            })
-            .map(this.extractData(Relationship));
-    }
-
     public insertRelationshipByHref(href: string, relationship: IRelationship): Observable<IRelationship> {
         return this.http
             .post(new Href(href).toString(), JSON.stringify(relationship), {

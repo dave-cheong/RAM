@@ -294,7 +294,7 @@ export interface IRelationship extends IRAMObject {
     _delegateProfileProviderCodes: string[];
     statusEnum(): RelationshipStatus;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
-    toDTO(invitationCode: string): Promise<DTO>;
+    toDTO(invitationCode?: string): Promise<DTO>;
     isPendingInvitation(): Promise<boolean>;
     claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship>;
     acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship>;

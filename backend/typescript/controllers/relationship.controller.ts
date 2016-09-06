@@ -6,16 +6,12 @@ import {
     sendSearchResult,
     sendError,
     sendNotFoundError,
-    validateReqSchema,
-    REGULAR_CHARS
+    validateReqSchema
 } from './helpers';
 import {PartyModel} from '../models/party.model';
 import {RelationshipStatus, RelationshipModel} from '../models/relationship.model';
 import {
-    FilterParams,
-    IInvitationCodeRelationshipAddDTO,
-    ICreateInvitationCodeDTO,
-    IAttributeDTO
+    FilterParams
 } from '../../../commons/api';
 import {Headers} from './headers';
 
@@ -276,114 +272,6 @@ export class RelationshipController {
             .catch(sendError(res));
     };
 
-    private createUsingInvitation = async(req:Request, res:Response) => {
-        // TODO support other party types - currently only INDIVIDUAL is supported here
-        // TODO how much of this validation should be in the data layer?
-        // TODO decide how to handle dates - should they include time? or should server just use 12am AEST
-        const schemaB2I = {
-            'relationshipType': {
-                in: 'body',
-                notEmpty: true,
-                errorMessage: 'Relationship type is not valid'
-            },
-            'subjectIdValue': {
-                in: 'body',
-                notEmpty: true,
-                errorMessage: 'Subject is not valid'
-            },
-            'startTimestamp': {
-                in: 'body',
-                notEmpty: true,
-                isDate: {
-                    errorMessage: 'Start timestamp is not valid'
-                },
-                errorMessage: 'Start timestamp is not valid'
-            },
-            'endTimestamp': {
-                in: 'body'
-            },
-            'delegate.partyType': {
-                in: 'body',
-                matches: {
-                    options: ['^(INDIVIDUAL)$'],
-                    errorMessage: 'Delegate Party Type is not valid'
-                }
-            },
-            'delegate.givenName': {
-                in: 'body',
-                notEmpty: true,
-                isLength: {
-                    options: [{min: 1, max: 200}],
-                    errorMessage: 'Delegate Given Name must be between 1 and 200 chars long'
-                },
-                matches: {
-                    options: [REGULAR_CHARS],
-                    errorMessage: 'Delegate Given Name contains illegal characters'
-                },
-                errorMessage: 'Delegate Given Name is not valid'
-            },
-            'delegate.familyName': {
-                in: 'body',
-                optional: true,
-                isLength: {
-                    options: [{min: 0, max: 200}],
-                    errorMessage: 'Delegate Family Name must be between 0 and 200 chars long'
-                },
-                matches: {
-                    options: [REGULAR_CHARS],
-                    errorMessage: 'Delegate Family Name contains illegal characters'
-                },
-                errorMessage: 'Delegate Family Name is not valid'
-            },
-            'delegate.sharedSecretTypeCode': {
-                in: 'body',
-                notEmpty: true,
-                matches: {
-                    options: ['^(DATE_OF_BIRTH)$'],
-                    errorMessage: 'Delegate Shared Secret Type Code is not valid'
-                }
-            },
-            'delegate.sharedSecretValue': {
-                in: 'body'
-            }
-        };
-
-        validateReqSchema(req, schemaB2I)
-            .then((req: Request) => {
-                return PartyModel.findByIdentityIdValue(req.body.subjectIdValue);
-            })
-            .then((subjectParty) => {
-
-                const delegateIdentity: ICreateInvitationCodeDTO = {
-                    givenName: req.body.delegate.givenName,
-                    familyName: req.body.delegate.familyName,
-                    sharedSecretValue: req.body.delegate.sharedSecretValue
-                };
-
-                const attributes: IAttributeDTO[] = [];
-                for (let attribute of req.body.attributes) {
-                    attributes.push({
-                        code: attribute.code,
-                        value: attribute.value
-                    });
-                }
-
-                const relationshipAddDTO: IInvitationCodeRelationshipAddDTO = {
-                    relationshipType: req.body.relationshipType,
-                    subjectIdValue: req.body.subjectIdValue,
-                    delegate: delegateIdentity,
-                    startTimestamp: req.body.startTimestamp ? new Date(req.body.startTimestamp) : undefined,
-                    endTimestamp: req.body.endTimestamp ? new Date(req.body.endTimestamp) : undefined,
-                    attributes: attributes
-                };
-                return subjectParty.addRelationship(relationshipAddDTO);
-            })
-            .then((model) => model ? model.toDTO(null) : null)
-            .then(sendResource(res))
-            .then(sendNotFoundError(res))
-            .catch(sendError(res));
-    };
-
     private create = async(req:Request, res:Response) => {
         const schema = {
             'relationshipType.href': {
@@ -528,11 +416,6 @@ export class RelationshipController {
             context.begin,
             context.isAuthenticated,
             this.searchByIdentity);
-
-        router.post('/v1/relationship-by-invitation',
-            context.begin,
-            context.isAuthenticated,
-            this.createUsingInvitation);
 
         router.post('/v1/relationship',
             context.begin,
