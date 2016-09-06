@@ -6,16 +6,12 @@ import {
     sendSearchResult,
     sendError,
     sendNotFoundError,
-    validateReqSchema,
-    REGULAR_CHARS
+    validateReqSchema
 } from './helpers';
 import {PartyModel} from '../models/party.model';
 import {RelationshipStatus, RelationshipModel} from '../models/relationship.model';
 import {
-    FilterParams,
-    IInvitationCodeRelationshipAddDTO,
-    ICreateInvitationCodeDTO,
-    IAttributeDTO
+    FilterParams
 } from '../../../commons/api';
 import {Headers} from './headers';
 
