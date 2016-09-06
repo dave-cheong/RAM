@@ -78,6 +78,9 @@ export function sendError<T>(res: Response) {
     'use strict';
     return (error: string | Error | ValidationError | string[]) => {
         logger.error(error.toString());
+        if (error instanceof Error) {
+            logger.error((error as Error).stack);
+        }
         switch (error.constructor.name) {
             case 'Array':
                 res.status(400);
@@ -123,7 +126,6 @@ export function sendError<T>(res: Response) {
                 res.json(new ErrorResponse(error.toString()));
                 break;
         }
-        console.error(new Error().stack);
     };
 }
 
