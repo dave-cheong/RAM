@@ -375,6 +375,7 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship> {
 
+        // evaluate permissions
         await new RelationshipCanClaimPermissionBuilder().assert(this);
 
         // if the user is already the delegate then there is nothing to do
@@ -403,6 +404,7 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship> {
 
+        // evaluate permissions
         await new RelationshipCanAcceptPermissionBuilder().assert(this);
 
         // mark relationship as active
@@ -417,6 +419,7 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship> {
 
+        // evaluate permissions
         await new RelationshipCanRejectPermissionBuilder().assert(this);
 
         // confirm the delegate is the user accepting
@@ -434,6 +437,7 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship> {
 
+        // evaluate permissions
         await new RelationshipCanNotifyDelegatePermissionBuilder().assert(this);
 
         // update email address
