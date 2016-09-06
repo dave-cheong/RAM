@@ -3,11 +3,7 @@ import {RAMEnum, RAMSchema, IRAMObject, RAMObject, Model} from './base';
 import {Url} from './url';
 import {IName, NameModel} from './name.model';
 import {ISharedSecret, SharedSecretModel} from './sharedSecret.model';
-import {
-    HrefValue,
-    Profile as DTO,
-    ProfileProvider as ProfileProviderDTO
-} from '../../../commons/api';
+import {HrefValue, Profile as DTO, ProfileProvider as ProfileProviderDTO} from '../../../commons/api';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
 import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
@@ -30,7 +26,7 @@ export class ProfileProvider extends RAMEnum {
 
     public static ABR = new ProfileProvider('ABR', 'ABR');
     public static AuthenticatorApp = new ProfileProvider('AUTHENTICATOR_APP', 'Authenticator App');
-    public static Invitation = new ProfileProvider('INVITATION', 'Invitation'); // TODO validate for temp identities
+    public static Invitation = new ProfileProvider('INVITATION', 'Invitation');
     public static MyGov = new ProfileProvider('MY_GOV', 'myGov');
     public static SelfAsserted = new ProfileProvider('SELF_ASSERTED', 'Self Asserted');
     public static VanguardFAS = new ProfileProvider('VANGUARD_FAS', 'Vanguard FAS');
@@ -90,7 +86,6 @@ export interface IProfile extends IRAMObject {
     sharedSecrets: ISharedSecret[];
     providerEnum(): ProfileProvider;
     getSharedSecret(code: string): ISharedSecret;
-    toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
     toDTO(): Promise<DTO>;
 }
 
@@ -117,13 +112,6 @@ class Profile extends RAMObject implements IProfile {
 
     public getPermissions(): Promise<Permissions> {
         return this.enforcePermissions(PermissionTemplates.profile, PermissionEnforcers.profile);
-    }
-
-    public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
-        return new HrefValue(
-            null, // TODO do these have endpoints?
-            includeValue ? await this.toDTO() : undefined
-        );
     }
 
     public async toDTO(): Promise<DTO> {
