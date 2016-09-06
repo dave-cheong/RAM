@@ -251,7 +251,10 @@ export const Model = <T extends mongoose.Document>(name: string, schema: mongoos
 export interface IPermissionBuilder<T> {
     template: IPermission;
     build(source: T): Promise<IPermission>;
+    evaluate(source: T): Promise<IPermission>;
     assert(source: T): Promise<void>;
+    isAllowed(source: T): Promise<boolean>;
+    isDenied(source: T): Promise<boolean>;
     getLinkHref(source: T): Promise<string>;
 }
 
@@ -262,9 +265,21 @@ export abstract class PermissionBuilder<T> implements IPermissionBuilder<T> {
 
     public abstract build(source: T): Promise<IPermission>;
 
-    public async assert(source: T) {
+    public async evaluate(source: T): Promise<IPermission> {
+        return await this.build(source);
+    }
+
+    public async assert(source: T): Promise<void> {
         let permission = await this.build(source);
         Assert.assertPermission(permission);
+    }
+
+    public async isAllowed(source: T): Promise<boolean> {
+        return (await this.build(source)).isAllowed();
+    }
+
+    public async isDenied(source: T): Promise<boolean> {
+        return (await this.build(source)).isDenied();
     }
 
     public async getLinkHref(source: T): Promise<string> {
