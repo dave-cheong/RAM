@@ -57,7 +57,7 @@ export class AuskeyController {
         };
         const filterParams = FilterParams.decode(req.query.filter);
         validateReqSchema(req, schema)
-            .then(async (req: Request) => {
+            .then(async(req: Request) => {
                 const idValue = req.params.idValue;
                 const myPrincipal = context.getAuthenticatedPrincipal();
                 if (!myPrincipal.agencyUserInd) {

@@ -21,7 +21,7 @@ export class RelationshipController {
     constructor() {
     }
 
-    private findByIdentifier = async(req:Request, res:Response) => {
+    private findByIdentifier = async(req: Request, res: Response) => {
         const schema = {
             'identifier': {
                 in: 'params',
@@ -30,14 +30,14 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => RelationshipModel.findByIdentifier(req.params.identifier))
+            .then((req: Request) => RelationshipModel.findByIdentifier(req.params.identifier))
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
             .catch(sendError(res));
     };
 
-    private findByInvitationCode = async(req:Request, res:Response) => {
+    private findByInvitationCode = async(req: Request, res: Response) => {
         const schema = {
             'invitationCode': {
                 notEmpty: true,
@@ -46,14 +46,14 @@ export class RelationshipController {
         };
         const invitationCode = req.params.invitationCode;
         validateReqSchema(req, schema)
-            .then((req:Request) => RelationshipModel.findByInvitationCode(invitationCode))
+            .then((req: Request) => RelationshipModel.findByInvitationCode(invitationCode))
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
             .catch(sendError(res));
     };
 
-    private claimByInvitationCode = async(req:Request, res:Response) => {
+    private claimByInvitationCode = async(req: Request, res: Response) => {
         const schema = {
             'invitationCode': {
                 notEmpty: true,
@@ -62,7 +62,7 @@ export class RelationshipController {
         };
         const invitationCode = req.params.invitationCode;
         validateReqSchema(req, schema)
-            .then((req:Request) => RelationshipModel.findByInvitationCode(invitationCode))
+            .then((req: Request) => RelationshipModel.findByInvitationCode(invitationCode))
             .then((model) => model ? model.claimPendingInvitation(context.getAuthenticatedIdentity(), invitationCode) : null)
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
@@ -70,7 +70,7 @@ export class RelationshipController {
             .catch(sendError(res));
     };
 
-    private acceptByInvitationCode = async(req:Request, res:Response) => {
+    private acceptByInvitationCode = async(req: Request, res: Response) => {
         const schema = {
             'invitationCode': {
                 notEmpty: true,
@@ -78,7 +78,7 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => RelationshipModel.findByInvitationCode(req.params.invitationCode))
+            .then((req: Request) => RelationshipModel.findByInvitationCode(req.params.invitationCode))
             .then((model) => model ? model.acceptPendingInvitation(context.getAuthenticatedIdentity()) : null)
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
@@ -86,7 +86,7 @@ export class RelationshipController {
             .catch(sendError(res));
     };
 
-    private rejectByInvitationCode = async(req:Request, res:Response) => {
+    private rejectByInvitationCode = async(req: Request, res: Response) => {
         const schema = {
             'invitationCode': {
                 notEmpty: true,
@@ -94,7 +94,7 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => RelationshipModel.findByInvitationCode(req.params.invitationCode))
+            .then((req: Request) => RelationshipModel.findByInvitationCode(req.params.invitationCode))
             .then((model) => model ? model.rejectPendingInvitation(context.getAuthenticatedIdentity()) : null)
             .then((model) => model ? Promise.resolve({}) : null)
             .then(sendResource(res))
@@ -102,7 +102,7 @@ export class RelationshipController {
             .catch(sendError(res));
     };
 
-    private notifyDelegateByInvitationCode = async(req:Request, res:Response) => {
+    private notifyDelegateByInvitationCode = async(req: Request, res: Response) => {
         const schema = {
             'invitationCode': {
                 notEmpty: true,
@@ -119,7 +119,7 @@ export class RelationshipController {
         };
 
         validateReqSchema(req, schema)
-            .then((req:Request) => RelationshipModel.findPendingByInvitationCodeInDateRange(req.params.invitationCode, new Date()))
+            .then((req: Request) => RelationshipModel.findPendingByInvitationCodeInDateRange(req.params.invitationCode, new Date()))
             .then((model) => model ? model.notifyDelegate(req.body.email, context.getAuthenticatedIdentity()) : null)
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
@@ -129,7 +129,7 @@ export class RelationshipController {
 
     /* tslint:disable:max-func-body-length */
     // todo this search might no longer be useful from SS2
-    private searchBySubjectOrDelegate = async(req:Request, res:Response) => {
+    private searchBySubjectOrDelegate = async(req: Request, res: Response) => {
         const schema = {
             'subject_or_delegate': {
                 in: 'params',
@@ -161,7 +161,7 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => RelationshipModel.search(
+            .then((req: Request) => RelationshipModel.search(
                 req.params.subject_or_delegate === 'subject' ? req.params.identity_id : null,
                 req.params.subject_or_delegate === 'delegate' ? req.params.identity_id : null,
                 parseInt(req.query.page),
@@ -174,7 +174,7 @@ export class RelationshipController {
     };
 
     /* tslint:disable:max-func-body-length */
-    private searchByIdentity = async(req:Request, res:Response) => {
+    private searchByIdentity = async(req: Request, res: Response) => {
         const schema = {
             'identity_id': {
                 in: 'params',
@@ -201,7 +201,7 @@ export class RelationshipController {
         };
         const filterParams = FilterParams.decode(req.query.filter);
         validateReqSchema(req, schema)
-            .then(async (req:Request) => {
+            .then(async(req: Request) => {
                 const myPrincipal = context.getAuthenticatedPrincipal();
                 const myIdentity = context.getAuthenticatedIdentity();
                 const hasAccess = await PartyModel.hasAccess(req.params.identity_id, myPrincipal, myIdentity);
@@ -210,7 +210,7 @@ export class RelationshipController {
                 }
                 return req;
             })
-            .then((req:Request) => RelationshipModel.searchByIdentity(
+            .then((req: Request) => RelationshipModel.searchByIdentity(
                 req.params.identity_id,
                 filterParams.get('partyType'),
                 filterParams.get('relationshipType'),
@@ -229,7 +229,7 @@ export class RelationshipController {
             .catch(sendError(res));
     };
 
-    private searchDistinctSubjectsForMe = async (req:Request, res:Response) => {
+    private searchDistinctSubjectsForMe = async(req: Request, res: Response) => {
         const schema = {
             'filter': {
                 in: 'query'
@@ -272,7 +272,7 @@ export class RelationshipController {
             .catch(sendError(res));
     };
 
-    private create = async(req:Request, res:Response) => {
+    private create = async(req: Request, res: Response) => {
         const schema = {
             'relationshipType.href': {
                 in: 'body',
@@ -298,7 +298,7 @@ export class RelationshipController {
             .catch(sendError(res));
     };
 
-    private modify = async(req:Request, res:Response) => {
+    private modify = async(req: Request, res: Response) => {
         const schema = {
             'identifier': {
                 in: 'params',
@@ -344,7 +344,7 @@ export class RelationshipController {
             .catch(sendError(res));
     };
 
-    private findStatusByCode = (req:Request, res:Response) => {
+    private findStatusByCode = (req: Request, res: Response) => {
         const schema = {
             'code': {
                 in: 'params',
@@ -353,24 +353,24 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req:Request) => RelationshipStatus.valueOf(req.params.code) as RelationshipStatus)
+            .then((req: Request) => RelationshipStatus.valueOf(req.params.code) as RelationshipStatus)
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
             .catch((err) => sendError(res)(err));
     };
 
-    private listStatuses = (req:Request, res:Response) => {
+    private listStatuses = (req: Request, res: Response) => {
         const schema = {};
         validateReqSchema(req, schema)
-            .then((req:Request) => RelationshipStatus.values() as RelationshipStatus[])
+            .then((req: Request) => RelationshipStatus.values() as RelationshipStatus[])
             .then((results) => results ? results.map((model) => model.toHrefValue(true)) : null)
             .then(sendList(res))
             .then(sendNotFoundError(res))
             .catch(sendError(res));
     };
 
-    public assignRoutes = (router:Router) => {
+    public assignRoutes = (router: Router) => {
 
         router.get('/v1/relationship/:identifier',
             context.begin,
