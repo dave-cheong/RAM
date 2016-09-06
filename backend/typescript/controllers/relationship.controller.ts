@@ -64,7 +64,7 @@ export class RelationshipController {
         validateReqSchema(req, schema)
             .then((req:Request) => RelationshipModel.findByInvitationCode(invitationCode))
             .then((model) => model ? model.claimPendingInvitation(context.getAuthenticatedIdentity(), invitationCode) : null)
-            .then((model) => model ? model.toDTO(invitationCode) : null)
+            .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
             .catch(sendError(res));
@@ -80,7 +80,7 @@ export class RelationshipController {
         validateReqSchema(req, schema)
             .then((req:Request) => RelationshipModel.findByInvitationCode(req.params.invitationCode))
             .then((model) => model ? model.acceptPendingInvitation(context.getAuthenticatedIdentity()) : null)
-            .then((model) => model ? model.toDTO(null) : null)
+            .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
             .catch(sendError(res));
@@ -121,7 +121,7 @@ export class RelationshipController {
         validateReqSchema(req, schema)
             .then((req:Request) => RelationshipModel.findPendingByInvitationCodeInDateRange(req.params.invitationCode, new Date()))
             .then((model) => model ? model.notifyDelegate(req.body.email, context.getAuthenticatedIdentity()) : null)
-            .then((model) => model ? model.toDTO(null) : null)
+            .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
             .catch(sendError(res));
