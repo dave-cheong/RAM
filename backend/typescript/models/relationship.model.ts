@@ -402,7 +402,7 @@ class Relationship extends RAMObject implements IRelationship {
     public async acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship> {
         logger.debug('Attempting to accept relationship by ', acceptingDelegateIdentity.idValue);
 
-        this.assertPermissions([RelationshipCanAcceptPermissionTemplate]);
+        await this.assertPermissions([RelationshipCanAcceptPermissionTemplate]);
 
         // mark relationship as active
         this.status = RelationshipStatus.Accepted.code;
