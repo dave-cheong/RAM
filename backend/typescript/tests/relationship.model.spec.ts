@@ -145,6 +145,23 @@ describe('RAM Relationship', () => {
         }
     });
 
+    it('converts to DTO', async (done) => {
+        try {
+
+            const retrievedInstance = await RelationshipModel.findByIdentifier(relationship1.id);
+
+            expect(retrievedInstance).not.toBeNull();
+
+            let dto = await retrievedInstance.toDTO();
+
+            done();
+
+        } catch (e) {
+            fail(e);
+            done();
+        }
+    });
+
     it('auto converts strings to dates', async (done) => {
         try {
 

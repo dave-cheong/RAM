@@ -292,7 +292,7 @@ export interface IRelationship extends IRAMObject {
     _delegateProfileProviderCodes: string[];
     statusEnum(): RelationshipStatus;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
-    toDTO(invitationCode: string): Promise<DTO>;
+    toDTO(invitationCode?: string): Promise<DTO>;
     claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship>;
     acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship>;
     rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship>;
@@ -360,7 +360,7 @@ class Relationship extends RAMObject implements IRelationship {
             this.endEventTimestamp,
             this.status,
             this.initiatedBy,
-            await this.supersededBy.toHrefValue(true),
+            this.supersededBy ? await this.supersededBy.toHrefValue(false) : null,
             await Promise.all<RelationshipAttributeDTO>(this.attributes.map(
                 async(attribute: IRelationshipAttribute) => {
                     return await attribute.toDTO();
