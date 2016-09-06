@@ -785,7 +785,6 @@ export class RelationshipModel {
     public static async findByInvitationCode(invitationCode: string): Promise<IRelationship> {
         const identity = await IdentityModel.findByInvitationCode(invitationCode);
         if (identity) {
-            const delegate = identity.party;
             return RelationshipMongooseModel
                 .findOne({
                     invitationIdentity: identity

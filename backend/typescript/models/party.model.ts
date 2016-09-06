@@ -332,7 +332,6 @@ class Party extends RAMObject implements IParty {
         for (let roleAttribute of roleDTO.attributes) {
             const roleAttributeValue = roleAttribute.value;
             const roleAttributeNameCode = roleAttribute.attributeName.value.code;
-            const roleAttributeNameCategory = roleAttribute.attributeName.value.category;
 
             const existingAttributeName = await RoleAttributeNameModel.findByCodeIgnoringDateRange(roleAttributeNameCode);
 
