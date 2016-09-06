@@ -31,6 +31,11 @@ export class RelationshipCanRejectPermissionEnforcer extends PermissionEnforcer<
             permission.messages.push(Translator.get('relationship.reject.notPending'));
         }
 
+        // validate invitation
+        if (!relationship.invitationIdentity) {
+            permission.messages.push(Translator.get('relationship.reject.notInvitation'));
+        }
+
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;

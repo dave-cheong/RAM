@@ -74,7 +74,7 @@ export class RelationshipCanClaimPermissionEnforcer extends PermissionEnforcer<I
                 }
             }
             if (!found) {
-                permission.messages.push(Translator.get('relationship.claim.nonMatchingABN'));
+                permission.messages.push(Translator.get('relationship.claim.mismatchedABN'));
             }
         }
 
