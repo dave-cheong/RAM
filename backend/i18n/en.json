@@ -7,6 +7,13 @@
   "error.pageInvalid" : "Page is not valid",
   "error.pageSizeInvalid" : "Page Size is not valid",
 
+  "relationship.claim.notPending" : "Unable to claim a non-pending relationship",
+  "relationship.claim.notInvitation" : "Unable to claim a non-invitation relationship",
+  "relationship.claim.invalidInvitationStatus" : "Unable to claim a non-pending relationship",
+  "relationship.claim.expiredInvitation" : "Unable to claim an expired relationship invitation",
+  "relationship.claim.mismatchedName" : "Identity does not match",
+  "relationship.claim.nonMatchingABN" : "You cannot accept an authorisation with an AUSkey from a different ABN. AUSkeys only have authorisation for the ABN they are issued under.",
+
   "relationship.accept.notPending" : "'Unable to accept a non-pending relationship'",
   "relationship.accept.notInvitation" : "Unable to accept a non-invitation relationship",
   "relationship.accept.notDelegate" : "Unable to accept a relationship you are not the delegate of",

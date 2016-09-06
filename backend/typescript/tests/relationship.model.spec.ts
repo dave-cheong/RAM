@@ -152,7 +152,7 @@ describe('RAM Relationship', () => {
 
             expect(retrievedInstance).not.toBeNull();
 
-            await retrievedInstance.toDTO();
+            const dto = await retrievedInstance.toDTO();
 
             expect(dto).not.toBeNull();
 

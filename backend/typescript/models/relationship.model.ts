@@ -27,7 +27,10 @@ import {
     RelationshipAttribute as RelationshipAttributeDTO,
     SearchResult
 } from '../../../commons/api';
-import {RelationshipCanAcceptPermissionTemplate} from '../../../commons/permissions/relationshipPermission.templates';
+import {
+    RelationshipCanAcceptPermissionTemplate,
+    RelationshipCanClaimPermissionTemplate
+} from '../../../commons/permissions/relationshipPermission.templates';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
@@ -371,98 +374,29 @@ class Relationship extends RAMObject implements IRelationship {
     }
 
     public async claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship> {
-            /* validate */
 
-            // validate current status
-            Assert.assertTrue(this.statusEnum() === RelationshipStatus.Pending, 'Unable to accept a non-pending relationship');
+        await this.assertPermissions([RelationshipCanClaimPermissionTemplate]);
 
-            // if the user is already the delegate then there is nothing to do
-            if (this.delegate.id === claimingDelegateIdentity.party.id) {
-                return this as IRelationship;
-            }
+        // if the user is already the delegate then there is nothing to do
+        if (this.delegate.id === claimingDelegateIdentity.party.id) {
+            return this as IRelationship;
+        }
 
-            // find identity to match user against
-            const invitationIdentities = await IdentityModel.listByPartyId(this.delegate._id);
-            Assert.assertTrue(
-                invitationIdentities.length === 1,
-                'A pending relationship should only have one delegate identity'
-            );
+        Assert.assertTrue(
+            this.invitationIdentity.rawIdValue === invitationCode,
+            'Invitation code does not match'
+        );
 
-            Assert.assertTrue(
-                this.invitationIdentity.identityTypeEnum() === IdentityType.InvitationCode,
-                'Must be an invitation code to claim'
-            );
+        // mark invitation code identity as claimed
+        this.invitationIdentity.invitationCodeStatus = IdentityInvitationCodeStatus.Claimed.code;
+        this.invitationIdentity.invitationCodeClaimedTimestamp = new Date();
+        await this.invitationIdentity.save();
 
-            Assert.assertTrue(
-                this.invitationIdentity.rawIdValue === invitationCode,
-                'Invitation code does not match'
-            );
+        // point relationship to the accepting delegate identity
+        this.delegate = claimingDelegateIdentity.party;
+        await this.save();
+        return Promise.resolve(this);
 
-            Assert.assertTrue(
-                this.invitationIdentity.invitationCodeStatusEnum() === IdentityInvitationCodeStatus.Pending || this.invitationIdentity.invitationCodeStatusEnum() === IdentityInvitationCodeStatus.Claimed,
-                'Invitation code must be pending',
-                `${this.invitationIdentity.invitationCodeStatusEnum()} != PENDING or CLAIMED`
-            );
-            Assert.assertTrue(
-                this.invitationIdentity.invitationCodeExpiryTimestamp > new Date(),
-                'Invitation code has expired'
-            );
-
-            // check name
-            Assert.assertCaseInsensitiveEqual(
-                claimingDelegateIdentity.profile.name.givenName,
-                this.invitationIdentity.profile.name.givenName,
-                'Identity does not match',
-                `${claimingDelegateIdentity.profile.name.givenName} != ${this.invitationIdentity.profile.name.givenName}`
-            );
-
-            Assert.assertCaseInsensitiveEqual(
-                claimingDelegateIdentity.profile.name.familyName,
-                this.invitationIdentity.profile.name.familyName,
-                'Identity does not match',
-                `${claimingDelegateIdentity.profile.name.familyName} != ${this.invitationIdentity.profile.name.familyName}`
-            );
-
-            // TODO not sure about this implementation
-            // check date of birth IF it is recorded on the invitation
-            if (this.invitationIdentity.profile.getSharedSecret(DOB_SHARED_SECRET_TYPE_CODE)) {
-                //
-                // Assert.assertTrue(
-                //      acceptingDelegateIdentity.profile.getSharedSecret(DOB_SHARED_SECRET_TYPE_CODE)
-                //     identity.profile.getSharedSecret(DOB_SHARED_SECRET_TYPE_CODE).matchesValue(),
-                //     'Identity does not match');
-            }
-
-            // If we received ABN from headers (ie from AUSkey), check it against ABN in relationship
-            const abn = context.getAuthenticatedABN();
-            logger.debug('abn is <' + abn + '>');
-            if (abn) {
-                logger.info('checking abn <' + abn + '>');
-                const allIdentities = await IdentityModel.listByPartyId(this.subject.id);
-                let found: boolean = false;
-                for (let identity of allIdentities) {
-                    logger.info('abn for identity is ' + identity.rawIdValue);
-                    if (identity.rawIdValue === abn) {
-                        found = true;
-                    }
-                }
-                Assert.assertTrue(
-                    found,
-                    'You cannot accept an authorisation with an AUSkey from a different ABN. AUSkeys only have authorisation for the ABN they are issued under.'
-                );
-            }
-
-            /* complete claim */
-
-            // mark invitation code identity as claimed
-            this.invitationIdentity.invitationCodeStatus = IdentityInvitationCodeStatus.Claimed.code;
-            this.invitationIdentity.invitationCodeClaimedTimestamp = new Date();
-            await this.invitationIdentity.save();
-
-            // point relationship to the accepting delegate identity
-            this.delegate = claimingDelegateIdentity.party;
-            await this.save();
-            return Promise.resolve(this);
     }
 
     public async acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship> {

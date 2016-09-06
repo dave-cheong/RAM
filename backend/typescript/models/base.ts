@@ -323,8 +323,12 @@ export class Assert {
         this.assertTrue(condition, failMessage, `${value1} != ${value2}`);
     }
 
+    public static checkCaseInsensitiveEqual(value1: string, value2: string): boolean {
+        return _.trim(value1).toLowerCase() === _.trim(value2).toLowerCase();
+    }
+
     public static assertCaseInsensitiveEqual(value1: string, value2: string, failMessage: string, detail?: string) {
-        const condition = _.trim(value1).toLowerCase() === _.trim(value2).toLowerCase();
+        const condition = Assert.checkCaseInsensitiveEqual(value1, value2);
         this.assertTrue(condition, failMessage, detail);
     }
 
