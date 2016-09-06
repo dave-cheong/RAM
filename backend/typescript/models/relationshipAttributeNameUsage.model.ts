@@ -56,7 +56,7 @@ class RelationshipAttributeNameUsage extends RAMObject implements IRelationshipA
     public sortOrder: number;
 
     public getPermissions(): Promise<Permissions> {
-        return this.enforcerPermissions(PermissionTemplates.relationshipAttributeNameUsage, PermissionEnforcers.relationshipAttributeNameUsage);
+        return this.enforcePermissions(PermissionTemplates.relationshipAttributeNameUsage, PermissionEnforcers.relationshipAttributeNameUsage);
     }
 
 }

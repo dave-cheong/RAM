@@ -74,7 +74,7 @@ class Name extends RAMObject implements IName {
     public _displayName: string;
 
     public getPermissions(): Promise<Permissions> {
-        return this.enforcerPermissions(PermissionTemplates.iname, PermissionEnforcers.iname);
+        return this.enforcePermissions(PermissionTemplates.iname, PermissionEnforcers.iname);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {

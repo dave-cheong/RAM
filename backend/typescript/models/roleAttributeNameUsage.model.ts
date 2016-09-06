@@ -50,7 +50,7 @@ class RoleAttributeNameUsage extends RAMObject implements IRoleAttributeNameUsag
     public attributeName: IRoleAttributeName;
 
     public getPermissions(): Promise<Permissions> {
-        return this.enforcerPermissions(PermissionTemplates.roleAttributeNameUsage, PermissionEnforcers.roleAttributeNameUsage);
+        return this.enforcePermissions(PermissionTemplates.roleAttributeNameUsage, PermissionEnforcers.roleAttributeNameUsage);
     }
 
 }

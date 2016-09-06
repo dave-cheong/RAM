@@ -52,7 +52,7 @@ class RoleAttribute extends RAMObject implements IRoleAttribute {
     public attributeName: IRoleAttributeName;
 
     public getPermissions(): Promise<Permissions> {
-        return this.enforcerPermissions(PermissionTemplates.roleAttribute, PermissionEnforcers.roleAttribute);
+        return this.enforcePermissions(PermissionTemplates.roleAttribute, PermissionEnforcers.roleAttribute);
     }
 
     public async toDTO(): Promise<DTO> {

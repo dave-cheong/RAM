@@ -52,7 +52,7 @@ export class RelationshipAttribute extends RAMObject implements IRelationshipAtt
     public attributeName: IRelationshipAttributeName;
 
     public getPermissions(): Promise<Permissions> {
-        return this.enforcerPermissions(PermissionTemplates.relationshipAttribute, PermissionEnforcers.relationshipAttribute);
+        return this.enforcePermissions(PermissionTemplates.relationshipAttribute, PermissionEnforcers.relationshipAttribute);
     }
 
     public async toDTO(): Promise<DTO> {

@@ -336,7 +336,7 @@ class Identity extends RAMObject implements IIdentity {
     }
 
     public getPermissions(): Promise<Permissions> {
-        return this.enforcerPermissions(PermissionTemplates.identity, PermissionEnforcers.identity);
+        return this.enforcePermissions(PermissionTemplates.identity, PermissionEnforcers.identity);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {

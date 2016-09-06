@@ -52,7 +52,7 @@ class SharedSecret extends RAMObject implements ISharedSecret {
     public sharedSecretType: ISharedSecretType;
 
     public async getPermissions(): Promise<Permissions> {
-        return this.enforcerPermissions(PermissionTemplates.sharedSecret, PermissionEnforcers.sharedSecret);
+        return this.enforcePermissions(PermissionTemplates.sharedSecret, PermissionEnforcers.sharedSecret);
     }
 
     public matchesValue(candidateValue: string): boolean {

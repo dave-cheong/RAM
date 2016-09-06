@@ -116,7 +116,7 @@ class Profile extends RAMObject implements IProfile {
     }
 
     public getPermissions(): Promise<Permissions> {
-        return this.enforcerPermissions(PermissionTemplates.profile, PermissionEnforcers.profile);
+        return this.enforcePermissions(PermissionTemplates.profile, PermissionEnforcers.profile);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {

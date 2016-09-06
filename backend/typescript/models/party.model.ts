@@ -98,7 +98,7 @@ class Party extends RAMObject implements IParty {
     }
 
     public async getPermissions(): Promise<Permissions> {
-        return this.enforcerPermissions(PermissionTemplates.party, PermissionEnforcers.party);
+        return this.enforcePermissions(PermissionTemplates.party, PermissionEnforcers.party);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {

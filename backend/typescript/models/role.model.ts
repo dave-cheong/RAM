@@ -239,7 +239,7 @@ class Role extends RAMObject implements IRole {
     }
 
     public async getPermissions(): Promise<Permissions> {
-        return this.enforcerPermissions(PermissionTemplates.role, PermissionEnforcers.role);
+        return this.enforcePermissions(PermissionTemplates.role, PermissionEnforcers.role);
     }
 
     public async toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>> {
