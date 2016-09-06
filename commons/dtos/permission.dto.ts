@@ -81,6 +81,15 @@ export class Permissions {
         }
     }
 
+    public get(template: IPermission): IPermission {
+        for (let permission of this.array) {
+            if (template.code === permission.code) {
+                return permission;
+            }
+        }
+        return undefined;
+    }
+
     public toArray(): IPermission[] {
         return this.array;
     }

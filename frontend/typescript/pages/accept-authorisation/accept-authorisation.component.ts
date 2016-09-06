@@ -18,6 +18,11 @@ import {
     IRelationshipAttribute,
     IRelationshipAttributeNameUsage
 } from '../../../../commons/api';
+import {PermissionTemplates} from '../../../../commons/permissions/allPermission.templates';
+import {
+    RelationshipPermissionTemplates,
+    RelationshipCanAcceptPermissionTemplate
+} from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
     selector: 'accept-authorisation',
@@ -63,11 +68,11 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
         this.relationship$.subscribe((relationship) => {
             this.relationship = relationship;
             this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
-            this.canAccept = this.services.model.getLinkByType('accept', this.relationship) !== null;
-            if(!this.canAccept) {
-               this.services.translate.get('acceptRelationship.insufficientStrength').subscribe({
-                    next: (message) => this.addGlobalMessage(message)
-                });
+
+            let permission = this.relationship.get(RelationshipCanAcceptPermissionTemplate);
+            this.canAccept = permission.isAllowed();
+            if (!permission.isAllowed()) {
+                this.addGlobalMessages(permission.messages);
             }
 
             this.relationshipType$ = this.services.rest.findRelationshipTypeByHref(relationship.relationshipType.href);
