@@ -79,6 +79,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public authType: string = 'choose';
     public disableAuthMgmt: boolean = true;
 
+    public originalStartDate: Date;
+
     public relationshipComponentData: EditRelationshipComponentData = {
         accessPeriod: {
             startDateEnabled: true,
@@ -127,15 +129,15 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         this.identityHref = params.path['identityHref'];
         this.relationshipHref = params.path['relationshipHref'];
 
-        // identity in focus
-        this.services.rest.findIdentityByHref(this.identityHref).subscribe({
-            next: this.onFindIdentity.bind(this),
-            error: this.onServerError.bind(this)
-        });
-
         // relationship types
         this.services.rest.listRelationshipTypes().subscribe({
             next: this.onListRelationshipTypes.bind(this),
+            error: this.onServerError.bind(this)
+        });
+
+        // identity in focus
+        this.services.rest.findIdentityByHref(this.identityHref).subscribe({
+            next: this.onFindIdentity.bind(this),
             error: this.onServerError.bind(this)
         });
 
@@ -160,6 +162,22 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     // todo refactor to use this.relationship
     public onFindRelationship(relationship: IRelationship) {
         this.relationship = relationship;
+
+        // todo there may be a timing problem here - make sure reltypes are loaded
+        let relationshipType = this.relationship.relationshipType.getFromList(this.relationshipTypeRefs);
+
+        this.relationshipComponentData.authType.authType = relationshipType.code;
+        this.authTypeChange(this.relationshipComponentData.authType);
+
+        // date
+        this.originalStartDate = relationship.startTimestamp;
+        this.relationshipComponentData.accessPeriod.startDate = relationship.startTimestamp;
+        this.relationshipComponentData.accessPeriod.endDate = relationship.endTimestamp;
+        this.relationshipComponentData.accessPeriod.noEndDate = relationship.endTimestamp === undefined || relationship.endTimestamp === null;
+        let todayMidnight = new Date();
+        todayMidnight.setHours(0, 0, 0, 0);
+        this.relationshipComponentData.accessPeriod.startDateEnabled = this.originalStartDate > todayMidnight;
+
     }
 
     // todo refactor to use this
@@ -182,6 +200,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             []
         );
 
+        this.originalStartDate = this.relationshipComponentData.accessPeriod.startDate;
     }
 
     public onListRelationshipTypes(relationshipTypeRefs: IHrefValue<IRelationshipType>[]) {
