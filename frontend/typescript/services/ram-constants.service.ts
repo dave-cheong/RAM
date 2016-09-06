@@ -50,6 +50,10 @@ export const RAMConstants = {
         OSP: 'OSP'
     },
 
+    RelationshipStatus: {
+        ACCEPTED: 'ACCEPTED'
+    },
+
     RelationshipAttributeNameClassifier: {
         PERMISSION: 'PERMISSION',
         OTHER: 'OTHER'

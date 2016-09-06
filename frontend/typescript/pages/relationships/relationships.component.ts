@@ -227,13 +227,13 @@ export class RelationshipsComponent extends AbstractPageComponent {
         }
     }
 
-    // todo go to relationship page
     public goToRelationshipPage(relationshipRef: IHrefValue<IRelationship>) {
-        alert('TODO: Not yet implemented');
+        this.services.route.goToEditRelationshipPage(this.identityHref, relationshipRef.href);
     }
 
     public isEditRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
-        return this.services.model.hasLinkHrefByType(RAMConstants.Link.MODIFY, relationshipRef.value);
+        // todo limit to only ACCEPTED at the moment, relax the restriction later
+        return this.services.model.hasLinkHrefByType(RAMConstants.Link.MODIFY, relationshipRef.value) && relationshipRef.value.status === RAMConstants.RelationshipStatus.ACCEPTED;
     }
 
 }
