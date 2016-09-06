@@ -10,6 +10,7 @@ export interface IPermission {
 }
 
 export class Permission implements IPermission {
+
     public static build(sourceObject: any): IPermission {
         return new Builder<IPermission>(sourceObject, this)
             .build();
@@ -20,7 +21,11 @@ export class Permission implements IPermission {
                 public value: boolean,
                 public messages?: string[],
                 public link?: ILink) {
+        if (!messages) {
+            this.messages = [];
+        }
     }
+
 }
 
 export interface IHasPermissions {
@@ -36,6 +41,22 @@ export class Permissions {
             this.array.push(permission);
         }
         return this;
+    }
+
+    public pushAll(permissions: IPermission[]): Permissions {
+        for (let permission of permissions) {
+            this.array.push(permission);
+        }
+        return this;
+    }
+
+    public isAllowed(template: IPermission): boolean {
+        for (let permission of this.array) {
+            if (permission.code === template.code) {
+                return permission.value;
+            }
+        }
+        return false;
     }
 
     public toArray(): IPermission[] {

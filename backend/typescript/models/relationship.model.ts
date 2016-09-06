@@ -1,6 +1,8 @@
 import {logger} from '../logger';
 import * as mongoose from 'mongoose';
 import {Model, RAMEnum, RAMSchema, IRAMObject, RAMObject, Query, Assert} from './base';
+import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
+import {PermissionBuilders} from '../permissions/allPermission.builders';
 import {Url} from './url';
 import {SharedSecretModel, ISharedSecret} from './sharedSecret.model';
 import {DOB_SHARED_SECRET_TYPE_CODE, SharedSecretTypeModel} from './sharedSecretType.model';
@@ -293,11 +295,11 @@ export interface IRelationship extends IRAMObject {
     statusEnum(): RelationshipStatus;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
     toDTO(invitationCode: string): Promise<DTO>;
+    isPendingInvitation(): Promise<boolean>;
     claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship>;
     acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship>;
     rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship>;
     notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship>;
-
 }
 
 class Relationship extends RAMObject implements IRelationship {
@@ -342,14 +344,7 @@ class Relationship extends RAMObject implements IRelationship {
 
         // todo need to use security context to drive the links
         return new DTO(
-            Url.links()
-                .push('self', Url.GET, await Url.forRelationship(this))
-                .push('claim', Url.POST, await Url.forRelationshipClaim(invitationCode), pendingWithInvitationCode)
-                .push('accept', Url.POST, await Url.forRelationshipAccept(invitationCode), pendingWithInvitationCode && this.canAccept())
-                .push('reject', Url.POST, await Url.forRelationshipReject(invitationCode), pendingWithInvitationCode)
-                .push('notifyDelegate', Url.POST, await Url.forRelationshipNotifyDelegate(invitationCode), pendingWithInvitationCode)
-                .push('modify', Url.PUT, await Url.forRelationship(this))
-                .toArray(),
+            await this.buildPermissions(PermissionTemplates.relationship, PermissionBuilders.relationship),
             await this.relationshipType.toHrefValue(false),
             await this.subject.toHrefValue(true),
             await this.subjectNickName.toDTO(),
@@ -360,12 +355,17 @@ class Relationship extends RAMObject implements IRelationship {
             this.endEventTimestamp,
             this.status,
             this.initiatedBy,
-            await this.supersededBy.toHrefValue(true),
+            this.supersededBy ? await this.supersededBy.toHrefValue(false) : undefined,
             await Promise.all<RelationshipAttributeDTO>(this.attributes.map(
                 async(attribute: IRelationshipAttribute) => {
                     return await attribute.toDTO();
                 }))
         );
+    }
+
+    public async isPendingInvitation(): Promise<boolean> {
+        let invitationCode = this.invitationIdentity ? this.invitationIdentity.rawIdValue : undefined;
+        return invitationCode !== null && invitationCode !== undefined && this.statusEnum() === RelationshipStatus.Pending;
     }
 
     public async claimPendingInvitation(claimingDelegateIdentity: IIdentity, invitationCode: string): Promise<IRelationship> {
@@ -911,7 +911,8 @@ export class RelationshipModel {
                     'subjectNickName',
                     'delegate',
                     'delegateNickName',
-                    'invitationIdentity',
+                    'invitationIdentity.profile.name',
+                    'invitationIdentity.profile.sharedSecrets',
                     'attributes.attributeName'
                 ])
                 .exec();
@@ -1017,6 +1018,8 @@ export class RelationshipModel {
                         'subjectNickName',
                         'delegate',
                         'delegateNickName',
+                        'invitationIdentity.profile.name',
+                        'invitationIdentity.profile.sharedSecrets',
                         'attributes.attributeName'
                     ])
                     .skip((page - 1) * thePageSize)
@@ -1105,6 +1108,8 @@ export class RelationshipModel {
                         'subjectNickName',
                         'delegate',
                         'delegateNickName',
+                        'invitationIdentity.profile.name',
+                        'invitationIdentity.profile.sharedSecrets',
                         'attributes.attributeName'
                     ])
                     .sort({
@@ -1158,6 +1163,8 @@ export class RelationshipModel {
                         'subjectNickName',
                         'delegate',
                         'delegateNickName',
+                        'invitationIdentity.profile.name',
+                        'invitationIdentity.profile.sharedSecrets',
                         'attributes.attributeName'
                     ])
                     .sort({

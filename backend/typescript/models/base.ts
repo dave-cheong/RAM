@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 import {logger} from '../logger';
 import * as _ from 'lodash';
+import {IPermission, Permissions} from '../../../commons/dtos/permission.dto';
 
 /* tslint:disable:no-var-requires */
 const mongooseUniqueValidator = require('mongoose-unique-validator');
@@ -57,11 +58,14 @@ export interface IRAMObject {
     resourceVersion: string;
     save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this>;
     delete(): void;
+    buildPermissions(templates: Permissions, builders: IPermissionBuilder<this>[]): Permissions;
 }
 
 // exists for type safety only, do not add function implementations here
 export class RAMObject implements IRAMObject {
+
     public id: string;
+
     constructor(public _id: any,
                 public createdAt: Date,
                 public updatedAt: Date,
@@ -69,12 +73,19 @@ export class RAMObject implements IRAMObject {
                 public resourceVersion: string) {
         this.id = _id ? _id.toString() : undefined;
     }
+
     public save(fn?: (err: any, product: this, numAffected: number) => void): Promise<this> {
         return null;
     }
+
     public delete(): void {
         return null;
     }
+
+    public buildPermissions(templates: Permissions, builders: IPermissionBuilder<this>[]): Permissions {
+        return null;
+    }
+
 }
 
 // RAMSchema ..........................................................................................................
@@ -92,9 +103,28 @@ export const RAMSchema = (schema: Object) => {
     result.plugin(mongooseIdValidator);
     result.plugin(mongooseDeepPopulate);
 
-    result.method('delete', () => {
+    result.method('delete', async function() {
         this.deleteInd = true;
-        this.save();
+        // this.save();
+    });
+
+    result.method('buildPermissions', async function(templates: Permissions, builders: IPermissionBuilder<any>[]): Promise<Permissions> {
+        let permissions = new Permissions();
+        for (let template of templates.toArray()) {
+            let builder: IPermissionBuilder<any>;
+            for (let aBuilder of builders) {
+                if (aBuilder.template && aBuilder.template.code === template.code) {
+                    builder = aBuilder;
+                    break;
+                }
+            }
+            if (builder) {
+                permissions.push(await builder.build(this));
+            } else {
+                permissions.push(template);
+            }
+        }
+        return permissions;
     });
 
     return result;
@@ -120,6 +150,7 @@ export interface ICodeDecode {
 // exists for type safety only, do not add functions here
 export class CodeDecode implements ICodeDecode {
     public id: string;
+
     constructor(public _id: any,
                 public shortDecodeText: string,
                 public longDecodeText: string,
@@ -211,6 +242,28 @@ export const Model = <T extends mongoose.Document>(name: string, schema: mongoos
     return mongoose.model(name, schema) as mongoose.Model<T>;
 
 };
+
+// permission builder .................................................................................................
+
+export interface IPermissionBuilder<T> {
+    template: IPermission;
+    build(source: T): Promise<IPermission>;
+    getLinkHref(source: T): Promise<string>;
+}
+
+export abstract class PermissionBuilder<T> implements IPermissionBuilder<T> {
+
+    constructor(public template: IPermission) {
+    }
+
+    public abstract build(source: T): Promise<IPermission>;
+
+    public async getLinkHref(source: T): Promise<string> {
+        let link = (await this.build(source)).link;
+        return link ? link.href : undefined;
+    }
+
+}
 
 // helpers ............................................................................................................
 

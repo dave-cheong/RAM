@@ -167,7 +167,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // relationship
         this.relationship = new Relationship(
-            [],
+            null,
             null,
             new HrefValue(this.identity.party.href, null),
             null,

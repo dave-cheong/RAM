@@ -1,12 +1,14 @@
 import {Builder} from './builder.dto';
-import {ILink, IHasLinks} from './link.dto';
+import {Permissions} from './permission.dto';
 import {IHrefValue} from './hrefValue.dto';
 import {IName, Name} from './name.dto';
 import {IParty, Party} from './party.dto';
 import {IRelationshipAttribute, RelationshipAttribute} from './relationshipAttribute.dto';
 import {RelationshipType, IRelationshipType} from './relationshipType.dto';
+import {IResource, Resource} from './resource.dto';
+import {PermissionTemplates} from '../permissions/allPermission.templates';
 
-export interface IRelationship extends IHasLinks {
+export interface IRelationship extends IResource {
     relationshipType: IHrefValue<IRelationshipType>;
     subject: IHrefValue<IParty>;
     subjectNickName?: IName;
@@ -24,7 +26,7 @@ export interface IRelationship extends IHasLinks {
     deleteAttribute(code: string): void;
 }
 
-export class Relationship implements IRelationship {
+export class Relationship extends Resource implements IRelationship {
 
     public static build(sourceObject: any): IRelationship {
         return new Builder<IRelationship>(sourceObject, this)
@@ -38,7 +40,7 @@ export class Relationship implements IRelationship {
             .build();
     }
 
-    constructor(public _links: ILink[],
+    constructor(permissions: Permissions,
                 public relationshipType: IHrefValue<IRelationshipType>,
                 public subject: IHrefValue<IParty>,
                 public subjectNickName: Name,
@@ -51,6 +53,7 @@ export class Relationship implements IRelationship {
                 public initiatedBy: string,
                 public supersededBy: IHrefValue<IRelationship>,
                 public attributes: IRelationshipAttribute[]) {
+        super(permissions ? permissions : PermissionTemplates.relationship);
     }
 
     public getAttribute(code: string): IRelationshipAttribute {
