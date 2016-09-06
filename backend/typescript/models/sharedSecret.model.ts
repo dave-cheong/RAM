@@ -7,9 +7,9 @@ import {PermissionTemplates} from '../../../commons/permissions/allPermission.te
 import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
-
 /* tslint:disable:no-unused-variable */
 const _SharedSecretTypeModel = SharedSecretTypeModel;
+/* tslint:enable:no-unused-variable */
 
 // mongoose ...........................................................................................................
 

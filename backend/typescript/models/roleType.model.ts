@@ -3,19 +3,13 @@ import {ICodeDecode, CodeDecode, CodeDecodeSchema, Model} from './base';
 import {Url} from './url';
 import {RoleAttributeNameModel} from './roleAttributeName.model';
 import {IRoleAttributeNameUsage, RoleAttributeNameUsageModel} from './roleAttributeNameUsage.model';
-import {
-    HrefValue,
-    RoleType as DTO,
-    RoleAttributeNameUsage as RoleAttributeNameUsageDTO
-} from '../../../commons/api';
+import {HrefValue, RoleType as DTO, RoleAttributeNameUsage as RoleAttributeNameUsageDTO} from '../../../commons/api';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
-
 /* tslint:disable:no-unused-variable */
 const _RoleAttributeNameModel = RoleAttributeNameModel;
-
-/* tslint:disable:no-unused-variable */
 const _RoleAttributeNameUsageModel = RoleAttributeNameUsageModel;
+/* tslint:enable:no-unused-variable */
 
 // mongoose ...........................................................................................................
 

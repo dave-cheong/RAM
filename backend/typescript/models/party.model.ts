@@ -27,11 +27,11 @@ import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
 import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
 
+// force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 /* tslint:disable:no-unused-variable */
 const _RoleAttributeModel = RoleAttributeModel;
-
-/* tslint:disable:no-unused-variable */
 const _RelationshipTypeModel = RelationshipTypeModel;
+/* tslint:enable:no-unused-variable */
 
 // mongoose ...........................................................................................................
 

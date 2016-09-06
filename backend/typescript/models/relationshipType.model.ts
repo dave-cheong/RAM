@@ -10,12 +10,10 @@ import {
 } from '../../../commons/api';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
-
 /* tslint:disable:no-unused-variable */
 const _RelationshipAttributeNameModel = RelationshipAttributeNameModel;
-
-/* tslint:disable:no-unused-variable */
 const _RelationshipAttributeNameUsageModel = RelationshipAttributeNameUsageModel;
+/* tslint:enable:no-unused-variable */
 
 // mongoose ...........................................................................................................
 

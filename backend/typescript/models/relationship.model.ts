@@ -34,21 +34,13 @@ import {RelationshipCanRejectPermissionEnforcer} from '../permissions/relationsh
 import {RelationshipCanAcceptPermissionEnforcer} from '../permissions/relationshipCanAcceptPermission.enforcer';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
-
 /* tslint:disable:no-unused-variable */
 const _PartyModel = PartyModel;
-
-/* tslint:disable:no-unused-variable */
 const _NameModel = NameModel;
-
-/* tslint:disable:no-unused-variable */
 const _RelationshipAttributeModel = RelationshipAttributeModel;
-
-/* tslint:disable:no-unused-variable */
 const _RelationshipAttributeNameModel = RelationshipAttributeNameModel;
-
-/* tslint:disable:no-unused-variable */
 const _RelationshipTypeModel = RelationshipTypeModel;
+/* tslint:enable:no-unused-variable */
 
 const MAX_PAGE_SIZE = 10;
 
