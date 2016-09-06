@@ -1,4 +1,4 @@
-import {IPermission, Permission, Permissions} from '../dtos/permission.dto';
+import {Permission, Permissions} from '../dtos/permission.dto';
 
 export const RelationshipCanViewPermissionTemplate = new Permission(
     'relationship-can-view',
