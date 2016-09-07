@@ -111,7 +111,10 @@ export class AddRelationshipCompleteComponent extends AbstractPageComponent {
     }
 
     public goToPrintPage() {
-        //this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity);
+        const printHref = this.services.model.getLinkHrefByType(Constants.Link.PRINT, this.relationship);
+        if (printHref) {
+            window.location.href = printHref;
+        }
     }
 
 }

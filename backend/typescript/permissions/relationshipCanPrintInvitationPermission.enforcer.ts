@@ -49,7 +49,7 @@ export class RelationshipCanPrintInvitationPermissionEnforcer extends Permission
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link(Constants.Link.PRINT, Url.POST, await Url.forRelationshipNotifyDelegate(relationship.invitationIdentity.rawIdValue));
+            permission.link = new Link(Constants.Link.PRINT, Url.GET, await Url.forRelationshipPrintInvitation(invitationIdentity.rawIdValue));
         } else {
             permission.value = false;
         }
