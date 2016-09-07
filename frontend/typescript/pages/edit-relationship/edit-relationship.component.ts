@@ -217,7 +217,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         };
 
         // access levels
-        let permAttributes = [];
+        let permAttributes:IRelationshipAttribute[] = [];
         for (let att of this.relationship.attributes) {
             if (att.attributeName.value.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
                 if (!att.value) {
@@ -461,7 +461,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.manageAuthAttribute = allowManageAuthorisationUsage;
 
             // authorisation permission component
-            this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND) !== null;
+            this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue !== 'false';
             this.relationshipComponentData.authorisationPermissions.enabled = true;
             this.relationshipComponentData.authorisationPermissions.accessLevelsDescription = selectedRelationshipTypeRef.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.ACCESS_LEVELS_DESCRIPTION);
 
