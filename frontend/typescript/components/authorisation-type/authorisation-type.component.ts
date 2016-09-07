@@ -1,4 +1,4 @@
-import {OnInit, Input, Output, EventEmitter, Component} from '@angular/core';
+import {OnInit, OnChanges, Input, Output, EventEmitter, Component, SimpleChanges} from '@angular/core';
 import {Validators, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, FormControl, FORM_DIRECTIVES } from '@angular/forms';
 
 import {
@@ -12,7 +12,7 @@ import {
     directives: [REACTIVE_FORM_DIRECTIVES,FORM_DIRECTIVES]
 })
 
-export class AuthorisationTypeComponent implements OnInit {
+export class AuthorisationTypeComponent implements OnInit, OnChanges {
 
     public form: FormGroup;
     public selectedAuthType: IHrefValue<IRelationshipType>;
@@ -36,6 +36,12 @@ export class AuthorisationTypeComponent implements OnInit {
             this.dataChanges.emit(v);
             this.isValid.emit(this.form.valid);
         });
+    }
+
+    public ngOnChanges(changes: SimpleChanges): any {
+        if (this.data.authType !== 'choose') {
+            (this.form.controls['authType'] as FormControl).updateValue(this.data.authType);
+        }
     }
 
     public onAuthTypeChange(value: string) {

@@ -165,9 +165,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // todo there may be a timing problem here - make sure reltypes are loaded
         let relationshipType = this.relationship.relationshipType.getFromList(this.relationshipTypeRefs);
-
-        this.relationshipComponentData.authType.authType = relationshipType.code;
-        this.authTypeChange(this.relationshipComponentData.authType);
+        if (!relationshipType) {
+            // todo probably Associate - what should we do?
+            return;
+        }
+        this.relationshipComponentData.authType = {authType:relationshipType.code};
 
         // date
         this.originalStartDate = relationship.startTimestamp;
