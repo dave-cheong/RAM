@@ -42,20 +42,20 @@ export class AddRelationshipCompleteComponent extends AbstractPageComponent {
         this.code = params.path['invitationCode'];
         this.displayName = params.path['displayName'];
 
-        // identity in focus
-        this.services.rest.findIdentityByValue(this.idValue).subscribe((identity) => {
-            this.identity = identity;
-        });
-
         // forms
-        this.form = this.fb.group({
-            'email': ['', Validators.compose([Validators.required, RAMNgValidators.validateEmailFormat])]
-        });
-        this.formUdn = this.fb.group({
-            'udn': ['']
-        });
-        // 'udn': ['', Validators.compose([Validators.required, RAMNgValidators.validateUDNFormat])]
+        this.form = this.fb.group({'email': ['', Validators.compose([Validators.required, RAMNgValidators.validateEmailFormat])]});
+        this.formUdn = this.fb.group({'udn': ['']});
 
+        // identity in focus
+        this.services.rest.findIdentityByValue(this.idValue).subscribe({
+            next: this.onFindIdentity.bind(this),
+            error: this.onServerError.bind(this)
+        });
+
+    }
+
+    public onFindIdentity(identity: IIdentity) {
+        this.identity = identity;
     }
 
     public onSubmitUdn() {
@@ -92,6 +92,10 @@ export class AddRelationshipCompleteComponent extends AbstractPageComponent {
 
     public goToRelationshipsPage() {
         this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity));
+    }
+
+    public goToPrintPage() {
+
     }
 
 }
