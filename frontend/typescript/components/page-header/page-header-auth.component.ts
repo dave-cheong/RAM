@@ -1,8 +1,8 @@
 import {Component, Input} from '@angular/core';
 import {Router} from '@angular/router';
 
+import {Constants} from '../../../../commons/constants';
 import {RAMServices} from '../../services/ram-services';
-import {RAMConstants} from '../../services/ram-constants.service';
 
 import {IIdentity} from '../../../../commons/api';
 
@@ -42,7 +42,7 @@ export class PageHeaderAuthComponent {
     public goToRelationshipsPage() {
         if (this.identity) {
             this.services.route.goToRelationshipsPage(
-                this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+                this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity)
             );
         }
     };
@@ -51,7 +51,7 @@ export class PageHeaderAuthComponent {
         if (this.isGiveAuthorisationsPageEnabled()) {
             if (this.identity) {
                 this.services.route.goToAddRelationshipPage(
-                    this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+                    this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity)
                 );
             }
         }

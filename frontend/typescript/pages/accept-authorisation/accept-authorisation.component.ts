@@ -8,7 +8,7 @@ import {AbstractPageComponent} from '../abstract-page/abstract-page.component';
 import {PageHeaderAuthComponent} from '../../components/page-header/page-header-auth.component';
 import {MarkdownComponent} from '../../components/ng2-markdown/ng2-markdown.component';
 import {RAMServices} from '../../services/ram-services';
-import {RAMConstants} from '../../services/ram-constants.service';
+import {Constants} from '../../../../commons/constants';
 import {
     IIdentity,
     IRelationship,
@@ -61,7 +61,7 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
         this.relationship$ = this.services.rest.findPendingRelationshipByInvitationCode(this.code);
         this.relationship$.subscribe((relationship) => {
             this.relationship = relationship;
-            this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
 
             let permission = this.relationship.getPermission(RelationshipCanAcceptPermission);
             this.canAccept = permission.isAllowed();
@@ -121,32 +121,32 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     private onDecline() {
         this.declineDisplay = false;
         this.services.route.goToRelationshipsPage(
-            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+            this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity),
             null,
             1,
-            RAMConstants.GlobalMessage.DECLINED_RELATIONSHIP
+            Constants.GlobalMessage.DECLINED_RELATIONSHIP
         );
     }
 
     private onAccept() {
         this.services.route.goToRelationshipsPage(
-            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+            this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity),
             null,
             1,
-            RAMConstants.GlobalMessage.ACCEPTED_RELATIONSHIP
+            Constants.GlobalMessage.ACCEPTED_RELATIONSHIP
         );
     }
 
     public goToEnterAuthorisationPage() {
-        this.services.route.goToRelationshipEnterCodePage(this.idValue, RAMConstants.GlobalMessage.INVALID_CODE);
+        this.services.route.goToRelationshipEnterCodePage(this.idValue, Constants.GlobalMessage.INVALID_CODE);
     };
 
     public goToRelationshipsPage() {
         this.services.route.goToRelationshipsPage(
-            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+            this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity),
             null,
             1,
-            RAMConstants.GlobalMessage.CANCEL_ACCEPT_RELATIONSHIP
+            Constants.GlobalMessage.CANCEL_ACCEPT_RELATIONSHIP
         );
     };
 

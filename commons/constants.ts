@@ -1,4 +1,4 @@
-export const RAMConstants = {
+export const Constants = {
 
     GlobalMessage: {
         DELEGATE_NOTIFIED: 'DELEGATE_NOTIFIED',
