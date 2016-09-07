@@ -80,7 +80,11 @@ const RelationshipAttributeNameSchema = CodeDecodeSchema({
     },
     permittedValues: [{
         type: String
-    }]
+    }],
+    appliesToInstance: {
+        type: Boolean,
+        required: [true, 'Applies to Instance is required'],
+    }
 });
 
 // instance ...........................................................................................................
@@ -91,6 +95,7 @@ export interface IRelationshipAttributeName extends ICodeDecode {
     category?: string;
     purposeText: string;
     permittedValues: string[];
+    appliesToInstance: boolean;
     domainEnum(): RelationshipAttributeNameDomain;
     isInDateRange(): boolean;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
@@ -104,6 +109,7 @@ class RelationshipAttributeName extends CodeDecode implements IRelationshipAttri
     public category: string;
     public purposeText: string;
     public permittedValues: string[];
+    public appliesToInstance: boolean;
 
     public domainEnum(): RelationshipAttributeNameDomain {
         return RelationshipAttributeNameDomain.valueOf(this.domain);
@@ -132,7 +138,8 @@ class RelationshipAttributeName extends CodeDecode implements IRelationshipAttri
             this.domain,
             this.classifier,
             this.category,
-            this.permittedValues
+            this.permittedValues,
+            this.appliesToInstance
         );
     }
 
