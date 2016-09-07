@@ -416,13 +416,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     }
 
-    // todo change this to use href hateoas instead of the id value
     public onInsert(relationship: IRelationship) {
-        let delegateIdentity = relationship.delegate.value.identities[0].value;
         this.services.route.goToRelationshipAddCompletePage(
-            this.identity.idValue,
-            delegateIdentity.rawIdValue,
-            this.displayName(this.relationshipComponentData.representativeDetails)
+            this.identityHref,
+            this.services.model.getLinkHrefByType(Constants.Link.SELF, relationship)
         );
     }
 
