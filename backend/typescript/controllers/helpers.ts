@@ -2,9 +2,26 @@ import {logger} from '../logger';
 import {Response, Request} from 'express';
 import {ErrorResponse, SearchResult, HrefValue} from '../../../commons/api';
 import * as _ from 'lodash';
+import * as mu from 'mu2';
 import MappedError = ExpressValidator.MappedError;
 
 export const REGULAR_CHARS = '^([A-Za-z0-9 +&\'\*\-]+)?$';
+
+mu.root = __dirname + '/../../views';
+
+export function sendHtml<T>(res: Response, view: string) {
+    'use strict';
+    return (doc: T): T => {
+        if (doc) {
+            res.status(200);
+            res.setHeader('Content-Type', 'text/html');
+            mu.clearCache(view);
+            let stream = mu.compileAndRender(view, doc);
+            stream.pipe(res);
+        }
+        return doc;
+    };
+}
 
 export function sendResource<T>(res: Response) {
     'use strict';

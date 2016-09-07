@@ -3,16 +3,10 @@ import {context} from '../providers/context.provider';
 import {sendResource, sendError, sendNotFoundError, validateReqSchema} from './helpers';
 import {conf} from '../bootstrap';
 import {HealthCheck} from '../models/healthCheck.model';
-import {logger} from '../logger';
-import {Translator} from '../ram/translator';
 
 export class SystemController {
 
     private healthCheckShallow = async(req: Request, res: Response) => {
-
-        const trans = Translator.get('HELLO');
-        logger.info(`${trans}`);
-
         const schema = {};
         validateReqSchema(req, schema)
             .then((req: Request) => {
@@ -61,6 +55,10 @@ export class SystemController {
     };
 
     public assignRoutes = (router: Router) => {
+
+        router.get('/hello',
+            context.begin,
+            this.hello);
 
         router.get('/healthcheck/shallow',
             context.begin,
