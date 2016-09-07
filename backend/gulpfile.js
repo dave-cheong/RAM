@@ -92,7 +92,7 @@ gulp.task('servedebug', ["copy:i18n", "copy:views", "ts:watch"], function () {
         });
 });
 
-gulp.task('seed', ["ts:compile"], function (cb) {
+gulp.task('seed', ["ts:compile", "copy:i18n"], function (cb) {
     exec('node dist/backend/typescript/seeding/seeder.js --color', function (err, stdout, stderr) {
         if (stdout) {
             console.log(stdout);

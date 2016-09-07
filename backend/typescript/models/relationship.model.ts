@@ -581,7 +581,7 @@ export class RelationshipModel {
         }
 
         const permissionCustomisationAllowed = relationshipType.findAttributeNameUsageByCode('PERMISSION_CUSTOMISATION_ALLOWED_IND');
-        let isPermissionAttributeAllowed = permissionCustomisationAllowed !== null && permissionCustomisationAllowed.defaultValue;
+        let isPermissionAttributeAllowed = permissionCustomisationAllowed !== null;
 
         for (let dtoAttribute of dto.attributes) {
             Assert.assertNotNull(dtoAttribute.attributeName, 'Attribute did not have an attribute name');

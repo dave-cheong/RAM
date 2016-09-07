@@ -264,7 +264,6 @@ To run locally for development:
  
  ./ram deps
  ./ram jspm
- 
  ./ram db:seed
 
  ./ram start:backend 
