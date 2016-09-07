@@ -2,10 +2,10 @@ import {ILink, IHasLinks} from './link.dto';
 import {IPermission, IHasPermissions, Permission, Permissions} from './permission.dto';
 
 export interface IResource extends IHasLinks, IHasPermissions {
-    get(template: IPermission): IPermission;
-    getDenied(templates: IPermission[]): IPermission[];
-    isAllowed(templates: IPermission[]): boolean;
-    isDenied(templates: IPermission[]): boolean;
+    getPermission(template: IPermission): IPermission;
+    getDeniedPermissions(templates: IPermission[]): IPermission[];
+    isPermissionAllowed(templates: IPermission[]): boolean;
+    isPermissionDenied(templates: IPermission[]): boolean;
 }
 
 export class Resource implements IResource {
@@ -34,25 +34,25 @@ export class Resource implements IResource {
         }
     }
 
-    public get(template: IPermission): IPermission {
+    public getPermission(template: IPermission): IPermission {
         return new Permissions()
             .pushAll(this._perms)
             .get(template);
     }
 
-    public getDenied(templates: IPermission[]): IPermission[] {
+    public getDeniedPermissions(templates: IPermission[]): IPermission[] {
         return new Permissions()
             .pushAll(this._perms)
             .getDenied(templates);
     }
 
-    public isAllowed(templates: IPermission[]): boolean {
+    public isPermissionAllowed(templates: IPermission[]): boolean {
         return new Permissions()
             .pushAll(this._perms)
             .isAllowed(templates);
     }
 
-    public isDenied(templates: IPermission[]): boolean {
+    public isPermissionDenied(templates: IPermission[]): boolean {
         return new Permissions()
             .pushAll(this._perms)
             .isDenied(templates);
