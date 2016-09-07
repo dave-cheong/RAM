@@ -6,8 +6,8 @@ import {AbstractPageComponent} from '../abstract-page/abstract-page.component';
 import {PageHeaderAuthComponent} from '../../components/page-header/page-header-auth.component';
 import {SearchResultPaginationComponent, SearchResultPaginationDelegate}
     from '../../components/search-result-pagination/search-result-pagination.component';
+import {Constants} from '../../../../commons/constants';
 import {RAMServices} from '../../services/ram-services';
-import {RAMConstants} from '../../services/ram-constants.service';
 
 import {
     IHrefValue,
@@ -71,7 +71,7 @@ export class RolesComponent extends AbstractPageComponent {
             this.identity = identity;
 
             // roles
-            const rolesHref = this.services.model.getLinkHrefByType(RAMConstants.Link.ROLE_LIST, this.identity);
+            const rolesHref = this.services.model.getLinkHrefByType(Constants.Link.ROLE_LIST, this.identity);
             this.services.rest.searchRolesByHref(rolesHref, null, this.page)
                 .subscribe((searchResult) => {
                     this.roleSearchResult = searchResult;
@@ -112,7 +112,7 @@ export class RolesComponent extends AbstractPageComponent {
 
     public goToAddRolePage() {
         if (this.agencyUser && this.identity) {
-            this.services.route.goToAddRolePage(this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity));
+            this.services.route.goToAddRolePage(this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity));
         }
     }
 
@@ -128,7 +128,7 @@ export class RolesComponent extends AbstractPageComponent {
     }
 
     public isEditRoleEnabled(roleRef: IHrefValue<IRole>) {
-        return this.services.model.hasLinkHrefByType(RAMConstants.Link.MODIFY, roleRef.value);
+        return this.services.model.hasLinkHrefByType(Constants.Link.MODIFY, roleRef.value);
     }
 
 }

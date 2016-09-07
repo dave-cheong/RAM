@@ -6,8 +6,8 @@ import {AbstractPageComponent} from '../abstract-page/abstract-page.component';
 import {PageHeaderAuthComponent} from '../../components/page-header/page-header-auth.component';
 import {SearchResultPaginationComponent, SearchResultPaginationDelegate}
     from '../../components/search-result-pagination/search-result-pagination.component';
+import {Constants} from '../../../../commons/constants';
 import {RAMServices} from '../../services/ram-services';
-import {RAMConstants} from '../../services/ram-constants.service';
 
 import {
     ISearchResult,
@@ -71,17 +71,17 @@ export class RelationshipsComponent extends AbstractPageComponent {
         this.page = params.query['page'] ? +params.query['page'] : 1;
 
         // restrict to authorisations
-        this.filter.add('relationshipTypeCategory', RAMConstants.RelationshipTypeCategory.AUTHORISATION);
+        this.filter.add('relationshipTypeCategory', Constants.RelationshipTypeCategory.AUTHORISATION);
 
         // message
         const msg = params.query['msg'];
-        if (msg === RAMConstants.GlobalMessage.DELEGATE_NOTIFIED) {
+        if (msg === Constants.GlobalMessage.DELEGATE_NOTIFIED) {
             this.addGlobalMessage('A notification has been sent to the delegate.');
-        } else if (msg === RAMConstants.GlobalMessage.DECLINED_RELATIONSHIP) {
+        } else if (msg === Constants.GlobalMessage.DECLINED_RELATIONSHIP) {
             this.addGlobalMessage('You have declined the relationship.');
-        } else if (msg === RAMConstants.GlobalMessage.ACCEPTED_RELATIONSHIP) {
+        } else if (msg === Constants.GlobalMessage.ACCEPTED_RELATIONSHIP) {
             this.addGlobalMessage('You have accepted the relationship.');
-        } else if (msg === RAMConstants.GlobalMessage.CANCEL_ACCEPT_RELATIONSHIP) {
+        } else if (msg === Constants.GlobalMessage.CANCEL_ACCEPT_RELATIONSHIP) {
             this.addGlobalMessage('You cancelled without accepting or declining the relationship');
         }
 
@@ -109,14 +109,14 @@ export class RelationshipsComponent extends AbstractPageComponent {
         // relationship types
         this.services.rest.listRelationshipTypes().subscribe((relationshipTypeRefs) => {
             this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
-                return relationshipType.value.category === RAMConstants.RelationshipTypeCategory.AUTHORISATION;
+                return relationshipType.value.category === Constants.RelationshipTypeCategory.AUTHORISATION;
             });
         });
 
         // pagination delegate
         this.paginationDelegate = {
             goToPage: (page: number) => {
-                this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity), this.filter.encode(), page);
+                this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity), this.filter.encode(), page);
             }
         } as SearchResultPaginationDelegate;
 
@@ -204,14 +204,14 @@ export class RelationshipsComponent extends AbstractPageComponent {
         //console.log('Filter (encoded): ' + filterString);
         //console.log('Filter (decoded): ' + JSON.stringify(FilterParams.decode(filterString), null, 4));
         this.services.route.goToRelationshipsPage(
-            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity),
+            this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity),
             filterString
         );
     }
 
     public goToRelationshipAddPage() {
         this.services.route.goToAddRelationshipPage(
-            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+            this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity)
         );
     };
 
@@ -223,7 +223,7 @@ export class RelationshipsComponent extends AbstractPageComponent {
     public goToRelationshipsContext(partyResource: IHrefValue<IParty>) {
         const defaultIdentityResource = this.services.model.getDefaultIdentityResource(partyResource.value);
         if (defaultIdentityResource) {
-            this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, defaultIdentityResource.value));
+            this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(Constants.Link.SELF, defaultIdentityResource.value));
         }
     }
 
@@ -233,7 +233,7 @@ export class RelationshipsComponent extends AbstractPageComponent {
 
     public isEditRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
         // todo limit to only ACCEPTED at the moment, relax the restriction later
-        return this.services.model.hasLinkHrefByType(RAMConstants.Link.MODIFY, relationshipRef.value) && relationshipRef.value.status === RAMConstants.RelationshipStatus.ACCEPTED;
+        return this.services.model.hasLinkHrefByType(Constants.Link.MODIFY, relationshipRef.value) && relationshipRef.value.status === Constants.RelationshipStatus.ACCEPTED;
     }
 
 }

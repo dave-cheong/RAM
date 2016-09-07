@@ -4,8 +4,8 @@ import {Validators, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, FORM_DIREC
 
 import {AbstractPageComponent} from '../abstract-page/abstract-page.component';
 import {PageHeaderAuthComponent} from '../../components/page-header/page-header-auth.component';
+import {Constants} from '../../../../commons/constants';
 import {RAMServices} from '../../services/ram-services';
-import {RAMConstants} from '../../services/ram-constants.service';
 
 import {IIdentity} from '../../../../commons/api';
 
@@ -36,7 +36,7 @@ export class EnterInvitationCodeComponent extends AbstractPageComponent {
 
         // message
         const msg = params.query['msg'];
-        if (msg === RAMConstants.GlobalMessage.INVALID_CODE) {
+        if (msg === Constants.GlobalMessage.INVALID_CODE) {
             this.addGlobalMessage('The code you have entered does not exist or is invalid.');
         }
 
@@ -75,7 +75,7 @@ export class EnterInvitationCodeComponent extends AbstractPageComponent {
 
     public goToRelationshipsPage() {
         this.services.route.goToRelationshipsPage(
-            this.services.model.getLinkHrefByType(RAMConstants.Link.SELF, this.identity)
+            this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity)
         );
     };
 
