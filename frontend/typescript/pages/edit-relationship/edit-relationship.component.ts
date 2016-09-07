@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectorRef} from '@angular/core';
 import {ROUTER_DIRECTIVES, Router, ActivatedRoute, Params} from '@angular/router';
 import {FormBuilder} from '@angular/forms';
 
@@ -64,6 +64,8 @@ import {
 
 export class EditRelationshipComponent extends AbstractPageComponent {
 
+    private changeDetectorRef: ChangeDetectorRef;
+
     public identityHref: string;
     public relationshipHref: string;
 
@@ -119,9 +121,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         }
     };
 
-    constructor(route: ActivatedRoute, router: Router, fb: FormBuilder, services: RAMServices) {
+    constructor(route: ActivatedRoute, router: Router, fb: FormBuilder, services: RAMServices, cdr: ChangeDetectorRef) {
         super(route, router, fb, services);
         this.setBannerTitle('Authorisations');
+        this.changeDetectorRef = cdr;
     }
 
     public onInit(params: {path: Params, query: Params}) {
@@ -163,8 +166,26 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public onFindRelationship(relationship: IRelationship) {
         this.relationship = relationship;
 
+        const delegate = this.relationship.delegate.value;
+        const isOrg = delegate.partyType === RAMConstants.PartyTypeCode.ABN;
+        const profile = delegate.identities[0].value.profile;
+        const dobSharedSecret = profile.getSharedSecret(RAMConstants.SharedSecretCode.DATE_OF_BIRTH);
+
+        this.relationshipComponentData.representativeDetails = {
+            isOrganisation: isOrg,
+                individual: {
+                    givenName: isOrg ? '' : profile.name.givenName,
+                    familyName: isOrg ? '' : profile.name.familyName,
+                    dob: isOrg || !dobSharedSecret ? null : new Date(dobSharedSecret.value)
+            },
+            organisation: {
+                abn: '',
+                organisationName: ''
+            }
+        };
+
         // todo there may be a timing problem here - make sure reltypes are loaded
-        let relationshipType = this.relationship.relationshipType.getFromList(this.relationshipTypeRefs);
+        const relationshipType = this.relationship.relationshipType.getFromList(this.relationshipTypeRefs);
         if (!relationshipType) {
             // todo probably Associate - what should we do?
             return;
@@ -176,9 +197,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         this.relationshipComponentData.accessPeriod.startDate = relationship.startTimestamp;
         this.relationshipComponentData.accessPeriod.endDate = relationship.endTimestamp;
         this.relationshipComponentData.accessPeriod.noEndDate = relationship.endTimestamp === undefined || relationship.endTimestamp === null;
-        let todayMidnight = new Date();
+        const todayMidnight = new Date();
         todayMidnight.setHours(0, 0, 0, 0);
         this.relationshipComponentData.accessPeriod.startDateEnabled = this.originalStartDate > todayMidnight;
+
+        this.changeDetectorRef.detectChanges();
 
     }
 
@@ -227,7 +250,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // insert relationship
 
-            let partyType = this.relationshipComponentData.representativeDetails.isOrganisation ? RAMConstants.PartyTypeCode.ORGANISATION : RAMConstants.PartyTypeCode.INDIVIDUAL;
+            let partyType = this.relationshipComponentData.representativeDetails.isOrganisation ? RAMConstants.PartyTypeCode.ABN : RAMConstants.PartyTypeCode.INDIVIDUAL;
             let relationshipType = CodeDecode.getRefByCode(this.relationshipTypeRefs, this.relationshipComponentData.authType.authType) as IHrefValue<IRelationshipType>;
 
             // name

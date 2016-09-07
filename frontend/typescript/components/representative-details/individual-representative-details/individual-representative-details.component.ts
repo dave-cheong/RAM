@@ -1,5 +1,5 @@
-import {OnInit, Input, Output, EventEmitter, Component} from '@angular/core';
-import {Validators, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, FORM_DIRECTIVES } from '@angular/forms';
+import {OnInit, OnChanges, Input, Output, EventEmitter, Component, SimpleChanges} from '@angular/core';
+import {Validators, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, FormControl, FORM_DIRECTIVES } from '@angular/forms';
 import {RAMNgValidators} from '../../../commons/ram-ng-validators';
 import {Calendar} from 'primeng/primeng';
 
@@ -8,8 +8,7 @@ import {Calendar} from 'primeng/primeng';
     templateUrl: 'individual-representative-details.component.html',
     directives: [FORM_DIRECTIVES,REACTIVE_FORM_DIRECTIVES,Calendar]
 })
-export class IndividualRepresentativeDetailsComponent implements OnInit {
-
+export class IndividualRepresentativeDetailsComponent implements OnInit, OnChanges {
     public form: FormGroup;
     public dateFormat: string = 'dd/mm/yy';
 
@@ -32,6 +31,18 @@ export class IndividualRepresentativeDetailsComponent implements OnInit {
             this.isValid.emit(this.form.valid);
         });
     }
+
+    public ngOnChanges(changes: SimpleChanges): any {
+        if (this.form) {
+            (this.form.controls['givenName'] as FormControl).updateValue(this.data.givenName);
+            (this.form.controls['familyName'] as FormControl).updateValue(this.data.familyName);
+            if (this.data.dob) {
+                (this.form.controls['dob'] as FormControl).updateValue(this.data.dob);
+            }
+        }
+        return undefined;
+    }
+
 }
 
 export interface IndividualRepresentativeDetailsComponentData {
