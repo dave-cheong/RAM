@@ -102,7 +102,7 @@ export class Permissions {
     }
 
     public isDenied(templates: IPermission[]): boolean {
-        return this.getDenied(templates).length > 0;
+        return !this.isAllowed(templates);
     }
 
     public toArray(): IPermission[] {
