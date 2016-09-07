@@ -20,8 +20,8 @@ export class CakeryBakeryRelationshipsSeeder {
             } else {
 
                 console.log(Seeder.delegateManageAuthorisationAllowedInd_relAttributeName);
-                console.log(Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName);
-                console.log(Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName);
+                console.log(Seeder.delegateRelationshipDeclaration_relAttributeName);
+                console.log(Seeder.subjectRelationshipDeclaration_relAttributeName);
 
                 Seeder.cakerybakery_and_jennifermaxims_relationship = await Seeder.createRelationshipModel({
                     relationshipType: Seeder.custom_delegate_relationshipType,
@@ -39,11 +39,11 @@ export class CakeryBakeryRelationshipsSeeder {
                         } as any),
                         await Seeder.createRelationshipAttributeModel({
                             value: '',
-                            attributeName: Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName
+                            attributeName: Seeder.delegateRelationshipDeclaration_relAttributeName
                         } as any),
                         await Seeder.createRelationshipAttributeModel({
                             value: '',
-                            attributeName: Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName
+                            attributeName: Seeder.subjectRelationshipDeclaration_relAttributeName
                         } as any)
                     ]
                 } as any);

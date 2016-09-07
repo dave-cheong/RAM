@@ -46,11 +46,11 @@ export class JensCateringRelationshipsSeeder {
                         } as any),
                         await Seeder.createRelationshipAttributeModel({
                             value: null,
-                            attributeName: Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName
+                            attributeName: Seeder.delegateRelationshipDeclaration_relAttributeName
                         } as any),
                         await Seeder.createRelationshipAttributeModel({
                             value: null,
-                            attributeName: Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName
+                            attributeName: Seeder.subjectRelationshipDeclaration_relAttributeName
                         } as any)
                     ]
                 } as any);
@@ -134,11 +134,11 @@ export class JensCateringRelationshipsSeeder {
                         } as any),
                         await Seeder.createRelationshipAttributeModel({
                             value: null,
-                            attributeName: Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName
+                            attributeName: Seeder.delegateRelationshipDeclaration_relAttributeName
                         } as any),
                         await Seeder.createRelationshipAttributeModel({
                             value: null,
-                            attributeName: Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName
+                            attributeName: Seeder.subjectRelationshipDeclaration_relAttributeName
                         } as any)
                     ]
                 } as any);
@@ -214,11 +214,11 @@ export class JensCateringRelationshipsSeeder {
                         } as any),
                         await Seeder.createRelationshipAttributeModel({
                             value: null,
-                            attributeName: Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName
+                            attributeName: Seeder.delegateRelationshipDeclaration_relAttributeName
                         } as any),
                         await Seeder.createRelationshipAttributeModel({
                             value: null,
-                            attributeName: Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName
+                            attributeName: Seeder.subjectRelationshipDeclaration_relAttributeName
                         } as any)
                     ]
                 } as any);
@@ -291,11 +291,11 @@ export class JensCateringRelationshipsSeeder {
                         } as any),
                         await Seeder.createRelationshipAttributeModel({
                             value: null,
-                            attributeName: Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName
+                            attributeName: Seeder.delegateRelationshipDeclaration_relAttributeName
                         } as any),
                         await Seeder.createRelationshipAttributeModel({
                             value: null,
-                            attributeName: Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName
+                            attributeName: Seeder.subjectRelationshipDeclaration_relAttributeName
                         } as any)
                     ]
                 } as any);
@@ -372,11 +372,11 @@ export class JensCateringRelationshipsSeeder {
                             } as any),
                             await Seeder.createRelationshipAttributeModel({
                                 value: null,
-                                attributeName: Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName
+                                attributeName: Seeder.delegateRelationshipDeclaration_relAttributeName
                             } as any),
                             await Seeder.createRelationshipAttributeModel({
                                 value: null,
-                                attributeName: Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName
+                                attributeName: Seeder.subjectRelationshipDeclaration_relAttributeName
                             } as any)
                         ]
                     } as any);
