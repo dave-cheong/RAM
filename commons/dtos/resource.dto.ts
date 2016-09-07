@@ -5,6 +5,7 @@ export interface IResource extends IHasLinks, IHasPermissions {
     get(template: IPermission): IPermission;
     getDenied(templates: IPermission[]): IPermission[];
     isAllowed(templates: IPermission[]): boolean;
+    isDenied(templates: IPermission[]): boolean;
 }
 
 export class Resource implements IResource {
