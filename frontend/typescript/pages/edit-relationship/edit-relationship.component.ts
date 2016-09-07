@@ -295,7 +295,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             ];
 
             // permission attributes
-            if (relationshipType.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true') {
+            if (relationshipType.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND)) {
                 for (let permissionAttribute of this.relationshipComponentData.permissionAttributes) {
                     this.relationship.attributes.push(permissionAttribute);
                 }
@@ -348,7 +348,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // permission attributes
             // todo this needs to replace any existing permissions
-            if (relationshipType.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true') {
+            if (relationshipType.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND)) {
                 for (let permissionAttribute of this.relationshipComponentData.permissionAttributes) {
                     this.relationship.attributes.push(permissionAttribute);
                 }
@@ -413,7 +413,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.manageAuthAttribute = allowManageAuthorisationUsage;
 
             // authorisation permission component
-            this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue === 'true';
+            this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND) != null;
             this.relationshipComponentData.authorisationPermissions.enabled = true;
             this.relationshipComponentData.authorisationPermissions.accessLevelsDescription = selectedRelationshipTypeRef.value.getAttributeNameUsage(RAMConstants.RelationshipAttributeNameCode.ACCESS_LEVELS_DESCRIPTION);
 

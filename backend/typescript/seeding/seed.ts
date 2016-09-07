@@ -572,7 +572,7 @@ export class Seeder {
                 shortDecodeText: 'Permission Customisation Allowed Indicator',
                 longDecodeText: 'Permission Customisation Allowed Indicator',
                 startDate: now,
-                domain: RelationshipAttributeNameDomain.Boolean.code,
+                domain: RelationshipAttributeNameDomain.Null.code,
                 classifier: RelationshipAttributeNameClassifier.Other.code,
                 category: null,
                 purposeText: 'Indicator of whether a relationship type allows the user to customise permission levels'
