@@ -4,7 +4,7 @@ import {doResetDataInMongo} from '../resetDataInMongo';
 import {Principal} from '../models/principal.model';
 import {Headers} from '../controllers/headers';
 import {context} from '../providers/context.provider';
-import {IIdentity} from "../models/identity.model";
+import {IIdentity} from '../models/identity.model';
 
 console.log('\nUsing mongo: ', conf.mongoURL, '\n');
 
