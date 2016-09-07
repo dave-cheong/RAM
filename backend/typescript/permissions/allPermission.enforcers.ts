@@ -1,4 +1,3 @@
-import {IPermissionEnforcer} from '../models/base';
 import {IIdentity} from '../models/identity.model';
 import {IName} from '../models/name.model';
 import {IParty} from '../models/party.model';
@@ -6,6 +5,9 @@ import {IProfile} from '../models/profile.model';
 import {IRole} from '../models/role.model';
 import {IRelationship} from '../models/relationship.model';
 import {ISharedSecret} from '../models/sharedSecret.model';
+import {IRoleAttribute} from '../models/roleAttribute.model';
+import {IRoleAttributeNameUsage} from '../models/roleAttributeNameUsage.model';
+import {IPermissionEnforcer} from '../models/base';
 import {RelationshipCanAcceptPermissionEnforcer} from './relationshipCanAcceptPermission.enforcer';
 import {RelationshipCanClaimPermissionEnforcer} from './relationshipCanClaimPermission.enforcer';
 import {RelationshipCanModifyPermissionEnforcer} from './relationshipCanModifyPermission.enforcer';
@@ -14,8 +16,6 @@ import {RelationshipCanRejectPermissionEnforcer} from './relationshipCanRejectPe
 import {RelationshipCanViewPermissionEnforcer} from './relationshipCanViewPermission.enforcer';
 import {IRelationshipAttributeNameUsage} from '../models/relationshipAttributeNameUsage.model';
 import {IRelationshipAttribute} from '../models/relationshipAttribute.model';
-import {IRoleAttribute} from '../models/roleAttribute.model';
-import {IRoleAttributeNameUsage} from '../models/roleAttributeNameUsage.model';
 
 export class PermissionEnforcers {
 

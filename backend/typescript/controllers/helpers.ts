@@ -20,7 +20,7 @@ export function sendResource<T>(res: Response) {
 
 export function sendList<T extends HrefValue<U>|U, U>(res: Response) {
     'use strict';
-    return async (results: Promise<T>[]): Promise<T[]> => {
+    return async(results: Promise<T>[]): Promise<T[]> => {
         const resolvedResults = await Promise.all<T>(results);
         res.status(200);
         res.setHeader('Content-Type', 'application/json');
@@ -31,7 +31,7 @@ export function sendList<T extends HrefValue<U>|U, U>(res: Response) {
 
 export function sendSearchResult<T extends HrefValue<U>, U>(res: Response) {
     'use strict';
-    return async (results: SearchResult<Promise<T>>): Promise<SearchResult<T>> => {
+    return async(results: SearchResult<Promise<T>>): Promise<SearchResult<T>> => {
         const resolvedResults = new SearchResult<T>(
             results.page,
             results.totalCount,

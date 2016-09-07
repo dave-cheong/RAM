@@ -45,9 +45,9 @@ export class SystemController {
             .then((req: Request) => {
                 return {};
             })
-            .then(async (model: {[key: string]: string}) => {
+            .then(async(model: {[key: string]: string}) => {
                 for (let i = 0; i < pause; i = i + 1) {
-                //     await IdentityModel.findByInvitationCode('some id ' + msg);
+                    // await IdentityModel.findByInvitationCode('some id ' + msg);
                 }
                 model[msg] = context.get(msg);
                 model['msg copy'] = context.get('msg');

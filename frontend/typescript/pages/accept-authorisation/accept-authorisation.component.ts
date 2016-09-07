@@ -4,13 +4,11 @@ import {ROUTER_DIRECTIVES, ActivatedRoute, Router, Params} from '@angular/router
 import {FormBuilder} from '@angular/forms';
 import {DatePipe} from '@angular/common';
 import {Dialog} from 'primeng/primeng';
-
 import {AbstractPageComponent} from '../abstract-page/abstract-page.component';
 import {PageHeaderAuthComponent} from '../../components/page-header/page-header-auth.component';
 import {MarkdownComponent} from '../../components/ng2-markdown/ng2-markdown.component';
 import {RAMServices} from '../../services/ram-services';
 import {RAMConstants} from '../../services/ram-constants.service';
-
 import {
     IIdentity,
     IRelationship,
@@ -18,11 +16,7 @@ import {
     IRelationshipAttribute,
     IRelationshipAttributeNameUsage
 } from '../../../../commons/api';
-import {PermissionTemplates} from '../../../../commons/permissions/allPermission.templates';
-import {
-    Relationships,
-    RelationshipCanAcceptPermission
-} from '../../../../commons/permissions/relationshipPermission.templates';
+import {RelationshipCanAcceptPermission} from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
     selector: 'accept-authorisation',
@@ -69,7 +63,7 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
             this.relationship = relationship;
             this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(RAMConstants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
 
-            let permission = this.relationship.get(RelationshipCanAcceptPermission);
+            let permission = this.relationship.getPermission(RelationshipCanAcceptPermission);
             this.canAccept = permission.isAllowed();
             if (!permission.isAllowed()) {
                 this.addGlobalMessages(permission.messages);
