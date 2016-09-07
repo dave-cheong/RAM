@@ -48,7 +48,7 @@ export class RelationshipCanNotifyDelegatePermissionEnforcer extends PermissionE
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link('notifyDelegate', Url.POST, await Url.forRelationshipNotifyDelegate(relationship.invitationIdentity.rawIdValue));
+            permission.link = new Link('notify-delegate', Url.POST, await Url.forRelationshipNotifyDelegate(relationship.invitationIdentity.rawIdValue));
         } else {
             permission.value = false;
         }
