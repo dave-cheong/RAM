@@ -56,10 +56,6 @@ export class SystemController {
 
     public assignRoutes = (router: Router) => {
 
-        router.get('/hello',
-            context.begin,
-            this.hello);
-
         router.get('/healthcheck/shallow',
             context.begin,
             this.healthCheckShallow);
