@@ -166,6 +166,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public onFindRelationship(relationship: IRelationship) {
         this.relationship = relationship;
 
+        // name, dob, abn
         const delegate = this.relationship.delegate.value;
         const isOrg = delegate.partyType === Constants.PartyTypeCode.ABN;
         const profile = delegate.identities[0].value.profile;
@@ -184,15 +185,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             }
         };
 
-        // todo there may be a timing problem here - make sure reltypes are loaded
-        const relationshipType = this.relationship.relationshipType.getFromList(this.relationshipTypeRefs);
-        if (!relationshipType) {
-            // todo probably Associate - what should we do?
-            return;
-        }
-        this.relationshipComponentData.authType = {authType:relationshipType.code};
-
-        // date
+        // access period
         this.originalStartDate = relationship.startTimestamp;
         this.relationshipComponentData.accessPeriod.startDate = relationship.startTimestamp;
         this.relationshipComponentData.accessPeriod.endDate = relationship.endTimestamp;
@@ -201,6 +194,37 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         todayMidnight.setHours(0, 0, 0, 0);
         this.relationshipComponentData.accessPeriod.startDateEnabled = this.originalStartDate > todayMidnight;
 
+        // authorisation type
+        // todo there may be a timing problem here - make sure reltypes are loaded
+        const relationshipType = this.relationship.relationshipType.getFromList(this.relationshipTypeRefs);
+        if (!relationshipType) {
+            // todo probably Associate - what should we do?
+            return;
+        }
+        this.relationshipComponentData.authType = {authType:relationshipType.code};
+
+        // trigger authType change update before doing the rest
+        this.changeDetectorRef.detectChanges();
+
+        // auth management
+        const userAuthorisedToManage = this.relationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND).value[0];
+        this.relationshipComponentData.authorisationManagement = {
+            value: userAuthorisedToManage
+        };
+
+        // access levels
+        let permAttributes = [];
+        for (let att of this.relationship.attributes) {
+            if (att.attributeName.value.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
+                if (!att.value) {
+                    att.value = [];
+                }
+                permAttributes.push(att);
+            }
+        }
+        this.relationshipComponentData.permissionAttributes = permAttributes;
+
+        // tell angular we've changed things to please the checks that are done to confirm change propagation
         this.changeDetectorRef.detectChanges();
 
     }
