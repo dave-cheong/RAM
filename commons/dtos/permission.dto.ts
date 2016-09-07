@@ -66,8 +66,13 @@ export class Permissions {
         return this;
     }
 
-    public isAllowed(templates: IPermission[]): boolean {
-        return this.getDenied(templates).length === 0;
+    public get(template: IPermission): IPermission {
+        for (let permission of this.array) {
+            if (template.code === permission.code) {
+                return permission;
+            }
+        }
+        return undefined;
     }
 
     public getDenied(templates: IPermission[]): IPermission[] {
@@ -92,13 +97,12 @@ export class Permissions {
         }
     }
 
-    public get(template: IPermission): IPermission {
-        for (let permission of this.array) {
-            if (template.code === permission.code) {
-                return permission;
-            }
-        }
-        return undefined;
+    public isAllowed(templates: IPermission[]): boolean {
+        return this.getDenied(templates).length === 0;
+    }
+
+    public isDenied(templates: IPermission[]): boolean {
+        return this.getDenied(templates).length > 0;
     }
 
     public toArray(): IPermission[] {

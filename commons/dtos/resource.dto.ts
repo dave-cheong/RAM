@@ -51,4 +51,10 @@ export class Resource implements IResource {
             .isAllowed(templates);
     }
 
+    public isDenied(templates: IPermission[]): boolean {
+        return new Permissions()
+            .pushAll(this._perms)
+            .isDenied(templates);
+    }
+
 }
