@@ -16,7 +16,7 @@ export class RelationshipCanAcceptPermissionEnforcer extends PermissionEnforcer<
 
     public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
-        let permission = new Permission(this.template.code, this.template.description, this.template.value);
+        let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
         let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
 
         // validate authenticated

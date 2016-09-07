@@ -26,6 +26,7 @@ export class Resource implements IResource {
                     permission.code,
                     permission.description,
                     permission.value,
+                    permission.linkType,
                     permission.messages,
                     undefined
                 );

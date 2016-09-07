@@ -9,6 +9,7 @@ import {RAMServices} from '../../services/ram-services';
 import {Constants} from '../../../../commons/constants';
 
 import {IIdentity, IRelationship, INotifyDelegateDTO} from '../../../../commons/api';
+import {RelationshipCanNotifyDelegatePermission} from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
     selector: 'add-relationship-complete',
@@ -85,26 +86,33 @@ export class AddRelationshipCompleteComponent extends AbstractPageComponent {
             email: this.form.value.email
         };
 
-        // todo need to change this to be HATEOAS compliant
-        this.services.rest.notifyDelegateByInvitationCode(this.code, notifyDelegateDTO).subscribe((relationship) => {
-            this.services.route.goToRelationshipsPage(
-                this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity),
-                null,
-                1,
-                Constants.GlobalMessage.DELEGATE_NOTIFIED
-            );
-        }, (err) => {
-            const status = err.status;
-            if (status === 404) {
-                this.addGlobalMessage('The code you have entered does not exist or is invalid.');
-            } else {
-                this.addGlobalErrorMessages(err);
-            }
-        });
+        let notifyDelegateHref = this.relationship.getLinkHrefByPermission(RelationshipCanNotifyDelegatePermission);
+        if (notifyDelegateHref) {
+            this.services.rest.notifyDelegateByHref(notifyDelegateHref, notifyDelegateDTO).subscribe({
+                next: this.onNotifyDelegate.bind(this),
+                error: (err) => {
+                    const status = err.status;
+                    if (status === 404) {
+                        this.addGlobalMessage('The code you have entered does not exist or is invalid.');
+                    } else {
+                        this.addGlobalErrorMessages(err);
+                    }
+                }
+            });
+        }
 
         return false;
 
     };
+
+    public onNotifyDelegate(relationship: IRelationship) {
+        this.services.route.goToRelationshipsPage(
+            this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity),
+            null,
+            1,
+            Constants.GlobalMessage.DELEGATE_NOTIFIED
+        );
+    }
 
     public goToRelationshipsPage() {
         this.services.route.goToRelationshipsPage(this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity));

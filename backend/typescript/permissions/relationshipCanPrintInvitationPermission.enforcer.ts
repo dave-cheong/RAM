@@ -18,7 +18,7 @@ export class RelationshipCanPrintInvitationPermissionEnforcer extends Permission
     // todo this needs to check party access
     public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
-        let permission = new Permission(this.template.code, this.template.description, this.template.value);
+        let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
         let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
         let invitationIdentity = relationship.invitationIdentity;
 

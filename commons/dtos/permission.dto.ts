@@ -14,8 +14,6 @@ export interface IPermission {
 
 export class Permission implements IPermission {
 
-    public linkType: string;
-
     public static build(sourceObject: any): IPermission {
         return new Builder<IPermission>(sourceObject, this)
             .build();
@@ -24,6 +22,7 @@ export class Permission implements IPermission {
     constructor(public code: string,
                 public description: string,
                 public value: boolean,
+                public linkType?: string,
                 public messages?: string[],
                 public link?: ILink) {
         if (!messages) {
