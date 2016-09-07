@@ -263,6 +263,7 @@ To run locally for development:
  cd RAM
  
  ./ram deps
+ ./ram jspm
  ./ram db:seed
 
  ./ram start:backend 
