@@ -23,10 +23,10 @@
 
     <div class="container">
 
-        <h1>RE: Instructions for DELEGATE_NAME to Accept an Authorisation</h1>
+        <h1>RE: Instructions for <b>{{delegateNickName._displayName}}</b> to Accept an Authorisation</h1>
 
         <p>You have been authorised to access and transact with Government business
-            services on behalf of SUBJECT_NAME.</p>
+            services on behalf of <b>{{subjectNickName._displayName}}</b>.</p>
 
         <h2>What you need to do</h2>
 
@@ -36,7 +36,7 @@
             <li>Go to authorisationmanager.gov.au</li>
             <li>sign in with your myGov or AUSkey*</li>
             <li>Select Get authorisation</li>
-            <li>Enter the authorisation code INVITATION_CODE and select activate**</li>
+            <li>Enter the authorisation code <b>INVITATION_CODE</b> and select activate**</li>
         </ol>
 
         <p>Important: This code will expire in seven calendar days, if the code expires you will
@@ -44,13 +44,13 @@
 
         <ol start="5">
             <li>Review the request details</li>
-            <li>Select 'accept' or 'decline'</li>
+            <li>Select 'Accept' or 'Decline'</li>
         </ol>
 
         <p>More information: Visit the ABR website, selecting Authorisations.</p>
 
         <div class="footer">
-            <p>* The AUSkey  must be for SUBJECT_NAME</p>
+            <p>* The AUSkey  must be for <b>{{subjectNickName._displayName}}</b></p>
             <p>** The name on this invitation must match your name on your login</p>
         </div>
 
