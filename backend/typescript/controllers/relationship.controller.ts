@@ -1,6 +1,7 @@
 import {Router, Request, Response} from 'express';
 import {context} from '../providers/context.provider';
 import {
+    sendHtml,
     sendResource,
     sendList,
     sendSearchResult,
@@ -10,9 +11,7 @@ import {
 } from './helpers';
 import {PartyModel} from '../models/party.model';
 import {RelationshipStatus, RelationshipModel} from '../models/relationship.model';
-import {
-    FilterParams
-} from '../../../commons/api';
+import {FilterParams} from '../../../commons/api';
 import {Headers} from './headers';
 
 // todo add data security
@@ -49,6 +48,23 @@ export class RelationshipController {
             .then((req: Request) => RelationshipModel.findByInvitationCode(invitationCode))
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
+            .then(sendNotFoundError(res))
+            .catch(sendError(res));
+    };
+
+    private printByInvitationCode = async(req: Request, res: Response) => {
+        const schema = {
+            'invitationCode': {
+                in: 'params',
+                notEmpty: true,
+                errorMessage: 'Identifier is not valid'
+            }
+        };
+        const invitationCode = req.params.invitationCode;
+        validateReqSchema(req, schema)
+            .then((req: Request) => RelationshipModel.findByInvitationCode(invitationCode))
+            .then((model) => model ? model.toDTO() : null)
+            .then(sendHtml(res, 'relationship-invitation.html'))
             .then(sendNotFoundError(res))
             .catch(sendError(res));
     };
@@ -381,6 +397,11 @@ export class RelationshipController {
             context.begin,
             context.isAuthenticated,
             this.findByInvitationCode);
+
+        router.get('/v1/relationship/invitationCode/:invitationCode/print',
+            context.begin,
+            context.isAuthenticated,
+            this.printByInvitationCode);
 
         router.post('/v1/relationship/invitationCode/:invitationCode/claim',
             context.begin,
