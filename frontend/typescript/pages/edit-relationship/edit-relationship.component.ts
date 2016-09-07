@@ -217,7 +217,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         };
 
         // access levels
-        let permAttributes = [];
+        let permAttributes:IRelationshipAttribute[] = [];
         for (let att of this.relationship.attributes) {
             if (att.attributeName.value.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
                 if (!att.value) {
