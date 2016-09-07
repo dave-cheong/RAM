@@ -233,9 +233,17 @@ export class RAMRestService {
             .map(this.extractData(Relationship));
     }
 
-    public notifyDelegateByInvitationCode(invitationCode: string, notification: INotifyDelegateDTO): Observable<IRelationship> {
+    // public notifyDelegateByInvitationCode(invitationCode: string, notification: INotifyDelegateDTO): Observable<IRelationship> {
+    //     return this.http
+    //         .post(`/api/v1/relationship/invitationCode/${invitationCode}/notifyDelegate`, JSON.stringify(notification), {
+    //             headers: this.headersForJson()
+    //         })
+    //         .map(this.extractData(Relationship));
+    // }
+
+    public notifyDelegateByHref(href: string, notification: INotifyDelegateDTO): Observable<IRelationship> {
         return this.http
-            .post(`/api/v1/relationship/invitationCode/${invitationCode}/notifyDelegate`, JSON.stringify(notification), {
+            .post(new Href(href).toString(), JSON.stringify(notification), {
                 headers: this.headersForJson()
             })
             .map(this.extractData(Relationship));

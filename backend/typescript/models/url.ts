@@ -133,6 +133,10 @@ export class Url {
         return '/api/v1/relationship/invitationCode/' + encodeURIComponent(invitationCode) + '/notifyDelegate';
     }
 
+    public static async forRelationshipPrintInvitation(invitationCode: string): Promise<string> {
+        return '/api/v1/relationship/invitationCode/' + encodeURIComponent(invitationCode) + '/print';
+    }
+
     // relationship attribute name ....................................................................................
 
     public static async forRelationshipAttributeName(model: relationshipAttributeName.IRelationshipAttributeName): Promise<string> {

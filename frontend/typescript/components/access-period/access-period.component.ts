@@ -1,4 +1,4 @@
-import {OnInit, Input, Output, EventEmitter, Component} from '@angular/core';
+import {OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitter, Component} from '@angular/core';
 import {
     Validators,
     REACTIVE_FORM_DIRECTIVES,
@@ -16,7 +16,7 @@ import {Calendar} from 'primeng/primeng';
     templateUrl: 'access-period.component.html',
     directives: [REACTIVE_FORM_DIRECTIVES, FORM_DIRECTIVES, Calendar]
 })
-export class AccessPeriodComponent implements OnInit {
+export class AccessPeriodComponent implements OnInit, OnChanges {
 
     public form: FormGroup;
     public dateFormat: string = 'dd/mm/yy';
@@ -66,6 +66,16 @@ export class AccessPeriodComponent implements OnInit {
         });
 
         this.isValid.emit(this.form.valid);
+    }
+
+    public ngOnChanges(changes: SimpleChanges): any {
+        if (this.form) {
+            (this.form.controls['startDateEnabled'] as FormControl).updateValue(this.data.startDateEnabled);
+            (this.form.controls['startDate'] as FormControl).updateValue(this.formatDate(this.data.startDate));
+            (this.form.controls['endDate'] as FormControl).updateValue(this.formatDate(this.data.endDate));
+            (this.form.controls['noEndDate'] as FormControl).updateValue(this.data.noEndDate);
+        }
+        return undefined;
     }
 
     private formatDate(d: Date) {

@@ -17,7 +17,7 @@ export class RelationshipCanClaimPermissionEnforcer extends PermissionEnforcer<I
     // todo this needs to check party access
     public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
-        let permission = new Permission(this.template.code, this.template.description, this.template.value);
+        let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
         let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
         let invitationIdentity = relationship.invitationIdentity;
 
@@ -81,7 +81,7 @@ export class RelationshipCanClaimPermissionEnforcer extends PermissionEnforcer<I
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link('claim', Url.POST, await Url.forRelationshipClaim(invitationIdentity.rawIdValue));
+            permission.link = new Link(permission.linkType, Url.POST, await Url.forRelationshipClaim(invitationIdentity.rawIdValue));
         } else {
             permission.value = false;
         }

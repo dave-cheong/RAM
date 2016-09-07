@@ -49,7 +49,7 @@ export const routes: RouterConfig = [
         component: EditRelationshipComponent
     },
     {
-        path: 'relationships/add/complete/:idValue/:invitationCode/:displayName',
+        path: 'relationships/add/complete/:identityHref/:relationshipHref',
         component: AddRelationshipCompleteComponent
     },
     {

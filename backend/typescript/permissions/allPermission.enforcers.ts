@@ -12,6 +12,7 @@ import {RelationshipCanAcceptPermissionEnforcer} from './relationshipCanAcceptPe
 import {RelationshipCanClaimPermissionEnforcer} from './relationshipCanClaimPermission.enforcer';
 import {RelationshipCanModifyPermissionEnforcer} from './relationshipCanModifyPermission.enforcer';
 import {RelationshipCanNotifyDelegatePermissionEnforcer} from './relationshipCanNotifyDelegatePermission.enforcer';
+import {RelationshipCanPrintInvitationPermissionEnforcer} from './relationshipCanPrintInvitationPermission.enforcer';
 import {RelationshipCanRejectPermissionEnforcer} from './relationshipCanRejectPermission.enforcer';
 import {RelationshipCanViewPermissionEnforcer} from './relationshipCanViewPermission.enforcer';
 import {IRelationshipAttributeNameUsage} from '../models/relationshipAttributeNameUsage.model';
@@ -32,6 +33,7 @@ export class PermissionEnforcers {
         new RelationshipCanClaimPermissionEnforcer(),
         new RelationshipCanModifyPermissionEnforcer(),
         new RelationshipCanNotifyDelegatePermissionEnforcer(),
+        new RelationshipCanPrintInvitationPermissionEnforcer(),
         new RelationshipCanRejectPermissionEnforcer(),
         new RelationshipCanViewPermissionEnforcer(),
     ];

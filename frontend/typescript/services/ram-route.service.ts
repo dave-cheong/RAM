@@ -53,11 +53,10 @@ export class RAMRouteService {
         ]);
     }
 
-    public goToRelationshipAddCompletePage(idValue: string, code: string, displayName: string) {
+    public goToRelationshipAddCompletePage(identityHref: string, relationshipHref: string) {
         this.router.navigate(['/relationships/add/complete',
-            this.encodeURIComponent(idValue, false),
-            this.encodeURIComponent(code, false),
-            this.encodeURIComponent(displayName, false)
+            this.encodeURIComponent(identityHref, true),
+            this.encodeURIComponent(relationshipHref, true)
         ]);
     }
 

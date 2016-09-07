@@ -18,7 +18,7 @@ export class RelationshipCanRejectPermissionEnforcer extends PermissionEnforcer<
     // todo check identity strength
     public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
-        let permission = new Permission(this.template.code, this.template.description, this.template.value);
+        let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
         let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
 
         // validate authenticated
@@ -39,7 +39,7 @@ export class RelationshipCanRejectPermissionEnforcer extends PermissionEnforcer<
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link('reject', Url.POST, await Url.forRelationshipReject(relationship.invitationIdentity.rawIdValue));
+            permission.link = new Link(permission.linkType, Url.POST, await Url.forRelationshipReject(relationship.invitationIdentity.rawIdValue));
         } else {
             permission.value = false;
         }

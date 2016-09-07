@@ -26,7 +26,11 @@
   "relationship.reject.notPending": "Unable to reject a non-pending relationship",
   "relationship.reject.notInvitation": "Unable to accept a non-invitation relationship",
 
-  "relationship.notifyDelegate.notInvitation" : "Unable to notify delegate for a non-invitation relationship",
+  "relationship.notifyDelegate.notInvitation": "Unable to notify delegate for a non-invitation relationship",
+  "relationship.notifyDelegate.invalidInvitationStatus": "Unable to notify delegate for a non-pending invitation",
+
+  "relationship.printInvitation.notInvitation" : "Unable to print a non-invitation relationship",
+  "relationship.printInvitation.invalidInvitationStatus": "Unable to print for a non-pending invitation",
 
   "BYE" : "Bye"
 

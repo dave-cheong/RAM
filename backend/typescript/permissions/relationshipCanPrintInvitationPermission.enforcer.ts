@@ -2,16 +2,16 @@ import {PermissionEnforcer} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
-import {RelationshipCanNotifyDelegatePermission} from '../../../commons/permissions/relationshipPermission.templates';
+import {RelationshipCanPrintInvitationPermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship, RelationshipStatus} from '../models/relationship.model';
 import {context} from '../providers/context.provider';
 import {Translator} from '../ram/translator';
 import {IdentityType, IdentityInvitationCodeStatus} from '../models/identity.model';
 
-export class RelationshipCanNotifyDelegatePermissionEnforcer extends PermissionEnforcer<IRelationship> {
+export class RelationshipCanPrintInvitationPermissionEnforcer extends PermissionEnforcer<IRelationship> {
 
     constructor() {
-        super(RelationshipCanNotifyDelegatePermission);
+        super(RelationshipCanPrintInvitationPermission);
     }
 
     // todo this needs to check party access
@@ -28,9 +28,9 @@ export class RelationshipCanNotifyDelegatePermissionEnforcer extends PermissionE
 
         // validate invitation
         if (!invitationIdentity) {
-            permission.messages.push(Translator.get('relationship.notifyDelegate.notInvitation'));
+            permission.messages.push(Translator.get('relationship.printInvitation.notInvitation'));
         } else if (invitationIdentity.identityTypeEnum() !== IdentityType.InvitationCode) {
-            permission.messages.push(Translator.get('relationship.notifyDelegate.notInvitation'));
+            permission.messages.push(Translator.get('relationship.printInvitation.notInvitation'));
         }
 
         // validate relationship status
@@ -41,14 +41,14 @@ export class RelationshipCanNotifyDelegatePermissionEnforcer extends PermissionE
         // validate invitation status
         if (invitationIdentity) {
             if (invitationIdentity.invitationCodeStatusEnum() !== IdentityInvitationCodeStatus.Pending) {
-                permission.messages.push(Translator.get('relationship.notifyDelegate.invalidInvitationStatus'));
+                permission.messages.push(Translator.get('relationship.printInvitation.invalidInvitationStatus'));
             }
         }
 
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link(permission.linkType, Url.POST, await Url.forRelationshipNotifyDelegate(relationship.invitationIdentity.rawIdValue));
+            permission.link = new Link(permission.linkType, Url.GET, await Url.forRelationshipPrintInvitation(invitationIdentity.rawIdValue));
         } else {
             permission.value = false;
         }

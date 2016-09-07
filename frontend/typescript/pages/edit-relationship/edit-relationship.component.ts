@@ -170,6 +170,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         const delegate = this.relationship.delegate.value;
         const isOrg = delegate.partyType === Constants.PartyTypeCode.ABN;
         const profile = delegate.identities[0].value.profile;
+        // note - sharedsecrets are currently not returned - so the dob can not be populated!
         const dobSharedSecret = profile.getSharedSecret(Constants.SharedSecretCode.DATE_OF_BIRTH);
 
         this.relationshipComponentData.representativeDetails = {
@@ -187,12 +188,15 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // access period
         this.originalStartDate = relationship.startTimestamp;
-        this.relationshipComponentData.accessPeriod.startDate = relationship.startTimestamp;
-        this.relationshipComponentData.accessPeriod.endDate = relationship.endTimestamp;
-        this.relationshipComponentData.accessPeriod.noEndDate = relationship.endTimestamp === undefined || relationship.endTimestamp === null;
+
         const todayMidnight = new Date();
         todayMidnight.setHours(0, 0, 0, 0);
-        this.relationshipComponentData.accessPeriod.startDateEnabled = this.originalStartDate > todayMidnight;
+        this.relationshipComponentData.accessPeriod = {
+            startDate: relationship.startTimestamp,
+            endDate: relationship.endTimestamp,
+            noEndDate: relationship.endTimestamp === undefined || relationship.endTimestamp === null,
+            startDateEnabled: this.originalStartDate > todayMidnight
+        };
 
         // authorisation type
         // todo there may be a timing problem here - make sure reltypes are loaded
@@ -213,7 +217,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         };
 
         // access levels
-        let permAttributes = [];
+        let permAttributes:IRelationshipAttribute[] = [];
         for (let att of this.relationship.attributes) {
             if (att.attributeName.value.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
                 if (!att.value) {
@@ -412,13 +416,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     }
 
-    // todo change this to use href hateoas instead of the id value
     public onInsert(relationship: IRelationship) {
-        let delegateIdentity = relationship.delegate.value.identities[0].value;
         this.services.route.goToRelationshipAddCompletePage(
-            this.identity.idValue,
-            delegateIdentity.rawIdValue,
-            this.displayName(this.relationshipComponentData.representativeDetails)
+            this.identityHref,
+            this.services.model.getLinkHrefByType(Constants.Link.SELF, relationship)
         );
     }
 
@@ -460,7 +461,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.manageAuthAttribute = allowManageAuthorisationUsage;
 
             // authorisation permission component
-            this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND) !== null;
+            this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue !== 'false';
             this.relationshipComponentData.authorisationPermissions.enabled = true;
             this.relationshipComponentData.authorisationPermissions.accessLevelsDescription = selectedRelationshipTypeRef.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.ACCESS_LEVELS_DESCRIPTION);
 

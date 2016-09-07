@@ -163,12 +163,15 @@ export class EditNotificationComponent extends AbstractPageComponent {
 
             // date
             this.originalStartDate = relationship.startTimestamp;
-            this.accessPeriod.startDate = relationship.startTimestamp;
-            this.accessPeriod.endDate = relationship.endTimestamp;
-            this.accessPeriod.noEndDate = relationship.endTimestamp === undefined || relationship.endTimestamp === null;
-            let todayMidnight = new Date();
+
+            const todayMidnight = new Date();
             todayMidnight.setHours(0, 0, 0, 0);
-            this.accessPeriod.startDateEnabled = this.originalStartDate > todayMidnight;
+            this.accessPeriod = {
+                startDate: relationship.startTimestamp,
+                endDate: relationship.endTimestamp,
+                noEndDate: relationship.endTimestamp === undefined || relationship.endTimestamp === null,
+                startDateEnabled: this.originalStartDate > todayMidnight
+            };
 
             // agency services
             let agencyServicesAttribute = this.services.model.getRelationshipAttribute(relationship, Constants.RelationshipAttributeNameCode.SELECTED_GOVERNMENT_SERVICES_LIST, null);

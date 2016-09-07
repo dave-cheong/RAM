@@ -16,7 +16,12 @@ export const Constants = {
         'ROLE_LIST': 'role-list',
         'ROLE_CREATE': 'role-create',
         'MODIFY': 'modify',
-        'DELETE': 'delete'
+        'DELETE': 'delete',
+        "NOTIFY": 'notify',
+        'PRINT': 'print',
+        'ACCEPT': 'accept',
+        'REJECT': 'reject',
+        'CLAIM': 'claim',
     },
 
     AUSkey: {

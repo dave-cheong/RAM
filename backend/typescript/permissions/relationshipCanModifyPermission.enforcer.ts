@@ -16,7 +16,7 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
     // todo this needs to check party access
     public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
-        let permission = new Permission(this.template.code, this.template.description, this.template.value);
+        let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
         let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
 
         // validate authenticated
@@ -27,7 +27,7 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link('modify', Url.PUT, await Url.forRelationship(relationship));
+            permission.link = new Link(permission.linkType, Url.PUT, await Url.forRelationship(relationship));
         } else {
             permission.value = false;
         }
