@@ -170,6 +170,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         const delegate = this.relationship.delegate.value;
         const isOrg = delegate.partyType === Constants.PartyTypeCode.ABN;
         const profile = delegate.identities[0].value.profile;
+        // note - sharedsecrets are currently not returned - so the dob can not be populated!
         const dobSharedSecret = profile.getSharedSecret(Constants.SharedSecretCode.DATE_OF_BIRTH);
 
         this.relationshipComponentData.representativeDetails = {
