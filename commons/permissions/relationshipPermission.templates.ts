@@ -36,6 +36,12 @@ export const RelationshipCanNotifyDelegatePermission = new Permission(
     false
 );
 
+export const RelationshipCanPrintInvitationPermission = new Permission(
+    'relationship-can-print-invitation',
+    'A relationship invitation can be printed if the relationship is pending.',
+    false
+);
+
 export const Relationships = new Permissions()
         .push(RelationshipCanViewPermission)
         .push(RelationshipCanModifyPermission)
@@ -43,4 +49,5 @@ export const Relationships = new Permissions()
         .push(RelationshipCanAcceptPermission)
         .push(RelationshipCanRejectPermission)
         .push(RelationshipCanNotifyDelegatePermission)
+        .push(RelationshipCanPrintInvitationPermission)
     ;

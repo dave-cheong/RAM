@@ -17,7 +17,7 @@ export const Constants = {
         'ROLE_CREATE': 'role-create',
         'MODIFY': 'modify',
         'DELETE': 'delete',
-        'NOTIFY_DELEGATE': 'notify-delegate',
+        "NOTIFY": 'notify',
         'PRINT': 'print'
     },
 
