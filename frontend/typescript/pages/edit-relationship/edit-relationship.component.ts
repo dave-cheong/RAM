@@ -187,12 +187,15 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // access period
         this.originalStartDate = relationship.startTimestamp;
-        this.relationshipComponentData.accessPeriod.startDate = relationship.startTimestamp;
-        this.relationshipComponentData.accessPeriod.endDate = relationship.endTimestamp;
-        this.relationshipComponentData.accessPeriod.noEndDate = relationship.endTimestamp === undefined || relationship.endTimestamp === null;
+
         const todayMidnight = new Date();
         todayMidnight.setHours(0, 0, 0, 0);
-        this.relationshipComponentData.accessPeriod.startDateEnabled = this.originalStartDate > todayMidnight;
+        this.relationshipComponentData.accessPeriod = {
+            startDate: relationship.startTimestamp,
+            endDate: relationship.endTimestamp,
+            noEndDate: relationship.endTimestamp === undefined || relationship.endTimestamp === null,
+            startDateEnabled: this.originalStartDate > todayMidnight
+        };
 
         // authorisation type
         // todo there may be a timing problem here - make sure reltypes are loaded
