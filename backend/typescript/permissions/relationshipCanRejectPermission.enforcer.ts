@@ -2,7 +2,6 @@ import {PermissionEnforcer} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
-import {Constants} from '../../../commons/constants';
 import {RelationshipCanRejectPermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship, RelationshipStatus} from '../models/relationship.model';
 import {Translator} from '../ram/translator';
@@ -40,7 +39,7 @@ export class RelationshipCanRejectPermissionEnforcer extends PermissionEnforcer<
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link(Constants.Link.REJECT, Url.POST, await Url.forRelationshipReject(relationship.invitationIdentity.rawIdValue));
+            permission.link = new Link(permission.linkType, Url.POST, await Url.forRelationshipReject(relationship.invitationIdentity.rawIdValue));
         } else {
             permission.value = false;
         }

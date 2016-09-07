@@ -2,7 +2,6 @@ import {PermissionEnforcer} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
-import {Constants} from '../../../commons/constants';
 import {RelationshipCanPrintInvitationPermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship, RelationshipStatus} from '../models/relationship.model';
 import {context} from '../providers/context.provider';
@@ -49,7 +48,7 @@ export class RelationshipCanPrintInvitationPermissionEnforcer extends Permission
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link(Constants.Link.PRINT, Url.GET, await Url.forRelationshipPrintInvitation(invitationIdentity.rawIdValue));
+            permission.link = new Link(permission.linkType, Url.GET, await Url.forRelationshipPrintInvitation(invitationIdentity.rawIdValue));
         } else {
             permission.value = false;
         }
