@@ -2,6 +2,7 @@ import {PermissionEnforcer} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
+import {Constants} from '../../../commons/constants';
 import {RelationshipCanModifyPermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship} from '../models/relationship.model';
 import {context} from '../providers/context.provider';
@@ -27,7 +28,7 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link('modify', Url.PUT, await Url.forRelationship(relationship));
+            permission.link = new Link(Constants.Link.MODIFY, Url.PUT, await Url.forRelationship(relationship));
         } else {
             permission.value = false;
         }

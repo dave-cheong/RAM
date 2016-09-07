@@ -2,6 +2,7 @@ import {PermissionEnforcer, Assert} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
 import {Url} from '../models/url';
 import {Link} from '../../../commons/dtos/link.dto';
+import {Constants} from '../../../commons/constants';
 import {RelationshipCanClaimPermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship, RelationshipStatus} from '../models/relationship.model';
 import {Translator} from '../ram/translator';
@@ -81,7 +82,7 @@ export class RelationshipCanClaimPermissionEnforcer extends PermissionEnforcer<I
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link('claim', Url.POST, await Url.forRelationshipClaim(invitationIdentity.rawIdValue));
+            permission.link = new Link(Constants.Link.CLAIM, Url.POST, await Url.forRelationshipClaim(invitationIdentity.rawIdValue));
         } else {
             permission.value = false;
         }

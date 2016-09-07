@@ -18,7 +18,10 @@ export const Constants = {
         'MODIFY': 'modify',
         'DELETE': 'delete',
         "NOTIFY": 'notify',
-        'PRINT': 'print'
+        'PRINT': 'print',
+        'ACCEPT': 'accept',
+        'REJECT': 'reject',
+        'CLAIM': 'claim',
     },
 
     AUSkey: {
