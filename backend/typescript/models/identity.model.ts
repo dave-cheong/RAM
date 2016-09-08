@@ -13,7 +13,6 @@ import {SharedSecretTypeModel, DOB_SHARED_SECRET_TYPE_CODE} from './sharedSecret
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
 import {PermissionEnforcers} from '../permissions/allPermission.enforcers';
-import {context} from '../providers/context.provider';
 
 // mongoose ...........................................................................................................
 
