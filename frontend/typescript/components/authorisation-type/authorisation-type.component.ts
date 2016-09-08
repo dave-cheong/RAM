@@ -5,6 +5,7 @@ import {
     IRelationshipType,
     IHrefValue
 } from '../../../../commons/api';
+import {CodeDecode} from '../../../../commons/dtos/codeDecode.dto';
 
 @Component({
     selector: 'authorisation-type',
@@ -28,36 +29,31 @@ export class AuthorisationTypeComponent implements OnInit, OnChanges {
 
     public ngOnInit() {
         this.form = this._fb.group({
-            'authType': [this.data.authType,
-                Validators.compose([this.isAuthTypeSelected])
-            ]
+            'authType': [this.data.authType ? this.data.authType.value.code : '-', Validators.compose([this.isAuthTypeSelected])]
         });
-        this.form.valueChanges.subscribe((v: AuthorisationTypeComponentData) => {
-            this.dataChanges.emit(v);
+        this.form.valueChanges.subscribe((v: {[key: string] : any}) => {
+            this.dataChanges.emit({
+                authType: CodeDecode.getRefByCode(this.options, v['authType']) as IHrefValue<IRelationshipType>
+            });
             this.isValid.emit(this.form.valid);
         });
     }
 
     public ngOnChanges(changes: SimpleChanges): any {
-        if (this.data.authType !== 'choose') {
-            (this.form.controls['authType'] as FormControl).updateValue(this.data.authType);
+        if (this.form) {
+            (this.form.controls['authType'] as FormControl).updateValue(this.data.authType ? this.data.authType.value.code : '-');
         }
     }
 
     public onAuthTypeChange(value: string) {
-        for (let type of this.options) {
-            if (type.value.code === value) {
-                this.selectedAuthType = type;
-                this.data.authType = value;
-            }
-        }
+        this.data.authType = CodeDecode.getRefByCode(this.options, value) as IHrefValue<IRelationshipType>;
     }
 
     private isAuthTypeSelected = (authType: FormControl) => {
-        return (authType.value === 'choose') ? { authorisationTypeNotSet: { valid: false } } : null;
+        return (authType.value === '-') ? { authorisationTypeNotSet: { valid: false } } : null;
     };
 }
 
 export interface AuthorisationTypeComponentData {
-    authType: string;
+    authType: IHrefValue<IRelationshipType>;
 }

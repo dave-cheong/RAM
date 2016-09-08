@@ -1,7 +1,9 @@
 <div class="panel panel-default">
+
     <div class="panel-heading">
         <h4><span class="badge square">2</span> {{'addRelationship.authType.heading' | translate}}</h4>
     </div>
+
     <div class="panel-body">
         <div class="form-group">
             <form [formGroup]="form">
@@ -14,16 +16,16 @@
                         <option *ngFor="let item of options" value={{item.value.code}}>{{item.value.shortDecodeText}}</option>
                     </select>
                     <br/>
-                    <div *ngIf="selectedAuthType">
+                    <div *ngIf="data.authType">
                         <h4>{{'addRelationship.authType.notes' | translate}}</h4>
-                        <p><strong>{{selectedAuthType.value.shortDecodeText}}</strong></p>
-                        <p>{{selectedAuthType.value.longDecodeText}}</p>
+                        <p><strong>{{data.authType.value.shortDecodeText}}</strong></p>
+                        <p>{{data.authType.value.longDecodeText}}</p>
                         <br/>
                     </div>
-
                 </div>
             </form>
         </div>
         <div class="clearfix"></div>
     </div>
+
 </div>
