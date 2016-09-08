@@ -27,6 +27,7 @@ import {
     RelationshipAttribute as RelationshipAttributeDTO,
     SearchResult
 } from '../../../commons/api';
+import {Constants} from '../../../commons/constants';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {RelationshipCanClaimPermissionEnforcer} from '../permissions/relationshipCanClaimPermission.enforcer';
 import {RelationshipCanNotifyDelegatePermissionEnforcer} from '../permissions/relationshipCanNotifyDelegatePermission.enforcer';
@@ -632,12 +633,12 @@ export class RelationshipModel {
             let status = RelationshipStatus.Pending;
 
             // check subject
-            if (initiatedBy === RelationshipInitiatedBy.Subject && relationshipType.autoAcceptIfInitiatedFromSubject) {
+            if (initiatedBy === RelationshipInitiatedBy.Subject && relationshipType.findAttributeNameUsageByCode(Constants.RelationshipAttributeNameCode.AUTOACCEPT_IF_INITIATED_FROM_SUBJECT_IND) !== null) {
                 status = RelationshipStatus.Accepted;
             }
 
             // check delegate
-            if (initiatedBy === RelationshipInitiatedBy.Delegate && relationshipType.autoAcceptIfInitiatedFromDelegate) {
+            if (initiatedBy === RelationshipInitiatedBy.Delegate && relationshipType.findAttributeNameUsageByCode(Constants.RelationshipAttributeNameCode.AUTOACCEPT_IF_INITIATED_FROM_DELEGATE_IND) !== null) {
                 status = RelationshipStatus.Accepted;
             }
 
@@ -701,12 +702,12 @@ export class RelationshipModel {
         let status = RelationshipStatus.Pending;
 
         // check subject
-        if (initiatedBy === RelationshipInitiatedBy.Subject && relationshipType.autoAcceptIfInitiatedFromSubject) {
+        if (initiatedBy === RelationshipInitiatedBy.Subject && relationshipType.findAttributeNameUsageByCode(Constants.RelationshipAttributeNameCode.AUTOACCEPT_IF_INITIATED_FROM_SUBJECT_IND) !== null) {
             status = RelationshipStatus.Accepted;
         }
 
         // check delegate
-        if (initiatedBy === RelationshipInitiatedBy.Delegate && relationshipType.autoAcceptIfInitiatedFromDelegate) {
+        if (initiatedBy === RelationshipInitiatedBy.Delegate && relationshipType.findAttributeNameUsageByCode(Constants.RelationshipAttributeNameCode.AUTOACCEPT_IF_INITIATED_FROM_DELEGATE_IND) !== null) {
             status = RelationshipStatus.Accepted;
         }
 
