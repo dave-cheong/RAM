@@ -8,7 +8,6 @@ export interface IRelationshipType extends ICodeDecode {
     minCredentialStrength: number;
     minIdentityStrength: number;
     relationshipAttributeNames: IRelationshipAttributeNameUsage[];
-    managedExternallyInd: boolean;
     category: string;
     getAttributeNameUsage(code: string): IRelationshipAttributeNameUsage;
     getAttributeNameRef(code: string): IHrefValue<IRelationshipAttributeName>;
@@ -30,7 +29,6 @@ export class RelationshipType extends CodeDecode implements IRelationshipType {
                 endTimestamp: Date,
                 public minCredentialStrength: number,
                 public minIdentityStrength: number,
-                public managedExternallyInd: boolean,
                 public category: string,
                 public relationshipAttributeNames: RelationshipAttributeNameUsage[]) {
         super(code, shortDecodeText, longDecodeText, startTimestamp, endTimestamp);

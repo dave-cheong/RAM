@@ -52,11 +52,6 @@ const RelationshipTypeSchema = CodeDecodeSchema({
         required: [true, 'Min Identity Strength is required'],
         default: 0
     },
-    managedExternallyInd: {
-        type: Boolean,
-        required: [true, 'Managed Externally Ind is required'],
-        default: false
-    },
     category: {
         type: String,
         required: [true, 'Category is required'],
@@ -74,7 +69,6 @@ const RelationshipTypeSchema = CodeDecodeSchema({
 export interface IRelationshipType extends ICodeDecode {
     minCredentialStrength: number;
     minIdentityStrength: number;
-    managedExternallyInd: boolean;
     category: string;
     attributeNameUsages: IRelationshipAttributeNameUsage[];
     categoryEnum(): RelationshipTypeCategory;
@@ -87,7 +81,6 @@ class RelationshipType extends CodeDecode implements IRelationshipType {
 
     public minCredentialStrength: number;
     public minIdentityStrength: number;
-    public managedExternallyInd: boolean;
     public category: string;
     public attributeNameUsages: IRelationshipAttributeNameUsage[];
 
@@ -120,7 +113,6 @@ class RelationshipType extends CodeDecode implements IRelationshipType {
             this.endDate,
             this.minCredentialStrength,
             this.minIdentityStrength,
-            this.managedExternallyInd,
             this.category,
             await Promise.all<RelationshipAttributeNameUsageDTO>(this.attributeNameUsages.map(
                 async(attributeNameUsage: IRelationshipAttributeNameUsage) => {

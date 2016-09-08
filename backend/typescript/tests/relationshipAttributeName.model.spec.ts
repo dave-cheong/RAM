@@ -80,7 +80,6 @@ describe('RAM Relationship Attribute Name', () => {
                 shortDecodeText: 'Relationship Type 1',
                 longDecodeText: 'Relationship Type 1',
                 startDate: new Date(),
-                managedExternallyInd: false,
                 category: RelationshipTypeCategory.Authorisation.code,
                 attributeNameUsages: [
                     await RelationshipAttributeNameUsageModel.create({
