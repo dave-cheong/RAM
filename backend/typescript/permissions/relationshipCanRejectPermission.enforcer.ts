@@ -22,6 +22,12 @@ export class RelationshipCanRejectPermissionEnforcer extends PermissionEnforcer<
         let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
 
         // validate authenticated
+        // validate authenticated
+        if (!context.getAuthenticatedPrincipalIdValue()) {
+            permission.messages.push(Translator.get('security.notAuthenticated'));
+        }
+
+        // validate authenticated
         if (!authenticatedIdentity) {
             permission.messages.push(Translator.get('security.notAuthenticated'));
         }

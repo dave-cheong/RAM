@@ -12,7 +12,6 @@ import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
 import {RelationshipAttributeNameModel, RelationshipAttributeNameClassifier, IRelationshipAttributeName} from './relationshipAttributeName.model';
 import {ProfileProvider} from './profile.model';
-import {Constants} from '../../../commons/constants';
 import {
     IdentityModel,
     IIdentity,
