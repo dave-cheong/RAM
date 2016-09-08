@@ -145,8 +145,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // filter the relationship types to those that can be chosen here
         this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
-            return relationshipType.value.managedExternallyInd === false
-                && relationshipType.value.category === Constants.RelationshipTypeCategory.AUTHORISATION;
+            return relationshipType.value.getAttributeNameRef(Constants.RelationshipAttributeNameCode.MANAGED_EXTERNALLY_IND) === null
+                            && relationshipType.value.category === Constants.RelationshipTypeCategory.AUTHORISATION;
         });
         this.resolveAttributeUsages();
 
