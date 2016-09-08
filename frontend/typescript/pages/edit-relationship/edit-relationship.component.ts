@@ -46,6 +46,7 @@ import {
     RelationshipAttribute,
     CodeDecode
 } from '../../../../commons/api';
+import {RelationshipCanViewPermission} from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
     selector: 'edit-relationship',
@@ -424,7 +425,16 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     }
 
     public onUpdate(relationship: IRelationship) {
-        this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
+        if (this.relationship.getLinkHrefByPermission(RelationshipCanViewPermission) === relationship.getLinkHrefByPermission(RelationshipCanViewPermission)) {
+            // edited existing relationship
+            this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
+        } else {
+            // created new superceding relationship requiring acceptance
+            this.services.route.goToRelationshipAddCompletePage(
+                this.identityHref,
+                relationship.subject.value.identities[0].href
+            );
+        }
     }
 
     public resolveAttributeUsages() {
