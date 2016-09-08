@@ -10,7 +10,7 @@ import {IParty, PartyModel, PartyType} from './party.model';
 import {IName, NameModel} from './name.model';
 import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model';
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
-import {RelationshipAttributeNameModel, RelationshipAttributeNameClassifier} from './relationshipAttributeName.model';
+import {RelationshipAttributeNameModel, RelationshipAttributeNameClassifier, IRelationshipAttributeName} from './relationshipAttributeName.model';
 import {ProfileProvider} from './profile.model';
 import {
     IdentityModel,
@@ -591,7 +591,6 @@ export class RelationshipModel {
             Assert.assertNotNull(relationshipAttributeNameCode, 'Attribute name code not found', `Unexpected attribute name href last element: ${dtoAttribute.attributeName.href}`);
             const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
 
-
             const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(relationshipAttributeNameCode);
             Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribute name with code: ${relationshipAttributeNameCode}`);
 
@@ -670,7 +669,8 @@ export class RelationshipModel {
         }
     }
 
-    public static async updateOrAddAttribute(attributes: IRelationshipAttribute[], attributeName, attributeValue: string[]): Promise<void> {
+    // this is a static method because we may be constructing attributes for a new relationship that has not been created yet
+    public static async updateOrAddAttribute(attributes: IRelationshipAttribute[], attributeName: IRelationshipAttributeName, attributeValue: string[]): Promise<void> {
 
         let foundAttribute = false;
         for (let attribute of attributes) {
