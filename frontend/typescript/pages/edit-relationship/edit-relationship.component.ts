@@ -139,6 +139,17 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             error: this.onServerError.bind(this)
         });
 
+    }
+
+    public onListRelationshipTypes(relationshipTypeRefs: IHrefValue<IRelationshipType>[]) {
+
+        // filter the relationship types to those that can be chosen here
+        this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
+            return relationshipType.value.managedExternallyInd === false
+                && relationshipType.value.category === Constants.RelationshipTypeCategory.AUTHORISATION;
+        });
+        this.resolveAttributeUsages();
+
         // identity in focus
         this.services.rest.findIdentityByHref(this.identityHref).subscribe({
             next: this.onFindIdentity.bind(this),
@@ -165,6 +176,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     // todo refactor to use this.relationship
     public onFindRelationship(relationship: IRelationship) {
+
         this.relationship = relationship;
 
         // name, dob, abn
@@ -200,13 +212,13 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         };
 
         // authorisation type
-        // todo there may be a timing problem here - make sure reltypes are loaded
         const relationshipType = this.relationship.relationshipType.getFromList(this.relationshipTypeRefs);
         if (!relationshipType) {
             // todo probably Associate - what should we do?
+            alert('TODO: Associate Relationships are not currently supported');
             return;
         }
-        this.relationshipComponentData.authType = {authType:relationshipType.code};
+        this.relationshipComponentData.authType = {authType: relationshipType.code};
 
         // trigger authType change update before doing the rest
         this.changeDetectorRef.detectChanges();
@@ -255,15 +267,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         );
 
         this.originalStartDate = this.relationshipComponentData.accessPeriod.startDate;
-    }
-
-    public onListRelationshipTypes(relationshipTypeRefs: IHrefValue<IRelationshipType>[]) {
-        // filter the relationship types to those that can be chosen here
-        this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
-            return relationshipType.value.managedExternallyInd === false
-                && relationshipType.value.category === Constants.RelationshipTypeCategory.AUTHORISATION;
-        });
-        this.resolveAttributeUsages();
     }
 
     public back() {
