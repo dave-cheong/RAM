@@ -12,6 +12,7 @@ import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
 import {RelationshipAttributeNameModel, RelationshipAttributeNameClassifier} from './relationshipAttributeName.model';
 import {ProfileProvider} from './profile.model';
+import {Constants} from '../../../commons/constants';
 import {
     IdentityModel,
     IIdentity,
@@ -296,6 +297,7 @@ export interface IRelationship extends IRAMObject {
     acceptPendingInvitation(acceptingDelegateIdentity: IIdentity): Promise<IRelationship>;
     rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship>;
     notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship>;
+    getAttribute(code: string): IRelationshipAttribute;
 }
 
 class Relationship extends RAMObject implements IRelationship {
@@ -443,6 +445,15 @@ class Relationship extends RAMObject implements IRelationship {
 
     }
 
+    public getAttribute(code: string): IRelationshipAttribute {
+        for (let attribute of this.attributes) {
+            if (attribute.attributeName.code === code) {
+                return attribute;
+            }
+        }
+        return null;
+    }
+
 }
 
 interface IRelationshipDocument extends IRelationship, mongoose.Document {
@@ -497,6 +508,63 @@ export class RelationshipModel {
         if (delegateIdValue) {
             delegateIdentity = await IdentityModel.findByIdValue(delegateIdValue);
         }
+
+        // calculate if re-acceptance is required
+        let reAcceptanceRequired = false;
+        if (!isNewRelationship) {
+
+            // has relationship type been upgraded via the relationship strength
+            const minCredentialStrengthUpgraded = relationshipType.minCredentialStrength > relationship.relationshipType.minIdentityStrength;
+            if (minCredentialStrengthUpgraded) {
+                console.info('Re-acceptance required due to relationship strenght change');
+                reAcceptanceRequired = true;
+            }
+
+            // has authorisation management been changed from no to yes
+            const relationshipAttributeDelegateManageAuthorisationAllowedInd = relationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            if (relationshipAttributeDelegateManageAuthorisationAllowedInd) {
+                if (relationshipAttributeDelegateManageAuthorisationAllowedInd.value[0] === 'false') {
+                    const dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd = dto.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+                    if (dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd) {
+                        if (dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd.value[0] === 'true') {
+                            console.info('Re-acceptance required due to authorisation management');
+                            reAcceptanceRequired = true;
+                        }
+                    }
+
+                }
+            }
+
+            // have more government services been added
+            if (dto.attributes) {
+                for (let att of dto.attributes) {
+                    const attributeNameCode = Url.lastPathElement(att.attributeName.href);
+                    const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(attributeNameCode);
+                    if (attributeName.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
+
+                        const attribute = relationship.getAttribute(attributeName.code);
+                        if (!attribute) {
+                            console.info('Re-acceptance required due addition of government service');
+                            reAcceptanceRequired = true;
+                        } else {
+
+                            // has the permission been changed from limited to full
+                            const permissionAttributeValueIndex = attribute.attributeName.permittedValues.findIndex((value: string) => value === attribute.value[0]);
+                            if (attribute.attributeName.permittedValues.find((value: string) => value === attribute.value[0])) {
+                                const dtoPermissionAttributeValueIndex = attribute.attributeName.permittedValues.findIndex((value: string) => value === att.value[0]);
+                                if (attribute.attributeName.permittedValues.find((value: string) => value === att.value[0])) {
+                                    if (dtoPermissionAttributeValueIndex < permissionAttributeValueIndex) {
+                                        console.info('Re-acceptance required due to upgrading of access level');
+                                        reAcceptanceRequired = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Assert.assertTrue(!reAcceptanceRequired, 'Re-acceptance was required');
 
         // todo if new, start date can not be past only today and future
         // todo if edit, start date can be future and past.
