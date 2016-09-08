@@ -80,7 +80,11 @@ const RoleAttributeNameSchema = CodeDecodeSchema({
     },
     permittedValues: [{
         type: String
-    }]
+    }],
+    appliesToInstance: {
+        type: Boolean,
+        required: [true, 'Applies to Instance is required'],
+    }
 });
 
 // instance ...........................................................................................................
@@ -92,6 +96,7 @@ export interface IRoleAttributeName extends ICodeDecode {
     category?: string;
     purposeText: string;
     permittedValues: string[];
+    appliesToInstance: boolean;
     domainEnum(): RoleAttributeNameDomain;
     isInDateRange(): boolean;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
@@ -105,6 +110,7 @@ class RoleAttributeName extends CodeDecode implements IRoleAttributeName {
     public category: string;
     public purposeText: string;
     public permittedValues: string[];
+    public appliesToInstance: boolean;
 
     public domainEnum(): RoleAttributeNameDomain {
         return RoleAttributeNameDomain.valueOf(this.domain);
@@ -133,7 +139,8 @@ class RoleAttributeName extends CodeDecode implements IRoleAttributeName {
             this.domain,
             this.classifier,
             this.category,
-            this.permittedValues
+            this.permittedValues,
+            this.appliesToInstance
         );
     }
 

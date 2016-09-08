@@ -618,7 +618,7 @@ export class RelationshipModel {
                     }
 
                 } else {
-                    logger.warn('Relationship attribute does not apply to instance');
+                    logger.warn('Relationship attribute name does not apply to instance');
                     throw new Error('400');
                 }
 
