@@ -2,6 +2,7 @@ import * as mongoose from 'mongoose';
 import * as colors from 'colors';
 import {conf} from '../bootstrap';
 import {doResetDataInMongo} from '../resetDataInMongo';
+import {Constants} from '../../../commons/constants';
 
 import {
     IRelationshipAttributeName,
@@ -139,6 +140,9 @@ export class Seeder {
     public static osp_delegate_relationshipType:IRelationshipType;
 
     // relationship attribute names (other)
+    public static managedExternallyInd_relAttributeName:IRelationshipAttributeName;
+    public static autoAcceptIfInitiatedFromDelegateInd_relAttributeName:IRelationshipAttributeName;
+    public static autoAcceptIfInitiatedFromSubjectInd_relAttributeName:IRelationshipAttributeName;
     public static permissionCustomisationAllowedInd_relAttributeName:IRelationshipAttributeName;
     public static accessLevelsDescription_relAttributeName:IRelationshipAttributeName;
     public static delegateManageAuthorisationAllowedInd_relAttributeName:IRelationshipAttributeName;
@@ -569,6 +573,45 @@ export class Seeder {
 
             Seeder.log('\nInserting Relationship Attribute Names (other):\n'.underline);
 
+            Seeder.managedExternallyInd_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: Constants.RelationshipAttributeNameCode.MANAGED_EXTERNALLY_IND,
+                shortDecodeText: 'External Truth Store Indicator',
+                longDecodeText: 'External Truth Store Indicator',
+                startDate: now,
+                domain: RelationshipAttributeNameDomain.Null.code,
+                classifier: RelationshipAttributeNameClassifier.Other.code,
+                category: null,
+                purposeText: 'Indicator of whether this relationship type is sourced from an external truth store',
+                permittedValues: null,
+                appliesToInstance: false
+            } as any);
+
+            Seeder.autoAcceptIfInitiatedFromDelegateInd_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: Constants.RelationshipAttributeNameCode.AUTOACCEPT_IF_INITIATED_FROM_DELEGATE_IND,
+                shortDecodeText: 'Auto Accept If Initiated From Delegate Indicator',
+                longDecodeText: 'Auto Accept If Initiated From Delegate Indicator',
+                startDate: now,
+                domain: RelationshipAttributeNameDomain.Null.code,
+                classifier: RelationshipAttributeNameClassifier.Other.code,
+                category: null,
+                purposeText: 'Indicator of whether a relationship should be auto accepted if initiated from delegate',
+                permittedValues: null,
+                appliesToInstance: false
+            } as any);
+
+            Seeder.autoAcceptIfInitiatedFromSubjectInd_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: Constants.RelationshipAttributeNameCode.AUTOACCEPT_IF_INITIATED_FROM_SUBJECT_IND,
+                shortDecodeText: 'Auto Accept If Initiated From Subject Indicator',
+                longDecodeText: 'Auto Accept If Initiated From Subject Indicator',
+                startDate: now,
+                domain: RelationshipAttributeNameDomain.Null.code,
+                classifier: RelationshipAttributeNameClassifier.Other.code,
+                category: null,
+                purposeText: 'Indicator of whether a relationship should be auto accepted if initiated from subject',
+                permittedValues: null,
+                appliesToInstance: false
+            } as any);
+
             Seeder.permissionCustomisationAllowedInd_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
                 code: 'PERMISSION_CUSTOMISATION_ALLOWED_IND',
                 shortDecodeText: 'Permission Customisation Allowed Indicator',
@@ -895,11 +938,9 @@ export class Seeder {
                 longDecodeText: 'Associate',
                 startDate: now,
                 minIdentityStrength: 2,
-                managedExternallyInd: true,
-                autoAcceptIfInitiatedFromDelegate: false,
-                autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
+                {attribute: Seeder.managedExternallyInd_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
@@ -928,9 +969,6 @@ export class Seeder {
                 longDecodeText: 'The same level of authorisation as an Associate of the organisation (e.g., Owner, Director). All permissions will be defaulted to maximum access.',
                 startDate: now,
                 minIdentityStrength: 2,
-                managedExternallyInd: false,
-                autoAcceptIfInitiatedFromDelegate: false,
-                autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
@@ -956,9 +994,6 @@ export class Seeder {
                 Select which permissions this representative will have, including restricting access to some services.`,
                 startDate: now,
                 minIdentityStrength: 1,
-                managedExternallyInd: false,
-                autoAcceptIfInitiatedFromDelegate: false,
-                autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 1},
@@ -984,11 +1019,9 @@ export class Seeder {
                 longDecodeText: 'Online Software Provider',
                 startDate: now,
                 minIdentityStrength: 0,
-                managedExternallyInd: false,
-                autoAcceptIfInitiatedFromDelegate: true,
-                autoAcceptIfInitiatedFromSubject: false,
                 category: RelationshipTypeCategory.Notification.code
             } as any, [
+                {attribute: Seeder.autoAcceptIfInitiatedFromDelegateInd_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.selectedGovernmentServicesList_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.ssid_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 2},
                 {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
