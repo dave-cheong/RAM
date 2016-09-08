@@ -156,7 +156,7 @@ export class RelationshipAttributeNameModel {
         return RelationshipAttributeNameMongooseModel.create(source);
     }
 
-    public static findByCodeIgnoringDateRange(code: string): Promise<IRelationshipAttributeName> {
+    public static async findByCodeIgnoringDateRange(code: string): Promise<IRelationshipAttributeName> {
         return RelationshipAttributeNameMongooseModel
             .findOne({
                 code: code
@@ -164,7 +164,7 @@ export class RelationshipAttributeNameModel {
             .exec();
     }
 
-    public static findByCodeInDateRange(code: string, date: Date): Promise<IRelationshipAttributeName> {
+    public static async findByCodeInDateRange(code: string, date: Date): Promise<IRelationshipAttributeName> {
         return RelationshipAttributeNameMongooseModel
             .findOne({
                 code: code,
@@ -174,14 +174,14 @@ export class RelationshipAttributeNameModel {
             .exec();
     }
 
-    public static listIgnoringDateRange(): Promise<IRelationshipAttributeName[]> {
+    public static async listIgnoringDateRange(): Promise<IRelationshipAttributeName[]> {
         return RelationshipAttributeNameMongooseModel
             .find({})
             .sort({name: 1})
             .exec();
     }
 
-    public static listInDateRange(date: Date): Promise<IRelationshipAttributeName[]> {
+    public static async listInDateRange(date: Date): Promise<IRelationshipAttributeName[]> {
         return RelationshipAttributeNameMongooseModel
             .find({
                 startDate: {$lte: date},

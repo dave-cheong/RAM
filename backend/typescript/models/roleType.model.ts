@@ -78,7 +78,7 @@ export class RoleTypeModel {
         return RoleTypeMongooseModel.create(source);
     }
 
-    public static findByCodeIgnoringDateRange(code: String): Promise<IRoleType> {
+    public static async findByCodeIgnoringDateRange(code: String): Promise<IRoleType> {
         return RoleTypeMongooseModel
             .findOne({
                 code: code
@@ -89,7 +89,7 @@ export class RoleTypeModel {
             .exec();
     }
 
-    public static findByCodeInDateRange(code: String, date: Date): Promise<IRoleType> {
+    public static async findByCodeInDateRange(code: String, date: Date): Promise<IRoleType> {
         return RoleTypeMongooseModel
             .findOne({
                 code: code,
@@ -102,7 +102,7 @@ export class RoleTypeModel {
             .exec();
     }
 
-    public static listIgnoringDateRange(): Promise<IRoleType[]> {
+    public static async listIgnoringDateRange(): Promise<IRoleType[]> {
         return RoleTypeMongooseModel
             .find({})
             .deepPopulate([
@@ -112,7 +112,7 @@ export class RoleTypeModel {
             .exec();
     }
 
-    public static listInDateRange(date: Date): Promise<IRoleType[]> {
+    public static async listInDateRange(date: Date): Promise<IRoleType[]> {
         return RoleTypeMongooseModel
             .find({
                 startDate: {$lte: date},

@@ -157,7 +157,7 @@ export class RoleAttributeNameModel {
         return RoleAttributeNameMongooseModel.create(source);
     }
 
-    public static findByCodeIgnoringDateRange(code: string): Promise<IRoleAttributeName> {
+    public static async findByCodeIgnoringDateRange(code: string): Promise<IRoleAttributeName> {
         return RoleAttributeNameMongooseModel
             .findOne({
                 code: code
@@ -165,7 +165,7 @@ export class RoleAttributeNameModel {
             .exec();
     }
 
-    public static findByCodeInDateRange(code: string, date: Date): Promise<IRoleAttributeName> {
+    public static async findByCodeInDateRange(code: string, date: Date): Promise<IRoleAttributeName> {
         return RoleAttributeNameMongooseModel
             .findOne({
                 code: code,
@@ -175,14 +175,14 @@ export class RoleAttributeNameModel {
             .exec();
     }
 
-    public static listIgnoringDateRange(): Promise<IRoleAttributeName[]> {
+    public static async listIgnoringDateRange(): Promise<IRoleAttributeName[]> {
         return RoleAttributeNameMongooseModel
             .find({})
             .sort({name: 1})
             .exec();
     }
 
-    public static listInDateRange(date: Date): Promise<IRoleAttributeName[]> {
+    public static async listInDateRange(date: Date): Promise<IRoleAttributeName[]> {
         return RoleAttributeNameMongooseModel
             .find({
                 startDate: {$lte: date},

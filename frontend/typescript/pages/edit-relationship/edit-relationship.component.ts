@@ -304,7 +304,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // identity
             let identityRef = new HrefValue<Identity>(null, new Identity(
-                [],
+                null,
                 null,
                 null,
                 Constants.IdentityTypeCode.INVITATION_CODE,
