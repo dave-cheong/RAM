@@ -12,7 +12,6 @@ import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
 import {RelationshipAttributeNameModel, RelationshipAttributeNameClassifier, IRelationshipAttributeName} from './relationshipAttributeName.model';
 import {ProfileProvider} from './profile.model';
-import {Constants} from '../../../commons/constants';
 import {
     IdentityModel,
     IIdentity,
@@ -686,7 +685,7 @@ export class RelationshipModel {
                     }
 
                 } else {
-                    logger.warn('Relationship attribute name does not apply to instance');
+                    logger.warn(`Relationship attribute name ${relationshipAttributeNameUsage.attributeName.code} does not apply to instance`);
                     throw new Error('400');
                 }
 

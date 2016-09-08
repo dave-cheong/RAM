@@ -16,10 +16,10 @@ export class RelationshipCanAcceptPermissionEnforcer extends PermissionEnforcer<
     public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
         let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
-        let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
+        const acceptingDelegateIdentity = context.getAuthenticatedPrincipal().identity;
 
         // validate authenticated
-        if (!authenticatedIdentity) {
+        if (!context.getAuthenticatedPrincipalIdValue()) {
             permission.messages.push(Translator.get('security.notAuthenticated'));
         }
 
@@ -35,14 +35,18 @@ export class RelationshipCanAcceptPermissionEnforcer extends PermissionEnforcer<
 
         // validate delegate
         // todo handle B2B2I scenario
-        const acceptingDelegateIdentity = context.getAuthenticatedPrincipal().identity;
-        if (acceptingDelegateIdentity.party.id !== relationship.delegate.id) {
-            permission.messages.push(Translator.get('relationship.accept.notDelegate'));
+        if (acceptingDelegateIdentity) {
+            if (acceptingDelegateIdentity.party.id !== relationship.delegate.id) {
+                permission.messages.push(Translator.get('relationship.accept.notDelegate'));
+
+            }
         }
 
         // validate identity strength
-        if (acceptingDelegateIdentity.strength < relationship.relationshipType.minIdentityStrength) {
-            permission.messages.push(Translator.get('relationship.accept.insufficientStrength'));
+        if (acceptingDelegateIdentity) {
+            if (acceptingDelegateIdentity.strength < relationship.relationshipType.minIdentityStrength) {
+                permission.messages.push(Translator.get('relationship.accept.insufficientStrength'));
+            }
         }
 
         // set value and link
