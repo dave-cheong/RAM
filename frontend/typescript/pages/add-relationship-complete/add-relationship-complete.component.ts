@@ -18,7 +18,6 @@ import {RelationshipCanNotifyDelegatePermission} from '../../../../commons/permi
     providers: []
 })
 
-// todo display name shouldn't be sent through in the path, should be obtained from the details associated with the invitation code
 export class AddRelationshipCompleteComponent extends AbstractPageComponent {
 
     public identityHref: string;
