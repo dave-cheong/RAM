@@ -1,6 +1,8 @@
 import {Permission, Permissions} from '../dtos/permission.dto';
 import {Constants} from '../constants';
 
+// todo descriptions to be filled out
+
 export const RelationshipCanViewPermission = new Permission(
     'relationship-can-view',
     'A relationship can be viewed if the parties it is associated with have access.',
