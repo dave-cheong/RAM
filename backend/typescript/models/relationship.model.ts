@@ -467,8 +467,8 @@ export class RelationshipModel {
         const relationshipTypeCode = Url.lastPathElement(dto.relationshipType.href);
         Assert.assertNotNull(relationshipTypeCode, 'Relationship type code was empty', `Expected relationshipType href last element to be the code: ${dto.relationshipType.href}`);
 
-        const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(relationshipTypeCode);
-        Assert.assertNotNull(relationshipType, 'Relationship type not found', `Expected relationship type with code with valid date: ${relationshipTypeCode}`);
+        const relationshipType = await RelationshipTypeModel.findByCodeInDateRange(relationshipTypeCode, new Date());
+        Assert.assertNotNull(relationshipType, 'Relationship type not found or not current', `Expected relationship type with code with valid date: ${relationshipTypeCode}`);
 
         const initiatedBy = RelationshipInitiatedBy.valueOf(dto.initiatedBy);
         let subjectIdentity: IIdentity;

@@ -144,9 +144,9 @@ export class Seeder {
     public static delegateManageAuthorisationAllowedInd_relAttributeName:IRelationshipAttributeName;
     public static delegateManageAuthorisationUserConfigurableInd_relAttributeName:IRelationshipAttributeName;
     public static delegateRelationshipTypeDeclaration_relAttributeName:IRelationshipAttributeName;
-    public static delegateRelationshipTypeDeclarationRecord_relAttributeName:IRelationshipAttributeName;
+    public static delegateRelationshipDeclaration_relAttributeName:IRelationshipAttributeName;
     public static subjectRelationshipTypeDeclaration_relAttributeName:IRelationshipAttributeName;
-    public static subjectRelationshipTypeDeclarationRecord_relAttributeName:IRelationshipAttributeName;
+    public static subjectRelationshipDeclaration_relAttributeName:IRelationshipAttributeName;
     public static selectedGovernmentServicesList_relAttributeName:IRelationshipAttributeName; // for storing the selected services on an OSP relationship
     public static ssid_relAttributeName:IRelationshipAttributeName;
 
@@ -630,10 +630,10 @@ export class Seeder {
                 appliesToInstance: false
             } as any);
 
-            Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'DELEGATE_RELATIONSHIP_TYPE_DECLARATION_RECORD',
-                shortDecodeText: 'Delegate Relationship Type Declaration Record',
-                longDecodeText: 'Delegate Relationship Type Declaration Record',
+            Seeder.delegateRelationshipDeclaration_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'DELEGATE_RELATIONSHIP_DECLARATION',
+                shortDecodeText: 'Delegate Relationship Declaration Record',
+                longDecodeText: 'Delegate Relationship Declaration Record',
                 startDate: now,
                 domain: RelationshipAttributeNameDomain.Markdown.code,
                 classifier: RelationshipAttributeNameClassifier.Other.code,
@@ -654,10 +654,10 @@ export class Seeder {
                 appliesToInstance: false
             } as any);
 
-            Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'SUBJECT_RELATIONSHIP_TYPE_DECLARATION_RECORD',
-                shortDecodeText: 'Subject Relationship Type Declaration Record',
-                longDecodeText: 'Subject Relationship Type Declaration Record',
+            Seeder.subjectRelationshipDeclaration_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: 'SUBJECT_RELATIONSHIP_DECLARATION',
+                shortDecodeText: 'Subject Relationship Declaration Record',
+                longDecodeText: 'Subject Relationship Declaration Record',
                 startDate: now,
                 domain: RelationshipAttributeNameDomain.Markdown.code,
                 classifier: RelationshipAttributeNameClassifier.Other.code,
@@ -895,10 +895,10 @@ export class Seeder {
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
-                {attribute: Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
+                {attribute: Seeder.delegateRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: 'Markdown for Delegate Universal Representative Declaration', sortOrder: 3},
-                {attribute: Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
+                {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: `# This is declaration text
 
@@ -928,10 +928,10 @@ export class Seeder {
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
-                {attribute: Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
+                {attribute: Seeder.delegateRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: 'Markdown for Delegate Universal Representative Declaration', sortOrder: 3},
-                {attribute: Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
+                {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: 'Markdown for Subject Universal Representative Declaration', sortOrder: 4},
                 {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 5},
@@ -957,10 +957,10 @@ export class Seeder {
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 2},
                 {attribute: Seeder.delegateManageAuthorisationUserConfigurableInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: -1},
-                {attribute: Seeder.delegateRelationshipTypeDeclarationRecord_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
+                {attribute: Seeder.delegateRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
                 {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: 'Markdown for Delegate Custom Representative Declaration', sortOrder: 3},
-                {attribute: Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
+                {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: 'Markdown for Subject Custom Representative Declaration', sortOrder: 4},
                 {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 5},
@@ -983,7 +983,7 @@ export class Seeder {
             } as any, [
                 {attribute: Seeder.selectedGovernmentServicesList_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.ssid_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 2},
-                {attribute: Seeder.subjectRelationshipTypeDeclarationRecord_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
+                {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
                     defaultValue: `# This is declaration text
 
