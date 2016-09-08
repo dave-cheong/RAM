@@ -7,21 +7,24 @@
     <div class="panel-body">
         <div class="form-group">
             <form [formGroup]="form">
-                <div class="col-md-12" [class.has-error]="!form.controls['authType'].valid">
-                    <h4 class="padding-btn-30">{{'addRelationship.authType.whatType' | translate}}</h4>
+                <div class="col-md-12" [class.has-error]="!form.controls['authTypeCode'].valid">
 
+                    <h4 class="padding-btn-30">{{'addRelationship.authType.whatType' | translate}}</h4>
                     <h4>{{'addRelationship.authType' | translate}}*</h4>
-                    <select class="form-control" [formControl]="form.controls['authType']" #t (change)="onAuthTypeChange(t.value)">
+                    <select class="form-control" [formControl]="form.controls['authTypeCode']" #t (change)="onAuthTypeChange(t.value)">
                         <option value="-" disabled>{{'pleaseChoose' | translate}}</option>
                         <option *ngFor="let item of options" value={{item.value.code}}>{{item.value.shortDecodeText}}</option>
                     </select>
+
                     <br/>
+
                     <div *ngIf="data.authType">
                         <h4>{{'addRelationship.authType.notes' | translate}}</h4>
                         <p><strong>{{data.authType.value.shortDecodeText}}</strong></p>
                         <p>{{data.authType.value.longDecodeText}}</p>
                         <br/>
                     </div>
+
                 </div>
             </form>
         </div>
