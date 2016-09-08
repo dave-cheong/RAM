@@ -102,6 +102,7 @@ export interface IRelationshipType extends ICodeDecode {
 }
 
 class RelationshipType extends CodeDecode implements IRelationshipType {
+
     public minCredentialStrength: number;
     public minIdentityStrength: number;
     public voluntaryInd: boolean;
@@ -168,7 +169,7 @@ export class RelationshipTypeModel {
         return RelationshipTypeMongooseModel.create(source);
     }
 
-    public static findByCodeIgnoringDateRange(code: String): Promise<IRelationshipType> {
+    public static async findByCodeIgnoringDateRange(code: String): Promise<IRelationshipType> {
         return RelationshipTypeMongooseModel
             .findOne({
                 code: code
@@ -179,7 +180,7 @@ export class RelationshipTypeModel {
             .exec();
     }
 
-    public static findByCodeInDateRange(code: String, date: Date): Promise<IRelationshipType> {
+    public static async findByCodeInDateRange(code: String, date: Date): Promise<IRelationshipType> {
         return RelationshipTypeMongooseModel
             .findOne({
                 code: code,
@@ -192,7 +193,7 @@ export class RelationshipTypeModel {
             .exec();
     }
 
-    public static listIgnoringDateRange(): Promise<IRelationshipType[]> {
+    public static async listIgnoringDateRange(): Promise<IRelationshipType[]> {
         return RelationshipTypeMongooseModel
             .find({})
             .deepPopulate([
@@ -202,7 +203,7 @@ export class RelationshipTypeModel {
             .exec();
     }
 
-    public static listInDateRange(date: Date): Promise<IRelationshipType[]> {
+    public static async listInDateRange(date: Date): Promise<IRelationshipType[]> {
         return RelationshipTypeMongooseModel
             .find({
                 startDate: {$lte: date},

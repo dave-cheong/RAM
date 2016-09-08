@@ -19,9 +19,9 @@ export class IdentityCanListAuskeysPermissionEnforcer extends PermissionEnforcer
         let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
 
         // validate authenticated
-        // if (!context.getAuthenticatedPrincipal()) {
-        //     permission.messages.push(Translator.get('security.notAuthenticated'));
-        // }
+        if (!context.getAuthenticatedPrincipalIdValue()) {
+            permission.messages.push(Translator.get('security.notAuthenticated'));
+        }
 
         // validate ABN
         if (identity.publicIdentifierScheme !== 'ABN') {

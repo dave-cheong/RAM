@@ -19,9 +19,9 @@ export class IdentityCanViewPermissionEnforcer extends PermissionEnforcer<IIdent
         let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
 
         // validate authenticated
-        // if (!context.getAuthenticatedIdentity()) {
-        //     permission.messages.push(Translator.get('security.notAuthenticated'));
-        // }
+        if (!context.getAuthenticatedPrincipalIdValue()) {
+            permission.messages.push(Translator.get('security.notAuthenticated'));
+        }
 
         // set value and link
         if (permission.messages.length === 0) {
