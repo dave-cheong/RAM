@@ -17,10 +17,23 @@ import {RelationshipCanRejectPermissionEnforcer} from './relationshipCanRejectPe
 import {RelationshipCanViewPermissionEnforcer} from './relationshipCanViewPermission.enforcer';
 import {IRelationshipAttributeNameUsage} from '../models/relationshipAttributeNameUsage.model';
 import {IRelationshipAttribute} from '../models/relationshipAttribute.model';
+import {IdentityCanListRelationshipsPermissionEnforcer} from './identityCanListRelationshipsPermission.enforcer';
+import {IdentityCanViewPermissionEnforcer} from './identityCanViewPermission.enforcer';
+import {IdentityCanCreateRelationshipPermissionEnforcer} from './identityCanCreateRelationshipPermission.enforcer';
+import {IdentityCanCreateRolePermissionEnforcer} from './identityCanCreateRolePermission.enforcer';
+import {IdentityCanListAuskeysPermissionEnforcer} from './identityCanListAuskeysPermission.enforcer';
+import {IdentityCanListRolesPermissionEnforcer} from './identityCanListRolesPermission.enforcer';
 
 export class PermissionEnforcers {
 
-    public static identity: IPermissionEnforcer<IIdentity>[] = [];
+    public static identity: IPermissionEnforcer<IIdentity>[] = [
+        new IdentityCanCreateRelationshipPermissionEnforcer(),
+        new IdentityCanCreateRolePermissionEnforcer(),
+        new IdentityCanListAuskeysPermissionEnforcer(),
+        new IdentityCanListRelationshipsPermissionEnforcer(),
+        new IdentityCanListRolesPermissionEnforcer(),
+        new IdentityCanViewPermissionEnforcer(),
+    ];
 
     public static iname: IPermissionEnforcer<IName>[] = [];
 

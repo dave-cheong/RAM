@@ -15,6 +15,7 @@ export const Constants = {
         'RELATIONSHIP_CREATE': 'relationship-create',
         'ROLE_LIST': 'role-list',
         'ROLE_CREATE': 'role-create',
+        'AUSKEY_LIST': 'auskey-list',
         'MODIFY': 'modify',
         'DELETE': 'delete',
         "NOTIFY": 'notify',

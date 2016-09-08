@@ -11,6 +11,8 @@
 
   "security.notAuthenticated" : "Unable to continue as you are not authenticated",
 
+  "relationship.listAuskeys.notABN" : "Unable to list AUSkeys for a non-ABN organisation",
+
   "relationship.claim.notPending" : "Unable to claim a non-pending relationship",
   "relationship.claim.notInvitation" : "Unable to claim a non-invitation relationship",
   "relationship.claim.invalidInvitationStatus" : "Unable to claim a non-pending relationship",

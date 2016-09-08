@@ -341,18 +341,9 @@ class Identity extends RAMObject implements IIdentity {
         );
     }
 
-    // TODO use perms to generate links
     public async toDTO(): Promise<DTO> {
-        const links = Url.links()
-            .push('self', Url.GET, await Url.forIdentity(this))
-            .push('relationship-list', Url.GET, await Url.forIdentityRelationshipList(this))
-            .push('relationship-create', Url.POST, await Url.forIdentityRelationshipCreate(this))
-            .push('role-list', Url.GET, await Url.forIdentityRoleList(this))
-            .push('role-create', Url.POST, await Url.forIdentityRoleCreate(this))
-            .push('auskey-list', Url.GET, await Url.forIdentityAUSkeyList(this), this.publicIdentifierScheme === 'ABN')
-            .toArray();
         return new DTO(
-            links,
+            await this.getPermissions(),
             this.idValue,
             this.rawIdValue,
             this.identityType,

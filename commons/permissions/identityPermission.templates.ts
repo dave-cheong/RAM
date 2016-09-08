@@ -14,35 +14,35 @@ export const IdentityCanListRelationshipsPermission = new Permission(
     'identity-can-list-relationships',
     'Description not available.',
     false,
-    Constants.Link.SELF
+    Constants.Link.RELATIONSHIP_LIST
 );
 
 export const IdentityCanCreateRelationshipPermission = new Permission(
     'identity-can-create-relationship',
     'Description not available.',
     false,
-    Constants.Link.SELF
+    Constants.Link.RELATIONSHIP_CREATE
 );
 
 export const IdentityCanListRolesPermission = new Permission(
     'identity-can-list-roles',
     'Description not available.',
     false,
-    Constants.Link.SELF
+    Constants.Link.ROLE_LIST
 );
 
 export const IdentityCanCreateRolePermission = new Permission(
     'identity-can-create-role',
     'Description not available.',
     false,
-    Constants.Link.SELF
+    Constants.Link.ROLE_CREATE
 );
 
 export const IdentityCanListAuskeysPermission = new Permission(
     'identity-can-list-auskeys',
     'Description not available.',
     false,
-    Constants.Link.SELF
+    Constants.Link.AUSKEY_LIST
 );
 
 export const IdentityPermissions = new Permissions()
