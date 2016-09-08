@@ -790,7 +790,8 @@ export class Seeder {
                 domain: RoleAttributeNameDomain.String.code,
                 classifier: RoleAttributeNameClassifier.Other.code,
                 category: null,
-                purposeText: 'Software serial number'
+                purposeText: 'Software serial number',
+                appliesToInstance: true
             } as any);
 
             Seeder.usi_roleAttributeName = await Seeder.createRoleAttributeNameModel({
@@ -801,7 +802,8 @@ export class Seeder {
                 domain: RoleAttributeNameDomain.String.code,
                 classifier: RoleAttributeNameClassifier.AgencyService.code,
                 category: 'EDUCATION',
-                purposeText: 'Unique Student Identifier (USI)'
+                purposeText: 'Unique Student Identifier (USI)',
+                appliesToInstance: true
             } as any);
 
             Seeder.sbr_roleAttributeName = await Seeder.createRoleAttributeNameModel({
@@ -812,7 +814,8 @@ export class Seeder {
                 domain: RoleAttributeNameDomain.String.code,
                 classifier: RoleAttributeNameClassifier.AgencyService.code,
                 category: 'TAX',
-                purposeText: 'Standard Business Reporting (SBR) - ATO'
+                purposeText: 'Standard Business Reporting (SBR) - ATO',
+                appliesToInstance: true
             } as any);
 
             Seeder.preferredName_roleAttributeName = await Seeder.createRoleAttributeNameModel({
@@ -823,7 +826,8 @@ export class Seeder {
                 domain: RoleAttributeNameDomain.String.code,
                 classifier: RoleAttributeNameClassifier.Other.code,
                 category: null,
-                purposeText: 'Preferred Name'
+                purposeText: 'Preferred Name',
+                appliesToInstance: true
             } as any);
 
             Seeder.creatorId_roleAttributeName = await Seeder.createRoleAttributeNameModel({
@@ -834,7 +838,8 @@ export class Seeder {
                 domain: RoleAttributeNameDomain.String.code,
                 classifier: RoleAttributeNameClassifier.Other.code,
                 category: null,
-                purposeText: 'Creator Id'
+                purposeText: 'Creator Id',
+                appliesToInstance: true
             } as any);
 
             Seeder.creatorName_roleAttributeName = await Seeder.createRoleAttributeNameModel({
@@ -845,7 +850,8 @@ export class Seeder {
                 domain: RoleAttributeNameDomain.String.code,
                 classifier: RoleAttributeNameClassifier.Other.code,
                 category: null,
-                purposeText: 'Creator Name'
+                purposeText: 'Creator Name',
+                appliesToInstance: true
             } as any);
 
             Seeder.creatorAgency_roleAttributeName = await Seeder.createRoleAttributeNameModel({
@@ -856,7 +862,8 @@ export class Seeder {
                 domain: RoleAttributeNameDomain.String.code,
                 classifier: RoleAttributeNameClassifier.Other.code,
                 category: null,
-                purposeText: 'Creator Agency'
+                purposeText: 'Creator Agency',
+                appliesToInstance: true
             } as any);
 
             Seeder.deviceAuskeys_roleAttributeName = await Seeder.createRoleAttributeNameModel({
@@ -867,7 +874,8 @@ export class Seeder {
                 domain: RoleAttributeNameDomain.SelectMulti.code,
                 classifier: RoleAttributeNameClassifier.Other.code,
                 category: null,
-                purposeText: 'Device Auskeys'
+                purposeText: 'Device Auskeys',
+                appliesToInstance: true
             } as any);
 
         } catch (e) {
