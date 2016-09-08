@@ -1,4 +1,4 @@
-import {connectDisconnectMongo, resetDataInMongo} from './helpers';
+import {connectDisconnectMongo, resetDataInMongo, login} from './helpers';
 import {Seeder} from '../seeding/seed';
 import {
     IIdentity,
@@ -26,6 +26,7 @@ import {
     ICreateInvitationCodeDTO,
     IAttributeDTO
 } from '../../../commons/api';
+import {context} from '../providers/context.provider';
 
 /* tslint:disable:max-func-body-length */
 describe('RAM Party', () => {
@@ -48,6 +49,7 @@ describe('RAM Party', () => {
             .then(async() => {
 
                 try {
+                    context.init();
 
                     name1 = await NameModel.create({
                         givenName: 'John',
@@ -72,6 +74,8 @@ describe('RAM Party', () => {
                         profile: profile1,
                         party: party1
                     });
+
+                    login(identity1);
 
                     done();
 

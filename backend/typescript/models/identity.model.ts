@@ -341,18 +341,9 @@ class Identity extends RAMObject implements IIdentity {
         );
     }
 
-    // TODO use perms to generate links
     public async toDTO(): Promise<DTO> {
-        const links = Url.links()
-            .push('self', Url.GET, await Url.forIdentity(this))
-            .push('relationship-list', Url.GET, await Url.forIdentityRelationshipList(this))
-            .push('relationship-create', Url.POST, await Url.forIdentityRelationshipCreate(this))
-            .push('role-list', Url.GET, await Url.forIdentityRoleList(this))
-            .push('role-create', Url.POST, await Url.forIdentityRoleCreate(this))
-            .push('auskey-list', Url.GET, await Url.forIdentityAUSkeyList(this), this.publicIdentifierScheme === 'ABN')
-            .toArray();
         return new DTO(
-            links,
+            await this.getPermissions(),
             this.idValue,
             this.rawIdValue,
             this.identityType,
@@ -494,7 +485,7 @@ export class IdentityModel {
         }
     }
 
-    public static findByIdValue(idValue: string): Promise<IIdentity> {
+    public static async findByIdValue(idValue: string): Promise<IIdentity> {
         return IdentityMongooseModel
             .findOne({
                 idValue: idValue
@@ -508,7 +499,7 @@ export class IdentityModel {
             .exec();
     }
 
-    public static findByInvitationCode(invitationCode: string): Promise<IIdentity> {
+    public static async findByInvitationCode(invitationCode: string): Promise<IIdentity> {
         return IdentityMongooseModel
             .findOne({
                 rawIdValue: invitationCode,
@@ -522,7 +513,7 @@ export class IdentityModel {
             .exec();
     }
 
-    public static findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IIdentity> {
+    public static async findPendingByInvitationCodeInDateRange(invitationCode: string, date: Date): Promise<IIdentity> {
         return IdentityMongooseModel
             .findOne({
                 rawIdValue: invitationCode,
@@ -538,7 +529,7 @@ export class IdentityModel {
             .exec();
     }
 
-    public static findDefaultByPartyId(partyId: string): Promise<IIdentity> {
+    public static async findDefaultByPartyId(partyId: string): Promise<IIdentity> {
         return IdentityMongooseModel
             .findOne({
                 'party': partyId,
@@ -553,7 +544,7 @@ export class IdentityModel {
             .exec();
     }
 
-    public static listByPartyId(partyId: string): Promise<IIdentity[]> {
+    public static async listByPartyId(partyId: string): Promise<IIdentity[]> {
         return IdentityMongooseModel
             .find({
                 'party': partyId
@@ -567,7 +558,7 @@ export class IdentityModel {
             .exec();
     }
 
-    public static searchLinkIds(page: number, reqPageSize: number): Promise<SearchResult<IIdentity>> {
+    public static async searchLinkIds(page: number, reqPageSize: number): Promise<SearchResult<IIdentity>> {
         return new Promise<SearchResult<IIdentity>>(async(resolve, reject) => {
             const pageSize: number = reqPageSize ? Math.min(reqPageSize, MAX_PAGE_SIZE) : MAX_PAGE_SIZE;
             try {

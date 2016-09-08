@@ -52,26 +52,6 @@ const RelationshipTypeSchema = CodeDecodeSchema({
         required: [true, 'Min Identity Strength is required'],
         default: 0
     },
-    voluntaryInd: {
-        type: Boolean,
-        required: [true, 'Voluntary Ind is required'],
-        default: false
-    },
-    managedExternallyInd: {
-        type: Boolean,
-        required: [true, 'Managed Externally Ind is required'],
-        default: false
-    },
-    autoAcceptIfInitiatedFromDelegate: {
-        type: Boolean,
-        required: [true, 'Auto-Accept If Initiated From Delegate is required'],
-        default: false
-    },
-    autoAcceptIfInitiatedFromSubject: {
-        type: Boolean,
-        required: [true, 'Auto-Accept If Initiated From Subject is required'],
-        default: false
-    },
     category: {
         type: String,
         required: [true, 'Category is required'],
@@ -89,10 +69,6 @@ const RelationshipTypeSchema = CodeDecodeSchema({
 export interface IRelationshipType extends ICodeDecode {
     minCredentialStrength: number;
     minIdentityStrength: number;
-    voluntaryInd: boolean;
-    managedExternallyInd: boolean;
-    autoAcceptIfInitiatedFromDelegate: boolean;
-    autoAcceptIfInitiatedFromSubject: boolean;
     category: string;
     attributeNameUsages: IRelationshipAttributeNameUsage[];
     categoryEnum(): RelationshipTypeCategory;
@@ -102,12 +78,9 @@ export interface IRelationshipType extends ICodeDecode {
 }
 
 class RelationshipType extends CodeDecode implements IRelationshipType {
+
     public minCredentialStrength: number;
     public minIdentityStrength: number;
-    public voluntaryInd: boolean;
-    public managedExternallyInd: boolean;
-    public autoAcceptIfInitiatedFromDelegate: boolean;
-    public autoAcceptIfInitiatedFromSubject: boolean;
     public category: string;
     public attributeNameUsages: IRelationshipAttributeNameUsage[];
 
@@ -140,8 +113,6 @@ class RelationshipType extends CodeDecode implements IRelationshipType {
             this.endDate,
             this.minCredentialStrength,
             this.minIdentityStrength,
-            this.voluntaryInd,
-            this.managedExternallyInd,
             this.category,
             await Promise.all<RelationshipAttributeNameUsageDTO>(this.attributeNameUsages.map(
                 async(attributeNameUsage: IRelationshipAttributeNameUsage) => {
@@ -168,7 +139,7 @@ export class RelationshipTypeModel {
         return RelationshipTypeMongooseModel.create(source);
     }
 
-    public static findByCodeIgnoringDateRange(code: String): Promise<IRelationshipType> {
+    public static async findByCodeIgnoringDateRange(code: String): Promise<IRelationshipType> {
         return RelationshipTypeMongooseModel
             .findOne({
                 code: code
@@ -179,7 +150,7 @@ export class RelationshipTypeModel {
             .exec();
     }
 
-    public static findByCodeInDateRange(code: String, date: Date): Promise<IRelationshipType> {
+    public static async findByCodeInDateRange(code: String, date: Date): Promise<IRelationshipType> {
         return RelationshipTypeMongooseModel
             .findOne({
                 code: code,
@@ -192,7 +163,8 @@ export class RelationshipTypeModel {
             .exec();
     }
 
-    public static listIgnoringDateRange(): Promise<IRelationshipType[]> {
+    // todo change to search result with pagesize of 100 and add filters
+    public static async listIgnoringDateRange(): Promise<IRelationshipType[]> {
         return RelationshipTypeMongooseModel
             .find({})
             .deepPopulate([
@@ -202,7 +174,8 @@ export class RelationshipTypeModel {
             .exec();
     }
 
-    public static listInDateRange(date: Date): Promise<IRelationshipType[]> {
+    // todo change to search result with pagesize of 100 and add filters
+    public static async listInDateRange(date: Date): Promise<IRelationshipType[]> {
         return RelationshipTypeMongooseModel
             .find({
                 startDate: {$lte: date},

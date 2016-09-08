@@ -46,6 +46,7 @@ import {
     RelationshipAttribute,
     CodeDecode
 } from '../../../../commons/api';
+import {RelationshipCanViewPermission} from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
     selector: 'edit-relationship',
@@ -91,7 +92,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             endDate: null
         },
         authType: {
-            authType: 'choose'
+            authType: null
         },
         representativeDetails: {
             isOrganisation: false,
@@ -138,6 +139,17 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             error: this.onServerError.bind(this)
         });
 
+    }
+
+    public onListRelationshipTypes(relationshipTypeRefs: IHrefValue<IRelationshipType>[]) {
+
+        // filter the relationship types to those that can be chosen here
+        this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
+            return relationshipType.value.managedExternallyInd === false
+                && relationshipType.value.category === Constants.RelationshipTypeCategory.AUTHORISATION;
+        });
+        this.resolveAttributeUsages();
+
         // identity in focus
         this.services.rest.findIdentityByHref(this.identityHref).subscribe({
             next: this.onFindIdentity.bind(this),
@@ -164,6 +176,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     // todo refactor to use this.relationship
     public onFindRelationship(relationship: IRelationship) {
+
         this.relationship = relationship;
 
         // name, dob, abn
@@ -199,13 +212,13 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         };
 
         // authorisation type
-        // todo there may be a timing problem here - make sure reltypes are loaded
         const relationshipType = this.relationship.relationshipType.getFromList(this.relationshipTypeRefs);
         if (!relationshipType) {
             // todo probably Associate - what should we do?
+            alert('TODO: Associate Relationships are not currently supported');
             return;
         }
-        this.relationshipComponentData.authType = {authType:relationshipType.code};
+        this.relationshipComponentData.authType = {authType: relationshipType};
 
         // trigger authType change update before doing the rest
         this.changeDetectorRef.detectChanges();
@@ -256,15 +269,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         this.originalStartDate = this.relationshipComponentData.accessPeriod.startDate;
     }
 
-    public onListRelationshipTypes(relationshipTypeRefs: IHrefValue<IRelationshipType>[]) {
-        // filter the relationship types to those that can be chosen here
-        this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
-            return relationshipType.value.managedExternallyInd === false
-                && relationshipType.value.category === Constants.RelationshipTypeCategory.AUTHORISATION;
-        });
-        this.resolveAttributeUsages();
-    }
-
     public back() {
         this.services.route.goToRelationshipsPage(
             this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity)
@@ -279,7 +283,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             // insert relationship
 
             let partyType = this.relationshipComponentData.representativeDetails.isOrganisation ? Constants.PartyTypeCode.ABN : Constants.PartyTypeCode.INDIVIDUAL;
-            let relationshipType = CodeDecode.getRefByCode(this.relationshipTypeRefs, this.relationshipComponentData.authType.authType) as IHrefValue<IRelationshipType>;
+            let relationshipType = this.relationshipComponentData.authType.authType;
 
             // name
             let name = new Name(
@@ -304,7 +308,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // identity
             let identityRef = new HrefValue<Identity>(null, new Identity(
-                [],
+                null,
                 null,
                 null,
                 Constants.IdentityTypeCode.INVITATION_CODE,
@@ -363,7 +367,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // update relationship
 
-            let relationshipType = CodeDecode.getRefByCode(this.relationshipTypeRefs, this.relationshipComponentData.authType.authType) as IHrefValue<IRelationshipType>;
+            let relationshipType = this.relationshipComponentData.authType.authType;
             let firstIdentityForDelegate = this.relationship.delegate.value.identities[0];
             let profile = firstIdentityForDelegate.value.profile;
             let name = profile.name;
@@ -424,7 +428,16 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     }
 
     public onUpdate(relationship: IRelationship) {
-        this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
+        if (this.relationship.getLinkHrefByPermission(RelationshipCanViewPermission) === relationship.getLinkHrefByPermission(RelationshipCanViewPermission)) {
+            // edited existing relationship
+            this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
+        } else {
+            // created new superceding relationship requiring acceptance
+            this.services.route.goToRelationshipAddCompletePage(
+                this.identityHref,
+                relationship.subject.value.identities[0].href
+            );
+        }
     }
 
     public resolveAttributeUsages() {
@@ -451,7 +464,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         this.relationshipComponentData.declaration.markdown = 'TODO ' + data.authType;
 
         // find the selected relationship type by code
-        let selectedRelationshipTypeRef = CodeDecode.getRefByCode(this.relationshipTypeRefs, data.authType) as IHrefValue<IRelationshipType>;
+        let selectedRelationshipTypeRef = data.authType;
 
         if (selectedRelationshipTypeRef) {
 

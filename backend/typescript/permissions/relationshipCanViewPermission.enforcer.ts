@@ -17,7 +17,7 @@ export class RelationshipCanViewPermissionEnforcer extends PermissionEnforcer<IR
         let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
 
         permission.value = true;
-        permission.link = new Link(permission.linkType, Url.POST, await Url.forRelationship(relationship));
+        permission.link = new Link(permission.linkType, Url.GET, await Url.forRelationship(relationship));
 
         return permission;
 

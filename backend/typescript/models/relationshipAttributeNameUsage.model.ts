@@ -67,9 +67,11 @@ interface IRelationshipAttributeNameUsageDocument extends IRelationshipAttribute
 // static .............................................................................................................
 
 export class RelationshipAttributeNameUsageModel {
+
     public static async create(source: any): Promise<IRelationshipAttributeNameUsage> {
         return RelationshipAttributeNameUsageMongooseModel.create(source);
     }
+
 }
 
 // concrete model .....................................................................................................

@@ -298,7 +298,7 @@ export class RoleModel {
         });
     }
 
-    public static findByIdentifier(id: string): Promise<IRole> {
+    public static async findByIdentifier(id: string): Promise<IRole> {
         // TODO migrate from _id to another id
         return RoleMongooseModel
             .findOne({
@@ -312,7 +312,7 @@ export class RoleModel {
             .exec();
     }
 
-    public static findByRoleTypeAndParty(roleType: IRoleType, party: IParty): Promise<IRole> {
+    public static async findByRoleTypeAndParty(roleType: IRoleType, party: IParty): Promise<IRole> {
         return RoleMongooseModel
             .findOne({
                 roleType: roleType,
@@ -326,7 +326,7 @@ export class RoleModel {
             .exec();
     }
 
-    public static searchByIdentity(identityIdValue: string,
+    public static async searchByIdentity(identityIdValue: string,
                                    roleType: string,
                                    status: string,
                                    inDateRange: boolean,

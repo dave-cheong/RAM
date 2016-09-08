@@ -235,23 +235,29 @@ class Party extends RAMObject implements IParty {
 
         const roleAttributes: IRoleAttribute[] = [];
 
+        // add or update attribute
         let processAttribute = async(code: string, value: string[], roleAttributes: IRoleAttribute[], role: IRole) => {
             const roleAttributeName = await RoleAttributeNameModel.findByCodeIgnoringDateRange(code);
             if (roleAttributeName) {
-                const filteredRoleAttributes: IRoleAttribute[] = role.attributes.filter((item) => {
-                    return item.attributeName.code === code;
-                });
-                const roleAttributeDoesNotExist = filteredRoleAttributes.length === 0;
-                if (roleAttributeDoesNotExist) {
-                    roleAttributes.push(await RoleAttributeModel.create({
-                        value: value,
-                        attributeName: roleAttributeName
-                    }));
+                if (roleAttributeName.appliesToInstance) {
+                    const filteredRoleAttributes: IRoleAttribute[] = role.attributes.filter((item) => {
+                        return item.attributeName.code === code;
+                    });
+                    const roleAttributeDoesNotExist = filteredRoleAttributes.length === 0;
+                    if (roleAttributeDoesNotExist) {
+                        roleAttributes.push(await RoleAttributeModel.create({
+                            value: value,
+                            attributeName: roleAttributeName
+                        }));
+                    } else {
+                        const filteredRoleAttribute = filteredRoleAttributes[0];
+                        filteredRoleAttribute.value = value;
+                        await filteredRoleAttribute.save();
+                        roleAttributes.push(filteredRoleAttribute);
+                    }
                 } else {
-                    const filteredRoleAttribute = filteredRoleAttributes[0];
-                    filteredRoleAttribute.value = value;
-                    await filteredRoleAttribute.save();
-                    roleAttributes.push(filteredRoleAttribute);
+                    logger.warn('Role attribute name does not apply to instance');
+                    throw new Error('400');
                 }
             }
         };
