@@ -32,8 +32,6 @@ export class AuthorisationTypeComponent implements OnInit, OnChanges {
             'authType': [this.data.authType ? this.data.authType.value.code : '-', Validators.compose([this.isAuthTypeSelected])]
         });
         this.form.valueChanges.subscribe((v: {[key: string] : any}) => {
-            console.log('valueChanges', v);
-            console.log('valueChanges', JSON.stringify(v, null, 4));
             this.dataChanges.emit({
                 authType: CodeDecode.getRefByCode(this.options, v['authType']) as IHrefValue<IRelationshipType>
             });

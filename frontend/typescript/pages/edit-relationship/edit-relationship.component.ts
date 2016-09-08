@@ -466,9 +466,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         // find the selected relationship type by code
         let selectedRelationshipTypeRef = data.authType;
 
-        console.log('authTypeChange', data.authType);
-        console.log('authTypeChange', JSON.stringify(data.authType, null, 4));
-
         if (selectedRelationshipTypeRef) {
 
             const allowManageAuthorisationUsage = selectedRelationshipTypeRef.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
