@@ -11,7 +11,7 @@ import {
 } from './helpers';
 import {PartyModel} from '../models/party.model';
 import {RelationshipStatus, RelationshipModel} from '../models/relationship.model';
-import {FilterParams} from '../../../commons/api';
+import {Relationship as DTO, FilterParams} from '../../../commons/api';
 import {Headers} from './headers';
 
 // todo add data security
@@ -353,7 +353,7 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, req.body))
+            .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, DTO.build(req.body) as DTO))
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
