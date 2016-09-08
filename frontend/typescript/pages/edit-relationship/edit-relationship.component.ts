@@ -92,7 +92,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             endDate: null
         },
         authType: {
-            authType: 'choose'
+            authType: null
         },
         representativeDetails: {
             isOrganisation: false,
@@ -218,7 +218,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             alert('TODO: Associate Relationships are not currently supported');
             return;
         }
-        this.relationshipComponentData.authType = {authType: relationshipType.code};
+        this.relationshipComponentData.authType = {authType: relationshipType};
 
         // trigger authType change update before doing the rest
         this.changeDetectorRef.detectChanges();
@@ -283,7 +283,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             // insert relationship
 
             let partyType = this.relationshipComponentData.representativeDetails.isOrganisation ? Constants.PartyTypeCode.ABN : Constants.PartyTypeCode.INDIVIDUAL;
-            let relationshipType = CodeDecode.getRefByCode(this.relationshipTypeRefs, this.relationshipComponentData.authType.authType) as IHrefValue<IRelationshipType>;
+            let relationshipType = this.relationshipComponentData.authType.authType;
 
             // name
             let name = new Name(
@@ -367,7 +367,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // update relationship
 
-            let relationshipType = CodeDecode.getRefByCode(this.relationshipTypeRefs, this.relationshipComponentData.authType.authType) as IHrefValue<IRelationshipType>;
+            let relationshipType = this.relationshipComponentData.authType.authType;
             let firstIdentityForDelegate = this.relationship.delegate.value.identities[0];
             let profile = firstIdentityForDelegate.value.profile;
             let name = profile.name;
@@ -464,7 +464,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         this.relationshipComponentData.declaration.markdown = 'TODO ' + data.authType;
 
         // find the selected relationship type by code
-        let selectedRelationshipTypeRef = CodeDecode.getRefByCode(this.relationshipTypeRefs, data.authType) as IHrefValue<IRelationshipType>;
+        let selectedRelationshipTypeRef = data.authType;
+
+        console.log('authTypeChange', data.authType);
+        console.log('authTypeChange', JSON.stringify(data.authType, null, 4));
 
         if (selectedRelationshipTypeRef) {
 
