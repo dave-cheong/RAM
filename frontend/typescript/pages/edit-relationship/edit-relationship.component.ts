@@ -145,8 +145,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // filter the relationship types to those that can be chosen here
         this.relationshipTypeRefs = relationshipTypeRefs.filter((relationshipType) => {
-            return relationshipType.value.getAttributeNameRef(Constants.RelationshipAttributeNameCode.MANAGED_EXTERNALLY_IND) === null
-                            && relationshipType.value.category === Constants.RelationshipTypeCategory.AUTHORISATION;
+            return !relationshipType.value.getAttributeName(Constants.RelationshipAttributeNameCode.MANAGED_EXTERNALLY_IND)
+                && relationshipType.value.category === Constants.RelationshipTypeCategory.AUTHORISATION;
         });
         this.resolveAttributeUsages();
 
@@ -213,6 +213,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // authorisation type
         const relationshipType = this.relationship.relationshipType.getFromList(this.relationshipTypeRefs);
+        console.log('current', this.relationship.relationshipType);
+        console.log('all', this.relationshipTypeRefs);
         if (!relationshipType) {
             // todo probably Associate - what should we do?
             alert('TODO: Associate Relationships are not currently supported');

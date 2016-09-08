@@ -16,42 +16,53 @@ import {CodeDecode} from '../../../../commons/dtos/codeDecode.dto';
 export class AuthorisationTypeComponent implements OnInit, OnChanges {
 
     public form: FormGroup;
-    public selectedAuthType: IHrefValue<IRelationshipType>;
 
     @Input('data') public data: AuthorisationTypeComponentData;
     @Input('options') public options: IHrefValue<IRelationshipType>[];
 
     @Output('dataChange') public dataChanges = new EventEmitter<AuthorisationTypeComponentData>();
-
     @Output('isValid') public isValid = new EventEmitter<boolean>();
 
     constructor(private _fb: FormBuilder) { }
 
     public ngOnInit() {
+
+        // setup form
         this.form = this._fb.group({
-            'authType': [this.data.authType ? this.data.authType.value.code : '-', Validators.compose([this.isAuthTypeSelected])]
+            'authTypeCode': [this.data.authType ? this.data.authType.value.code : '-', Validators.compose([this.isAuthTypeSelected])]
         });
-        this.form.valueChanges.subscribe((v: {[key: string] : any}) => {
+
+        // emit changes externally on change
+        this.form.valueChanges.subscribe((v: AuthorisationTypeInternalData) => {
             this.dataChanges.emit({
-                authType: CodeDecode.getRefByCode(this.options, v['authType']) as IHrefValue<IRelationshipType>
-            });
+                authType: this.getRefByCode(v.authTypeCode)
+            } as AuthorisationTypeComponentData);
             this.isValid.emit(this.form.valid);
         });
+
+    }
+
+    private getRefByCode(code: string) {
+        return CodeDecode.getRefByCode(this.options, code) as IHrefValue<IRelationshipType>;
     }
 
     public ngOnChanges(changes: SimpleChanges): any {
         if (this.form) {
-            (this.form.controls['authType'] as FormControl).updateValue(this.data.authType ? this.data.authType.value.code : '-');
+            (this.form.controls['authTypeCode'] as FormControl).updateValue(this.data.authType ? this.data.authType.value.code : '-');
         }
     }
 
-    public onAuthTypeChange(value: string) {
-        this.data.authType = CodeDecode.getRefByCode(this.options, value) as IHrefValue<IRelationshipType>;
+    public onAuthTypeChange(code: string) {
+        this.data.authType = this.getRefByCode(code);
     }
 
-    private isAuthTypeSelected = (authType: FormControl) => {
-        return (authType.value === '-') ? { authorisationTypeNotSet: { valid: false } } : null;
+    private isAuthTypeSelected = (control: FormControl) => {
+        return (control.value === '-') ? { authorisationTypeNotSet: { valid: false } } : null;
     };
+}
+
+interface AuthorisationTypeInternalData {
+    authTypeCode: string;
 }
 
 export interface AuthorisationTypeComponentData {
