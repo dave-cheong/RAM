@@ -464,9 +464,9 @@ export class RelationshipModel {
 
         const isNewRelationship = !identifier;
 
+        // load relationship type
         const relationshipTypeCode = Url.lastPathElement(dto.relationshipType.href);
         Assert.assertNotNull(relationshipTypeCode, 'Relationship type code was empty', `Expected relationshipType href last element to be the code: ${dto.relationshipType.href}`);
-
         const relationshipType = await RelationshipTypeModel.findByCodeInDateRange(relationshipTypeCode, new Date());
         Assert.assertNotNull(relationshipType, 'Relationship type not found or not current', `Expected relationship type with code with valid date: ${relationshipTypeCode}`);
 
@@ -587,11 +587,13 @@ export class RelationshipModel {
             Assert.assertNotNull(dtoAttribute.attributeName, 'Attribute did not have an attribute name');
             Assert.assertNotNull(dtoAttribute.attributeName.href, 'Attribute did not have an attribute name href');
 
-            const attributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
-            Assert.assertNotNull(attributeNameCode, 'Attribute name code not found', `Unexpected attribute name href last element: ${dtoAttribute.attributeName.href}`);
+            const relationshipAttributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
+            Assert.assertNotNull(relationshipAttributeNameCode, 'Attribute name code not found', `Unexpected attribute name href last element: ${dtoAttribute.attributeName.href}`);
+            const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
 
-            const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(attributeNameCode);
-            Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribute name with code: ${attributeNameCode}`);
+
+            const attributeName = await RelationshipAttributeNameModel.findByCodeIgnoringDateRange(relationshipAttributeNameCode);
+            Assert.assertNotNull(attributeName, 'Attribute name not found', `Expected to find attribute name with code: ${relationshipAttributeNameCode}`);
 
             const attributeValue = dtoAttribute.value;
 
@@ -599,83 +601,31 @@ export class RelationshipModel {
             const isOtherClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.Other.code;
             const isAgencyServiceClassifier = attributeName.classifier === RelationshipAttributeNameClassifier.AgencyService.code;
 
-            if (isPermissionClassifier) {
+            if (relationshipAttributeNameUsage !== null) {
 
-                if (!isPermissionAttributeAllowed) {
-                    logger.warn('Found relationship attribute with classifier permission but permission customisation not allowed');
-                    throw new Error('400');
-                } else {
-                    const relationshipAttributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
-                    const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
-                    if (relationshipAttributeNameUsage !== null) {
+                if (relationshipAttributeNameUsage.attributeName.appliesToInstance) {
 
-                        let foundAttribute = false;
-                        for (let attribute of attributes) {
-                            if (attribute.attributeName.code === attributeName.code) {
-                                attribute.value = attributeValue;
-                                await attribute.save();
-                                foundAttribute = true;
-                                break;
-                            }
-                        }
-                        if (!foundAttribute) {
-                            attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
+                    if (isPermissionClassifier) {
+
+                        if (!isPermissionAttributeAllowed) {
+                            logger.warn('Found relationship attribute with classifier permission but permission customisation not allowed');
+                            throw new Error('400');
+                        } else {
+                            await RelationshipModel.updateOrAddAttribute(attributes, attributeName, attributeValue);
                         }
 
-                    } else {
-                        logger.warn('Relationship attribute not associated with relationship type');
-                        throw new Error('400');
-                    }
-                }
-
-            } else if (isOtherClassifier) {
-
-                const relationshipAttributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
-                const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
-                if (relationshipAttributeNameUsage !== null) {
-
-                    let foundAttribute = false;
-                    for (let attribute of attributes) {
-                        if (attribute.attributeName.code === attributeName.code) {
-                            attribute.value = attributeValue;
-                            await attribute.save();
-                            foundAttribute = true;
-                            break;
-                        }
-                    }
-                    if (!foundAttribute) {
-                        attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
+                    } else if (isOtherClassifier || isAgencyServiceClassifier) {
+                        await RelationshipModel.updateOrAddAttribute(attributes, attributeName, attributeValue);
                     }
 
                 } else {
-                    logger.warn('Relationship attribute not associated with relationship type');
+                    logger.warn('Relationship attribute does not apply to instance');
                     throw new Error('400');
                 }
 
-            } else if (isAgencyServiceClassifier) {
-
-                const relationshipAttributeNameCode = Url.lastPathElement(dtoAttribute.attributeName.href);
-                const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsageByCode(relationshipAttributeNameCode);
-                if (relationshipAttributeNameUsage !== null) {
-
-                    let foundAttribute = false;
-                    for (let attribute of attributes) {
-                        if (attribute.attributeName.code === attributeName.code) {
-                            attribute.value = attributeValue;
-                            await attribute.save();
-                            foundAttribute = true;
-                            break;
-                        }
-                    }
-                    if (!foundAttribute) {
-                        attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
-                    }
-
-                } else {
-                    logger.warn('Relationship attribute not associated with relationship type');
-                    throw new Error('400');
-                }
-
+            } else {
+                logger.warn('Relationship attribute not associated with relationship type');
+                throw new Error('400');
             }
         }
 
@@ -718,6 +668,23 @@ export class RelationshipModel {
 
             return relationship.save();
         }
+    }
+
+    public static async updateOrAddAttribute(attributes: IRelationshipAttribute[], attributeName, attributeValue: string[]): Promise<void> {
+
+        let foundAttribute = false;
+        for (let attribute of attributes) {
+            if (attribute.attributeName.code === attributeName.code) {
+                attribute.value = attributeValue;
+                await attribute.save();
+                foundAttribute = true;
+                break;
+            }
+        }
+        if (!foundAttribute) {
+            attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
+        }
+
     }
 
     public static async add(relationshipType: IRelationshipType,
