@@ -43,8 +43,7 @@ import {
     IHrefValue,
     HrefValue,
     IRelationshipAttribute,
-    RelationshipAttribute,
-    CodeDecode
+    RelationshipAttribute
 } from '../../../../commons/api';
 import {RelationshipCanViewPermission} from '../../../../commons/permissions/relationshipPermission.templates';
 
