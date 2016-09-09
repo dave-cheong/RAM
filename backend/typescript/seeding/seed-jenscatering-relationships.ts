@@ -139,6 +139,10 @@ export class JensCateringRelationshipsSeeder {
                         await Seeder.createRelationshipAttributeModel({
                             value: null,
                             attributeName: Seeder.subjectRelationshipDeclaration_relAttributeName
+                        } as any),
+                        await Seeder.createRelationshipAttributeModel({
+                            value: Seeder.limited_accessLevel,
+                            attributeName: Seeder.taxSuperServices_relAttributeName
                         } as any)
                     ]
                 } as any);

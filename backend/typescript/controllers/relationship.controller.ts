@@ -345,10 +345,6 @@ export class RelationshipController {
             'startTimestamp': {
                 in: 'body',
                 notEmpty: true,
-                // isDate: {
-                //     errorMessage: 'Start timestamp is not valid'
-                // },
-                // todo resolve issue
                 errorMessage: 'Start timestamp is not valid'
             }
         };

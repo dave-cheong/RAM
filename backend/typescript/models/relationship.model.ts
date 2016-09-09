@@ -12,6 +12,7 @@ import {IRelationshipType, RelationshipTypeModel} from './relationshipType.model
 import {IRelationshipAttribute, RelationshipAttributeModel} from './relationshipAttribute.model';
 import {RelationshipAttributeNameModel, RelationshipAttributeNameClassifier, IRelationshipAttributeName} from './relationshipAttributeName.model';
 import {ProfileProvider} from './profile.model';
+import {Constants} from '../../../commons/constants';
 import {
     IdentityModel,
     IIdentity,
@@ -27,7 +28,6 @@ import {
     RelationshipAttribute as RelationshipAttributeDTO,
     SearchResult
 } from '../../../commons/api';
-import {Constants} from '../../../commons/constants';
 import {Permissions} from '../../../commons/dtos/permission.dto';
 import {RelationshipCanClaimPermissionEnforcer} from '../permissions/relationshipCanClaimPermission.enforcer';
 import {RelationshipCanNotifyDelegatePermissionEnforcer} from '../permissions/relationshipCanNotifyDelegatePermission.enforcer';
@@ -514,9 +514,9 @@ export class RelationshipModel {
         if (!isNewRelationship) {
 
             // has relationship type been upgraded via the relationship strength
-            const minCredentialStrengthUpgraded = relationshipType.minCredentialStrength > relationship.relationshipType.minIdentityStrength;
-            if (minCredentialStrengthUpgraded) {
-                console.info('Re-acceptance required due to relationship strenght change');
+            const minIdentityStrengthUpgraded = relationshipType.minIdentityStrength > relationship.relationshipType.minIdentityStrength;
+            if (minIdentityStrengthUpgraded) {
+                console.info('Re-acceptance required due to relationship strength change');
                 reAcceptanceRequired = true;
             }
 
