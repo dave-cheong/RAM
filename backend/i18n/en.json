@@ -11,6 +11,8 @@
 
   "security.notAuthenticated" : "Unable to continue as you are not authenticated",
 
+  "identity.createRelationship.notABN" : "Unable to create an Authorisation for a non-ABN organisation",
+
   "relationship.listAuskeys.notABN" : "Unable to list AUSkeys for a non-ABN organisation",
 
   "relationship.claim.notPending" : "Unable to claim a non-pending relationship",

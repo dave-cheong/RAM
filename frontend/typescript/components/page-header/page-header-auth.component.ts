@@ -5,6 +5,7 @@ import {Constants} from '../../../../commons/constants';
 import {RAMServices} from '../../services/ram-services';
 
 import {IIdentity} from '../../../../commons/api';
+import {IdentityCanCreateRelationshipPermission} from '../../../../commons/permissions/identityPermission.templates';
 
 @Component({
     selector: 'page-header',
@@ -81,7 +82,7 @@ export class PageHeaderAuthComponent {
     };
 
     public isGiveAuthorisationsPageEnabled() {
-        return this.identity !== null && this.identity !== undefined && this.giveAuthorisationsEnabled;
+        return this.identity !== null && this.identity !== undefined && this.identity.isPermissionAllowed([IdentityCanCreateRelationshipPermission]);
     }
 
     // todo logins page

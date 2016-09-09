@@ -1021,7 +1021,7 @@ export class Seeder {
                 minIdentityStrength: 0,
                 category: RelationshipTypeCategory.Notification.code
             } as any, [
-                {attribute: Seeder.autoAcceptIfInitiatedFromDelegateInd_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
+                {attribute: Seeder.autoAcceptIfInitiatedFromSubjectInd_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.selectedGovernmentServicesList_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.ssid_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 2},
                 {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},

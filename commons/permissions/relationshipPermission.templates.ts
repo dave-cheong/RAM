@@ -52,6 +52,12 @@ export const RelationshipCanPrintInvitationPermission = new Permission(
     Constants.Link.PRINT
 );
 
+export const RelationshipCanViewDobPermission = new Permission(
+    'relationship-can-view-dob',
+    'A relationship dob can only be viewed on initial creation.',
+    true
+);
+
 export const Relationships = new Permissions()
         .push(RelationshipCanViewPermission)
         .push(RelationshipCanModifyPermission)
@@ -60,4 +66,5 @@ export const Relationships = new Permissions()
         .push(RelationshipCanRejectPermission)
         .push(RelationshipCanNotifyDelegatePermission)
         .push(RelationshipCanPrintInvitationPermission)
+        .push(RelationshipCanViewDobPermission)
     ;

@@ -22,7 +22,7 @@ import {
 import {
     RepresentativeDetailsComponent, RepresentativeDetailsComponentData
 } from
-'../../components/representative-details/representative-details.component';
+    '../../components/representative-details/representative-details.component';
 import {
     AuthorisationManagementComponent,
     AuthorisationManagementComponentData
@@ -45,7 +45,10 @@ import {
     IRelationshipAttribute,
     RelationshipAttribute
 } from '../../../../commons/api';
-import {RelationshipCanViewPermission} from '../../../../commons/permissions/relationshipPermission.templates';
+import {
+    RelationshipCanViewPermission,
+    RelationshipCanViewDobPermission
+} from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
     selector: 'edit-relationship',
@@ -98,7 +101,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             individual: {
                 givenName: '',
                 familyName: null,
-                dob: null
+                dob: null,
+                showDob: true
             },
             organisation: {
                 abn: '',
@@ -109,7 +113,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             value: 'false'
         },
         permissionAttributes: [],
-        authorisationPermissions : {
+        authorisationPermissions: {
             value: '',
             customisationEnabled: false,
             accessLevelsDescription: null,
@@ -187,10 +191,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         this.relationshipComponentData.representativeDetails = {
             isOrganisation: isOrg,
-                individual: {
-                    givenName: isOrg ? '' : profile.name.givenName,
-                    familyName: isOrg ? '' : profile.name.familyName,
-                    dob: isOrg || !dobSharedSecret ? null : new Date(dobSharedSecret.value)
+            individual: {
+                givenName: isOrg ? '' : profile.name.givenName,
+                familyName: isOrg ? '' : profile.name.familyName,
+                dob: isOrg || !dobSharedSecret ? null : new Date(dobSharedSecret.value),
+                showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission])
             },
             organisation: {
                 abn: '',
@@ -231,7 +236,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         };
 
         // access levels
-        let permAttributes:IRelationshipAttribute[] = [];
+        let permAttributes: IRelationshipAttribute[] = [];
         for (let att of this.relationship.attributes) {
             if (att.attributeName.value.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
                 if (!att.value) {
@@ -268,6 +273,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         );
 
         this.originalStartDate = this.relationshipComponentData.accessPeriod.startDate;
+        this.relationshipComponentData.representativeDetails.individual.showDob = this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]);
     }
 
     public back() {
@@ -458,7 +464,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         }
     }
 
-    public authTypeChange = (data:AuthorisationTypeComponentData) => {
+    public authTypeChange = (data: AuthorisationTypeComponentData) => {
 
         // TODO calculate declaration markdown based on relationship type and services selected
         // TODO update declaration component to show new text
