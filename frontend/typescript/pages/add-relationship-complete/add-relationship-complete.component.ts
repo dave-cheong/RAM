@@ -24,7 +24,6 @@ export class AddRelationshipCompleteComponent extends AbstractPageComponent {
     public relationshipHref: string;
     public displayName: string;
     public code: string;
-    public giveAuthorisationsEnabled: boolean = true; // todo need to set this
 
     public identity: IIdentity;
     public relationship: IRelationship;

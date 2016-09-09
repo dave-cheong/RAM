@@ -76,7 +76,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public permissionAttributeUsagesByType: { [relationshipTypeCode: string]: IRelationshipAttributeNameUsage[] } = {};
     public permissionAttributeUsages: IRelationshipAttributeNameUsage[];
 
-    public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public identity: IIdentity;
     public relationship: IRelationship;
     public manageAuthAttribute: IRelationshipAttributeNameUsage;

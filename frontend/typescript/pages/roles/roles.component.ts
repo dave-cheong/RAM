@@ -38,7 +38,6 @@ export class RolesComponent extends AbstractPageComponent {
 
     public roleSearchResult: ISearchResult<IHrefValue<IRole>>;
 
-    public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public agencyUser: IAgencyUser;
     public identity: IIdentity;
     public roleTypeRefs: IHrefValue<IRoleType>[];

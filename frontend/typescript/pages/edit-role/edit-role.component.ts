@@ -50,7 +50,6 @@ export class EditRoleComponent extends AbstractPageComponent {
 
     public deviceAusKeyRefs: ISearchResult<IHrefValue<IAUSkey>>;
 
-    public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public me: IPrincipal;
     public identity: IIdentity;
     public role: IRole;

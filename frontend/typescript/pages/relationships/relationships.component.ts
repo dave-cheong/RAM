@@ -21,6 +21,7 @@ import {
     IHrefValue,
     FilterParams
 } from '../../../../commons/api';
+import {IdentityCanCreateRelationshipPermission} from '../../../../commons/permissions/identityPermission.templates';
 
 @Component({
     selector: 'list-relationships',
@@ -40,7 +41,7 @@ export class RelationshipsComponent extends AbstractPageComponent {
     public filter: FilterParams;
     public page: number;
 
-    public giveAuthorisationsEnabled: boolean = true; // todo need to set this
+    public giveAuthorisationsEnabled: boolean = true;
     public identity: IIdentity;
     public relationshipRefs: ISearchResult<IHrefValue<IRelationship>>;
     public partyTypeRefs: IHrefValue<IPartyType>[];
@@ -135,6 +136,9 @@ export class RelationshipsComponent extends AbstractPageComponent {
     public onFindIdentity(identity: IIdentity) {
 
         this.identity = identity;
+
+        // give authorisation permissions
+        this.giveAuthorisationsEnabled = this.identity.isPermissionAllowed([IdentityCanCreateRelationshipPermission]);
 
         // relationships
         this.services.rest.searchRelationshipsByIdentity(this.identity.idValue, this.filter.encode(), this.page).subscribe({

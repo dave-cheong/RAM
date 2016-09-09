@@ -82,7 +82,9 @@ export class PageHeaderAuthComponent {
     };
 
     public isGiveAuthorisationsPageEnabled() {
-        return this.identity !== null && this.identity !== undefined && this.identity.isPermissionAllowed([IdentityCanCreateRelationshipPermission]);
+        return this.identity !== null &&
+            this.identity !== undefined &&
+            this.identity.isPermissionAllowed([IdentityCanCreateRelationshipPermission]);
     }
 
     // todo logins page

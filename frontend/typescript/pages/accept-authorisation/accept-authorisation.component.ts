@@ -32,7 +32,6 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     public relationship$: Observable<IRelationship>;
     public relationshipType$: Observable<IRelationshipType>;
 
-    public giveAuthorisationsEnabled: boolean = true; // todo need to set this
     public identity: IIdentity;
     public relationship: IRelationship;
     public delegateManageAuthorisationAllowedIndAttribute: IRelationshipAttribute;
