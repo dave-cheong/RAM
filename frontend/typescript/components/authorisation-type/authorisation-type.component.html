@@ -21,8 +21,10 @@
 
                     <div *ngIf="data.authType">
                         <h4>{{'addRelationship.authType.notes' | translate}}</h4>
-                        <p><strong>{{data.authType.value.shortDecodeText}}</strong></p>
-                        <p>{{data.authType.value.longDecodeText}}</p>
+                        <blockquote>
+                            <p><strong>{{data.authType.value.shortDecodeText}}</strong></p>
+                            <p>{{data.authType.value.longDecodeText}}</p>
+                        </blockquote>
                         <br/>
                     </div>
 
