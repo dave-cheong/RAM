@@ -6,6 +6,7 @@ import {IIdentity} from '../models/identity.model';
 import {Translator} from '../ram/translator';
 import {context} from '../providers/context.provider';
 import {IdentityCanCreateRelationshipPermission} from '../../../commons/permissions/identityPermission.templates';
+import {PartyType} from '../models/party.model';
 
 export class IdentityCanCreateRelationshipPermissionEnforcer extends PermissionEnforcer<IIdentity> {
 
@@ -21,6 +22,11 @@ export class IdentityCanCreateRelationshipPermissionEnforcer extends PermissionE
         // validate authenticated
         if (!context.getAuthenticatedPrincipalIdValue()) {
             permission.messages.push(Translator.get('security.notAuthenticated'));
+        }
+
+        // validate is business
+        if (identity.party.partyTypeEnum() !== PartyType.ABN) {
+            permission.messages.push(Translator.get('identity.createRelationship.notABN'));
         }
 
         // set value and link

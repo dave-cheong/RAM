@@ -49,4 +49,5 @@ export interface IndividualRepresentativeDetailsComponentData {
     givenName: string;
     familyName?: string;
     dob?: Date;
+    showDob: boolean;
 }
