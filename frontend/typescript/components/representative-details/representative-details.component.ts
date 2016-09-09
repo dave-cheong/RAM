@@ -48,7 +48,8 @@ export class RepresentativeDetailsComponent {
             this.data.individual = {
                 givenName: '',
                 familyName: null,
-                dob: null
+                dob: null,
+                showDob: true
             };
         }
     }
