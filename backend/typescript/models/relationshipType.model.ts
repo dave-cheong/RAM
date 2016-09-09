@@ -72,7 +72,7 @@ export interface IRelationshipType extends ICodeDecode {
     category: string;
     attributeNameUsages: IRelationshipAttributeNameUsage[];
     categoryEnum(): RelationshipTypeCategory;
-    findAttributeNameUsageByCode(code: string): IRelationshipAttributeNameUsage;
+    findAttributeNameUsage(code: string): IRelationshipAttributeNameUsage;
     toHrefValue(includeValue: boolean): Promise<HrefValue<DTO>>;
     toDTO(): Promise<DTO>;
 }
@@ -88,7 +88,7 @@ class RelationshipType extends CodeDecode implements IRelationshipType {
         return RelationshipTypeCategory.valueOf(this.category);
     }
 
-    public findAttributeNameUsageByCode(code: string): IRelationshipAttributeNameUsage {
+    public findAttributeNameUsage(code: string): IRelationshipAttributeNameUsage {
         for (let attributeNameUsage of this.attributeNameUsages) {
             if (attributeNameUsage.attributeName.code === code) {
                 return attributeNameUsage;

@@ -307,7 +307,7 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, req.body))
+            .then((req: Request) => RelationshipModel.createFromDto(DTO.build(req.body) as DTO))
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
@@ -349,7 +349,8 @@ export class RelationshipController {
             }
         };
         validateReqSchema(req, schema)
-            .then((req: Request) => RelationshipModel.addOrModify(req.params.identifier, DTO.build(req.body) as DTO))
+            .then((req: Request) => RelationshipModel.findByIdentifier(req.params.identifier))
+            .then((model) => model ? model.modify(DTO.build(req.body) as DTO) : null)
             .then((model) => model ? model.toDTO() : null)
             .then(sendResource(res))
             .then(sendNotFoundError(res))
