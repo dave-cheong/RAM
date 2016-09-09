@@ -474,59 +474,7 @@ class Relationship extends RAMObject implements IRelationship {
 
         await new RelationshipCanModifyPermissionEnforcer().assert(this);
 
-        // re-acceptance determined by comparing against original relationship
-        let reAcceptanceRequired = false;
-        const originalRelationship = await RelationshipModel.findByIdentifier(this.id);
-
-        // has relationship type been upgraded via the relationship strength
-        const minIdentityStrengthUpgraded = this.relationshipType.minIdentityStrength > originalRelationship.relationshipType.minIdentityStrength;
-        if (minIdentityStrengthUpgraded) {
-            console.info('Re-acceptance required due to relationship strength change');
-            reAcceptanceRequired = true;
-        }
-
-        // has authorisation management been changed from no to yes
-        const relationshipAttributeDelegateManageAuthorisationAllowedInd = originalRelationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
-        if (relationshipAttributeDelegateManageAuthorisationAllowedInd) {
-            if (relationshipAttributeDelegateManageAuthorisationAllowedInd.value[0] === 'false') {
-                const dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd = this.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
-                if (dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd) {
-                    if (dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd.value[0] === 'true') {
-                        console.info('Re-acceptance required due to authorisation management upgrade');
-                        reAcceptanceRequired = true;
-                    }
-                }
-            }
-        }
-
-        // have more government services been added
-        for (let attribute of this.attributes) {
-            if (attribute.attributeName.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
-
-                const originalAttribute = originalRelationship.getAttribute(attribute.attributeName.code);
-                if (!originalAttribute) {
-                    console.info('Re-acceptance required due addition of government service');
-                    reAcceptanceRequired = true;
-                } else {
-
-                    // has the permission been changed from limited to full
-                    const permittedValues = originalAttribute.attributeName.permittedValues;
-                    const permissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === originalAttribute.value[0]);
-                    const originalAttributeValueValid = permittedValues.find((value: string) => value === originalAttribute.value[0]);
-                    if (originalAttributeValueValid) {
-                        const dtoPermissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === attribute.value[0]);
-                        const attributeValueValid = permittedValues.find((value: string) => value === attribute.value[0]);
-                        if (attributeValueValid) {
-                            if (dtoPermissionAttributeValueIndex < permissionAttributeValueIndex) {
-                                console.info('Re-acceptance required due to upgrading of access level');
-                                reAcceptanceRequired = true;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
+        const reAcceptanceRequired = this.isReAcceptanceRequired();
         if (reAcceptanceRequired) {
             throw new Error('400:Re-acceptance required'); // todo handle by creating new relationship
         }
@@ -540,6 +488,68 @@ class Relationship extends RAMObject implements IRelationship {
         }
 
         return this;
+    }
+
+    private async isReAcceptanceRequired(): boolean {
+        let reAcceptanceRequired = false;
+
+        // re-acceptance can only happen while accepted
+        if (this.status === RelationshipStatus.Accepted.code) {
+
+            // re-acceptance determined by comparing against original relationship
+            const originalRelationship = await RelationshipModel.findByIdentifier(this.id);
+
+            // has relationship type been upgraded via the relationship strength
+            const minIdentityStrengthUpgraded = this.relationshipType.minIdentityStrength > originalRelationship.relationshipType.minIdentityStrength;
+            if (minIdentityStrengthUpgraded) {
+                console.info('Re-acceptance required due to relationship strength change');
+                reAcceptanceRequired = true;
+            }
+
+            // has authorisation management been changed from no to yes
+            const relationshipAttributeDelegateManageAuthorisationAllowedInd = originalRelationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            if (relationshipAttributeDelegateManageAuthorisationAllowedInd) {
+                if (relationshipAttributeDelegateManageAuthorisationAllowedInd.value[0] === 'false') {
+                    const dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd = this.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+                    if (dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd) {
+                        if (dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd.value[0] === 'true') {
+                            console.info('Re-acceptance required due to authorisation management upgrade');
+                            reAcceptanceRequired = true;
+                        }
+                    }
+                }
+            }
+
+            // have more government services been added
+            for (let attribute of this.attributes) {
+                if (attribute.attributeName.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
+
+                    const originalAttribute = originalRelationship.getAttribute(attribute.attributeName.code);
+                    if (!originalAttribute) {
+                        console.info('Re-acceptance required due addition of government service');
+                        reAcceptanceRequired = true;
+                    } else {
+
+                        // has the permission been changed from limited to full
+                        const permittedValues = originalAttribute.attributeName.permittedValues;
+                        const permissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === originalAttribute.value[0]);
+                        const originalAttributeValueValid = permittedValues.find((value: string) => value === originalAttribute.value[0]);
+                        if (originalAttributeValueValid) {
+                            const dtoPermissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === attribute.value[0]);
+                            const attributeValueValid = permittedValues.find((value: string) => value === attribute.value[0]);
+                            if (attributeValueValid) {
+                                if (dtoPermissionAttributeValueIndex < permissionAttributeValueIndex) {
+                                    console.info('Re-acceptance required due to upgrading of access level');
+                                    reAcceptanceRequired = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return reAcceptanceRequired;
     }
 
     private async mergeInvitationIdentityIfRequired(dto: DTO): Promise<IIdentity> {
