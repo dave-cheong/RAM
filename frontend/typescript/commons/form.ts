@@ -33,8 +33,14 @@ export class SimpleForm<T> {
         return this;
     }
 
-    public onChange(onChangeCallback: (value: T) => void): SimpleForm<T> {
-        this.onChangeFn = onChangeCallback;
+    public remove(name: string): SimpleForm<T> {
+        this.group.removeControl(name);
+        this.controls[name] = undefined;
+        return this;
+    }
+
+    public onChange(onChangeFn: (value: T) => void): SimpleForm<T> {
+        this.onChangeFn = onChangeFn;
         return this;
     }
 
