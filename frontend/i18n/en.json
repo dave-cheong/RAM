@@ -5,6 +5,8 @@
 
   "yes" : "Yes",
   "no" : "No",
+  "edit" : "Edit",
+  "manage" : "Manage",
   "back" : "Back",
   "save" : "Save",
   "submit" : "Submit",
