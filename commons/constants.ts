@@ -56,8 +56,9 @@ export const Constants = {
         OSP: 'OSP'
     },
 
-    RelationshipStatus: {
-        ACCEPTED: 'ACCEPTED'
+    RelationshipStatusCode: {
+        ACCEPTED: 'ACCEPTED',
+        PENDING: 'PENDING'
     },
 
     RelationshipAttributeNameClassifier: {

@@ -177,6 +177,10 @@ div.navbar-header {
   vertical-align: middle;
 }
 
+.table td span.label {
+  margin-left: 5px;
+}
+
 blockquote {
   background: $well-bg;
   border-left-color: $brand-primary;

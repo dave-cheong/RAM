@@ -94,7 +94,9 @@
                 </td>
             </tr>
             <tr *ngFor="let relationshipRef of item.relationshipRefs">
-                <td>{{services.model.displayName(relationshipRef.value.delegateNickName)}}</td>
+                <td>{{services.model.displayName(relationshipRef.value.delegateNickName)}}
+                    <span class="label label-warning" *ngIf="relationshipRef.value.isPending()">{{services.model.relationshipStatusLabel(relationshipStatusRefs, relationshipRef.value.status)}}</span>
+                </td>
                 <td>{{commaSeparatedListOfProviderNames(relationshipRef.value.delegate.value)}}</td>
                 <td>{{services.model.relationshipTypeLabel(relationshipTypeRefs, relationshipRef.value)}}</td>
                 <td>{{services.model.relationshipStatusLabel(relationshipStatusRefs, relationshipRef.value.status)}}</td>
