@@ -42,6 +42,8 @@
 
   "relationship.canEditDelegate.invalidStatus": "Unable to modify delegate for a non-pending",
 
+  "relationship.canViewDob.invalidStatus": "Unable to view DOB for a non-pending",
+
   "BYE" : "Bye"
 
 }
