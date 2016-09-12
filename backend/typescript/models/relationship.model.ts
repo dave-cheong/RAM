@@ -721,19 +721,14 @@ export class RelationshipModel {
 
     // this is a static method because we may be constructing attributes for a new relationship that has not been created yet
     public static async updateOrAddAttribute(attributes: IRelationshipAttribute[], attributeName: IRelationshipAttributeName, attributeValue: string[]): Promise<void> {
-
-        let foundAttribute = false;
-        for (let attribute of attributes) {
-            if (attribute.attributeName.code === attributeName.code) {
-                attribute.value = attributeValue;
-                foundAttribute = true;
-                break;
+        if (attributes && attributeName) {
+            const matchedAttribute = attributes.find((attribute) => attribute.attributeName.code === attributeName.code);
+            if (matchedAttribute) {
+                matchedAttribute.value = attributeValue;
+            } else {
+                attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
             }
         }
-        if (!foundAttribute) {
-            attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
-        }
-
     }
 
     public static async add(relationshipType: IRelationshipType,
