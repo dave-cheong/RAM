@@ -10,6 +10,7 @@
   "error.pageSizeInvalid" : "Page Size is not valid",
 
   "security.notAuthenticated" : "Unable to continue as you are not authenticated",
+  "security.noAccess" : "Unable to access this resource",
 
   "identity.createRelationship.notABN" : "Unable to create an Authorisation for a non-ABN organisation",
 
@@ -38,6 +39,8 @@
 
   "relationship.modify.managedExternally": "Unable to modify an externally managed relationship",
   "relationship.modify.invalidStatus": "Unable to modify a non-pending or non-accepted relationship",
+
+  "relationship.canEditDelegate.invalidStatus": "Unable to modify delegate for a non-pending",
 
   "BYE" : "Bye"
 

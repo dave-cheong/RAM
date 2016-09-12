@@ -47,7 +47,7 @@ import {
 } from '../../../../commons/api';
 import {
     RelationshipCanViewPermission,
-    RelationshipCanViewDobPermission
+    RelationshipCanViewDobPermission, RelationshipCanEditDelegatePermission
 } from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
@@ -268,7 +268,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         console.log('showDob', this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]));
 
         this.relationshipComponentData.representativeDetails = {
-            readOnly: this.relationshipHref !== null && this.relationshipHref !== undefined,
+            readOnly: !this.relationship.isPermissionAllowed([RelationshipCanEditDelegatePermission]),
             showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]),
             isOrganisation: isOrganisation,
             individual: !isOrganisation ? {

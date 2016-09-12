@@ -410,9 +410,9 @@ export class PartyModel {
         return identity ? identity.party : null;
     }
 
-    public static async hasAccess(requestedIdValue: string, requestingPrincipal: IPrincipal, requestingIdentity: IIdentity): Promise<boolean> {
-        const requestedIdentity = await
-            IdentityModel.findByIdValue(requestedIdValue);
+    public static async hasAccess(requestedIdValue: string, requestingPrincipal: IPrincipal): Promise<boolean> {
+        const requestedIdentity = await IdentityModel.findByIdValue(requestedIdValue);
+        const requestingIdentity = requestingPrincipal ? requestingPrincipal.identity : null;
         if (requestedIdentity) {
             // requested party exists
             if (requestingPrincipal && requestingPrincipal.agencyUserInd) {

@@ -24,6 +24,7 @@ import {IdentityCanCreateRolePermissionEnforcer} from './identityCanCreateRolePe
 import {IdentityCanListAuskeysPermissionEnforcer} from './identityCanListAuskeysPermission.enforcer';
 import {IdentityCanListRolesPermissionEnforcer} from './identityCanListRolesPermission.enforcer';
 import {RelationshipCanViewDobPermissionEnforcer} from './relationshipCanViewDobPermission.enforcer';
+import {RelationshipCanEditDelegatePermissionEnforcer} from './relationshipCanEditDelegatePermission.enforcer';
 
 export class PermissionEnforcers {
 
@@ -50,6 +51,7 @@ export class PermissionEnforcers {
         new RelationshipCanPrintInvitationPermissionEnforcer(),
         new RelationshipCanRejectPermissionEnforcer(),
         new RelationshipCanViewPermissionEnforcer(),
+        new RelationshipCanEditDelegatePermissionEnforcer(),
         new RelationshipCanViewDobPermissionEnforcer(),
     ];
 

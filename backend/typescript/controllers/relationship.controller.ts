@@ -219,8 +219,7 @@ export class RelationshipController {
         validateReqSchema(req, schema)
             .then(async(req: Request) => {
                 const myPrincipal = context.getAuthenticatedPrincipal();
-                const myIdentity = context.getAuthenticatedIdentity();
-                const hasAccess = await PartyModel.hasAccess(req.params.identity_id, myPrincipal, myIdentity);
+                const hasAccess = await PartyModel.hasAccess(req.params.identity_id, myPrincipal);
                 if (!hasAccess) {
                     throw new Error('403');
                 }

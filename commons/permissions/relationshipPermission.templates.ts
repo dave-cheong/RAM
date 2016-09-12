@@ -52,6 +52,12 @@ export const RelationshipCanPrintInvitationPermission = new Permission(
     Constants.Link.PRINT
 );
 
+export const RelationshipCanEditDelegatePermission = new Permission(
+    'relationship-can-edit-delegate',
+    'A relationship delegate can only be edited on initial creation or for pending invitations.',
+    true
+);
+
 export const RelationshipCanViewDobPermission = new Permission(
     'relationship-can-view-dob',
     'A relationship dob can only be viewed on initial creation.',
@@ -66,5 +72,6 @@ export const Relationships = new Permissions()
         .push(RelationshipCanRejectPermission)
         .push(RelationshipCanNotifyDelegatePermission)
         .push(RelationshipCanPrintInvitationPermission)
+        .push(RelationshipCanEditDelegatePermission)
         .push(RelationshipCanViewDobPermission)
     ;

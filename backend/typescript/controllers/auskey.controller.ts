@@ -61,8 +61,7 @@ export class AuskeyController {
                 const idValue = req.params.idValue;
                 const myPrincipal = context.getAuthenticatedPrincipal();
                 if (!myPrincipal.agencyUserInd) {
-                    const myIdentity = context.getAuthenticatedIdentity();
-                    const hasAccess = await PartyModel.hasAccess(idValue, myPrincipal, myIdentity);
+                    const hasAccess = await PartyModel.hasAccess(idValue, myPrincipal);
                     if (!hasAccess) {
                         console.log('Identity access denied or does not exist', idValue);
                         throw new Error('403');
