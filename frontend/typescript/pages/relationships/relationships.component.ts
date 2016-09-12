@@ -22,6 +22,7 @@ import {
     FilterParams
 } from '../../../../commons/api';
 import {IdentityCanCreateRelationshipPermission} from '../../../../commons/permissions/identityPermission.templates';
+import {RelationshipCanModifyPermission} from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
     selector: 'list-relationships',
@@ -236,8 +237,7 @@ export class RelationshipsComponent extends AbstractPageComponent {
     }
 
     public isEditRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
-        // todo limit to only ACCEPTED at the moment, relax the restriction later
-        return this.services.model.hasLinkHrefByType(Constants.Link.MODIFY, relationshipRef.value) && relationshipRef.value.status === Constants.RelationshipStatus.ACCEPTED;
+        return relationshipRef.value.isPermissionAllowed([RelationshipCanModifyPermission]);
     }
 
 }
