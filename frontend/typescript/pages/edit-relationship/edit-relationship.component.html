@@ -44,6 +44,9 @@
             <h4><span class="badge square">6</span> {{'addRelationship.declaration.header' | translate}}</h4>
         </div>
         <div class="panel-body" *ngIf="declarationText !== null">
+            <h4>By authorising the nominated representative to act on behalf of the selected
+                {{services.model.partyTypeLabelForParty(relationship.subject)}}, it is acknowledged that
+                they will be able to perform all of the selected transactions on their behalf.</h4>
             <relationship-declaration
                     [markdown]='declarationText'
                     [(data)]='relationshipComponentData.declaration'
