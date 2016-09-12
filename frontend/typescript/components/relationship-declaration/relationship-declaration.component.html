@@ -1,6 +1,8 @@
 <form [formGroup]='form'>
-    <blockquote><ng2-markdown [markdown]="markdown"></ng2-markdown></blockquote>
-    <div class="checkbox">
-        <label><input type="checkbox" [formControl]='form.controls["accepted"]'> <strong>I agree to this declaration</strong></label>
+    <div class="form-group col-md-12">
+        <blockquote><ng2-markdown [markdown]="markdown"></ng2-markdown></blockquote>
+        <div class="checkbox">
+            <label><input type="checkbox" [formControl]='form.controls["accepted"]'> <strong>I agree to this declaration</strong></label>
+        </div>
     </div>
 </form>
