@@ -22,8 +22,8 @@
             [disabled]="disableAuthMgmt"></authorisation-management>
 
     <authorisation-permissions
-            [(data)]='relationshipComponentData.authorisationPermissions'
-            [(permissionAttributes)]='relationshipComponentData.permissionAttributes'
+            [data]='relationshipComponentData.authorisationPermissions'
+            [permissionAttributes]='relationshipComponentData.permissionAttributes'
             [attributeNameUsages]='permissionAttributeUsages'
             (validationErrors)='authorisationPermissionErrors=$event'></authorisation-permissions>
 

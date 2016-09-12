@@ -202,8 +202,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             this.relationshipComponentData.authType = {authType: relationshipType};
 
-            // trigger authType change update before doing the rest
-            this.changeDetectorRef.detectChanges();
+            this.authTypeChange(this.relationshipComponentData.authType);
 
             // auth management
             const userAuthorisedToManage = this.relationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND).value[0];
@@ -212,22 +211,27 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             };
 
             // access levels
-            let permAttributes: IRelationshipAttribute[] = [];
-            for (let att of this.relationship.attributes) {
-                if (att.attributeName.value.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
-                    if (!att.value) {
-                        att.value = [];
-                    }
-                    permAttributes.push(att);
+            for (let permissionAttribute of this.relationshipComponentData.permissionAttributes) {
+                const existingAttribute = this.getExistingAttributeWithCode(permissionAttribute.attributeName.value.code);
+                if (existingAttribute && existingAttribute.value) {
+                    permissionAttribute.value = existingAttribute.value;
                 }
             }
-            this.relationshipComponentData.permissionAttributes = permAttributes;
 
             // tell angular we've changed things to please the checks that are done to confirm change propagation
             this.changeDetectorRef.detectChanges();
 
         }
 
+    }
+
+    private getExistingAttributeWithCode(code: string): IRelationshipAttribute {
+        for (let att of this.relationship.attributes) {
+            if (att.attributeName.value.code === code) {
+                return att;
+            }
+        }
+        return null;
     }
 
     // todo refactor to use this
