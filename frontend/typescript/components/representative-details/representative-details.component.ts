@@ -39,25 +39,28 @@ export class RepresentativeDetailsComponent {
         if (isOrganisation) {
             this.data.individual = undefined;
             this.data.organisation = {
-                readOnly: false,
                 abn: '',
                 organisationName: ''
             };
         } else {
             this.data.organisation = undefined;
             this.data.individual = {
-                readOnly: false,
                 givenName: '',
-                familyName: null,
+                familyName: '',
                 dob: null,
                 showDob: true
             };
         }
     }
 
+    public isDisabled() {
+        return this.data.readOnly;
+    }
+
 }
 
 export interface RepresentativeDetailsComponentData {
+    readOnly: boolean;
     individual?: IndividualRepresentativeDetailsComponentData;
     organisation?: OrganisationRepresentativeDetailsComponentData;
     isOrganisation: boolean;

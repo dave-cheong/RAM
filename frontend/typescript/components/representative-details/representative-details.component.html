@@ -6,7 +6,7 @@
 
     <div class="panel-body">
 
-        <form>
+        <form *ngIf='!isDisabled()'>
             <div class="form-group">
                 <div class="radio">
                     <div class="col-lg-2">
@@ -30,16 +30,20 @@
 
         <individual-representative-details
                 *ngIf='!isOrganisation'
+                [readOnly]='data.readOnly'
                 [(data)]='data.individual'
                 (isValid)="setChildValidationStatus(false,$event)">
         </individual-representative-details>
 
         <organisation-representative-details
                 *ngIf='isOrganisation'
+                [readOnly]='readOnly'
                 [(data)]='data.organisation'
                 (isValid)="setChildValidationStatus(true,$event)">
         </organisation-representative-details>
 
     </div>
+
+    <br/>
 
 </div>
