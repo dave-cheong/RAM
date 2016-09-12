@@ -100,7 +100,10 @@
                 <td>{{commaSeparatedListOfProviderNames(relationshipRef.value.delegate.value)}}</td>
                 <td>{{services.model.relationshipTypeLabel(relationshipTypeRefs, relationshipRef.value)}}</td>
                 <td>{{services.model.relationshipStatusLabel(relationshipStatusRefs, relationshipRef.value.status)}}</td>
-                <td><a class="btn btn-sm btn-secondary align-center" (click)="goToRelationshipPage(relationshipRef)" *ngIf="isEditRelationshipEnabled(relationshipRef)">{{'edit' | translate}}</a></td>
+                <td>
+                    <a class="btn btn-sm btn-secondary align-center" (click)="goToRelationshipPage(relationshipRef)" *ngIf="isEditRelationshipEnabled(relationshipRef)">{{'edit' | translate}}</a>
+                    <a class="btn btn-sm btn-secondary align-center" (click)="goToAcceptRejectRelationshipPage(relationshipRef)" *ngIf="isAcceptRejectRelationshipEnabled(relationshipRef)">{{'edit' | translate}}</a>
+                </td>
             </tr>
         </template>
     </tbody>

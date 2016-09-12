@@ -1,14 +1,14 @@
 import {Component} from '@angular/core';
 import {ROUTER_DIRECTIVES, ActivatedRoute, Router, Params} from '@angular/router';
 import {FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup} from '@angular/forms';
-
 import {AbstractPageComponent} from '../abstract-page/abstract-page.component';
 import {PageHeaderAuthComponent} from '../../components/page-header/page-header-auth.component';
-import {SearchResultPaginationComponent, SearchResultPaginationDelegate}
-    from '../../components/search-result-pagination/search-result-pagination.component';
+import {
+    SearchResultPaginationComponent,
+    SearchResultPaginationDelegate
+} from '../../components/search-result-pagination/search-result-pagination.component';
 import {Constants} from '../../../../commons/constants';
 import {RAMServices} from '../../services/ram-services';
-
 import {
     ISearchResult,
     IParty,
@@ -236,8 +236,19 @@ export class RelationshipsComponent extends AbstractPageComponent {
         this.services.route.goToEditRelationshipPage(this.identityHref, relationshipRef.href);
     }
 
+    public goToAcceptRejectRelationshipPage(relationshipRef: IHrefValue<IRelationship>) {
+        // todo refactor to href
+        // this.services.route.goToRelationshipAcceptPage(this.identity.idValue, relationshipRef.href);
+    }
+
     public isEditRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
         return relationshipRef.value.isPermissionAllowed([RelationshipCanModifyPermission]);
+    }
+
+    // todo auto link to the accept/reject page
+    public isAcceptRejectRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
+        // return relationshipRef.value.isPermissionAllowed([RelationshipCanAcceptPermission]);
+        return false;
     }
 
 }
