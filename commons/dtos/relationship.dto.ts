@@ -7,6 +7,7 @@ import {IRelationshipAttribute, RelationshipAttribute} from './relationshipAttri
 import {RelationshipType, IRelationshipType} from './relationshipType.dto';
 import {IResource, Resource} from './resource.dto';
 import {PermissionTemplates} from '../permissions/allPermission.templates';
+import {Constants} from '../constants';
 
 export interface IRelationship extends IResource {
     relationshipType: IHrefValue<IRelationshipType>;
@@ -24,6 +25,7 @@ export interface IRelationship extends IResource {
     getAttribute(code: string): IRelationshipAttribute;
     insertOrUpdateAttribute(attribute: IRelationshipAttribute): void;
     deleteAttribute(code: string): void;
+    isPending(): boolean;
 }
 
 export class Relationship extends Resource implements IRelationship {
@@ -82,6 +84,10 @@ export class Relationship extends Resource implements IRelationship {
                 }
             }
         }
+    }
+
+    public isPending(): boolean {
+        return this.status === Constants.RelationshipStatusCode.PENDING;
     }
 
 }
