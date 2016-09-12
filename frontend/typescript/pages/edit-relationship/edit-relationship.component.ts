@@ -101,7 +101,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 givenName: '',
                 familyName: null,
                 dob: null,
-                showDob: true
+                showDob: false
             },
             organisation: {
                 abn: '',
