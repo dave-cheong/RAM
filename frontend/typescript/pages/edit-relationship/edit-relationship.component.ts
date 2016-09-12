@@ -117,10 +117,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             enabled: false
         },
         declaration: {
-            accepted: false,
-            markdown: null
+            accepted: false
         }
     };
+
+    public declarationText: string;
 
     constructor(route: ActivatedRoute, router: Router, fb: FormBuilder, services: RAMServices, cdr: ChangeDetectorRef) {
         super(route, router, fb, services);
@@ -301,9 +302,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         }
 
         this.relationshipComponentData.declaration = {
-            accepted: false,
-            markdown: markdown
+            accepted: false
         };
+
+        this.declarationText = markdown;
 
     }
 

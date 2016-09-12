@@ -10,6 +10,7 @@ import {MarkdownComponent} from '../ng2-markdown/ng2-markdown.component';
 })
 export class RelationshipDeclarationComponent implements OnInit {
 
+    @Input('markdown') public markdown: string;
     @Input('data') public data: DeclarationComponentData;
 
     @Output('dataChange') public dataChanges = new EventEmitter<DeclarationComponentData>();
@@ -40,5 +41,4 @@ export class RelationshipDeclarationComponent implements OnInit {
 
 export interface DeclarationComponentData {
     accepted: boolean;
-    markdown: string;
 }

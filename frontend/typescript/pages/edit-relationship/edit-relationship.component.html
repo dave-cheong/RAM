@@ -43,8 +43,9 @@
         <div class="panel-heading">
             <h4><span class="badge square">6</span> {{'addRelationship.declaration.header' | translate}}</h4>
         </div>
-        <div class="panel-body" *ngIf="relationshipComponentData.declaration.markdown !== null">
+        <div class="panel-body" *ngIf="declarationText !== null">
             <relationship-declaration
+                    [markdown]='declarationText'
                     [(data)]='relationshipComponentData.declaration'
                     (isValid)='declarationIsValid=$event'></relationship-declaration>
         </div>
