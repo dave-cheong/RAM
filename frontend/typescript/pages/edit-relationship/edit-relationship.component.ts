@@ -450,7 +450,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             // created new superceding relationship requiring acceptance
             this.services.route.goToRelationshipAddCompletePage(
                 this.identityHref,
-                relationship.subject.value.identities[0].href
+                this.services.model.getLinkHrefByType(Constants.Link.SELF, relationship)
             );
         }
     }
