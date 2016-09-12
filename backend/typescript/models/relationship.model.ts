@@ -61,6 +61,7 @@ export class RelationshipStatus extends RAMEnum {
     public static Pending = new RelationshipStatus('PENDING', 'Pending');
     public static Revoked = new RelationshipStatus('REVOKED', 'Revoked');
     public static Suspended = new RelationshipStatus('SUSPENDED', 'Suspended');
+    public static Superseded = new RelationshipStatus('SUPERSEDED', 'Superseded');
 
     protected static AllValues = [
         RelationshipStatus.Accepted,
@@ -69,7 +70,8 @@ export class RelationshipStatus extends RAMEnum {
         RelationshipStatus.Deleted,
         RelationshipStatus.Pending,
         RelationshipStatus.Revoked,
-        RelationshipStatus.Suspended
+        RelationshipStatus.Suspended,
+        RelationshipStatus.Superseded
     ];
 
     constructor(code: string, shortDecodeText: string) {
@@ -411,6 +413,19 @@ class Relationship extends RAMObject implements IRelationship {
 
         // mark relationship as active
         this.status = RelationshipStatus.Accepted.code;
+
+        // if this relationship is superseding then end date superseded relationship
+        if (this.supersedes) {
+            const date = new Date();
+            date.setHours(0, 0, 0);
+
+            const supersededRelationship = await RelationshipModel.findByIdentifier(this.supersedes.toString());
+            supersededRelationship.status = RelationshipStatus.Superseded.code;
+            supersededRelationship.endTimestamp = date;
+            supersededRelationship.supersededBy = this;
+            supersededRelationship.save();
+            this.startTimestamp = date;
+        }
         await this.save();
 
         // TODO notify relevant parties
@@ -455,9 +470,11 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async modify(dto: DTO): Promise<IRelationship> {
 
+        // lookup identities, evaluate permissions on these
         const subjectIdentity = await IdentityModel.findByIdValue(Url.lastPathElement(dto.subject.href));
         const delegateIdentity = await IdentityModel.findByIdValue(Url.lastPathElement(dto.delegate.href));
 
+        // update fields before permission evluation
         this.relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(Url.lastPathElement(dto.relationshipType.href));
         this.subject = subjectIdentity.party;
         this.delegate = delegateIdentity.party;
@@ -477,18 +494,21 @@ class Relationship extends RAMObject implements IRelationship {
         //     endTimestamp.setHours(0, 0, 0);
         // }
 
+        // evaluate permissions
         await new RelationshipCanModifyPermissionEnforcer().assert(this);
 
+        // if re-acceptance required, create new pending relationship
         const reAcceptanceRequired = await this.isReAcceptanceRequired();
         if (reAcceptanceRequired) {
-            const superSeedingRelationship = await RelationshipModel.createFromDto(dto);
+            const supersededPendingRelationship = await RelationshipModel.createFromDto(dto);
             const invitationIdentity = await IdentityModel.createInvitationCodeIdentity(this.delegateNickName.givenName, this.delegateNickName.familyName, null);
-            superSeedingRelationship.delegate = invitationIdentity.party;
-            superSeedingRelationship.invitationIdentity = invitationIdentity;
-            superSeedingRelationship.supersedes = this;
-            return await superSeedingRelationship.save();
+            supersededPendingRelationship.delegate = invitationIdentity.party;
+            supersededPendingRelationship.invitationIdentity = invitationIdentity;
+            supersededPendingRelationship.supersedes = this;
+            return await supersededPendingRelationship.save();
         }
 
+        // general flow - save relationship and cascade save on dependents
         await this.save();
         for (let sharedSecret of delegateIdentity.profile.sharedSecrets) {
             await sharedSecret.save();
@@ -559,7 +579,7 @@ class Relationship extends RAMObject implements IRelationship {
             }
         }
 
-        return reAcceptanceRequired;
+        return Promise.resolve(reAcceptanceRequired);
     }
 
     private async mergeInvitationIdentityIfRequired(dto: DTO): Promise<IIdentity> {
@@ -988,6 +1008,7 @@ export class RelationshipModel {
                         'delegateNickName',
                         'invitationIdentity.profile.name',
                         'invitationIdentity.profile.sharedSecrets',
+                        'supersededBy',
                         'attributes.attributeName'
                     ])
                     .sort({
