@@ -118,6 +118,10 @@ $pagination-disabled-border: $brand-primary;
   padding-bottom: ($line-height-computed * 4);
 }
 
+h4 {
+  line-height: 1.2em;
+}
+
 a {
   cursor: pointer;
 }
