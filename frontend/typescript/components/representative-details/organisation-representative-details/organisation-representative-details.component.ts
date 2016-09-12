@@ -65,12 +65,17 @@ export class OrganisationRepresentativeDetailsComponent implements OnInit {
     }
 
     public isCompanyNameSet() {
-        return this.organisationName !== '' && this.organisationName !== this.ABNNotValidMsg;
+        return (this.organisationName !== '' && this.organisationName !== this.ABNNotValidMsg) || this.data.readOnly;
+    }
+
+    public isDisabled() {
+        return this.isCompanyNameSet() || this.data.readOnly;
     }
 
 }
 
 export interface OrganisationRepresentativeDetailsComponentData {
+    readOnly: boolean;
     abn: string;
     organisationName: string;
 }

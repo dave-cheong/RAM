@@ -5,6 +5,7 @@
             <input class="form-control"
                    type="text"
                    name="givenName"
+                   [disabled]='isDisabled()'
                    [formControl]="form.controls['givenName']"
                    placeholder="{{'addRelationship.givenName.placeholder' | translate}}">
         </div>
@@ -13,6 +14,7 @@
             <input class="form-control"
                    type="text"
                    name="familyName"
+                   [disabled]='isDisabled()'
                    [formControl]="form.controls['familyName']"
                    placeholder="{{'addRelationship.familyName.placeholder' | translate}}">
         </div>
@@ -23,6 +25,7 @@
                 <p-calendar
                         placeholder="{{'addRelationship.dob.placeholder' | translate}}"
                         inputStyleClass="form-control"
+                        [disabled]='isDisabled()'
                         [formControl]="form.controls['dob']"
                         dateFormat="{{dateFormat}}"
                         monthNavigator="true"

@@ -8,7 +8,7 @@
                    type="number"
                    minlength=11
                    maxlength=14
-                   [disabled]='isCompanyNameSet()'
+                   [disabled]='isDisabled()'
                    [formControl]="form.controls['abn']"
                    placeholder="{{'addRelationship.abn.placeholder' | translate}}">
         </div>

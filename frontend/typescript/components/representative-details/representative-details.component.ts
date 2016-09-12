@@ -39,12 +39,14 @@ export class RepresentativeDetailsComponent {
         if (isOrganisation) {
             this.data.individual = undefined;
             this.data.organisation = {
+                readOnly: false,
                 abn: '',
                 organisationName: ''
             };
         } else {
             this.data.organisation = undefined;
             this.data.individual = {
+                readOnly: false,
                 givenName: '',
                 familyName: null,
                 dob: null,

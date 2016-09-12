@@ -98,12 +98,14 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         representativeDetails: {
             isOrganisation: false,
             individual: {
+                readOnly: true,
                 givenName: '',
                 familyName: null,
                 dob: null,
                 showDob: false
             },
             organisation: {
+                readOnly: true,
                 abn: '',
                 organisationName: ''
             }
@@ -181,73 +183,76 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         this.relationship = relationship;
 
-        // name, dob, abn
-        const delegate = this.relationship.delegate.value;
-        const isOrg = delegate.partyType === Constants.PartyTypeCode.ABN;
-        const profile = delegate.identities[0].value.profile;
-        // note - sharedsecrets are currently not returned - so the dob can not be populated!
-        const dobSharedSecret = profile.getSharedSecret(Constants.SharedSecretCode.DATE_OF_BIRTH);
-
-        this.relationshipComponentData.representativeDetails = {
-            isOrganisation: isOrg,
-            individual: {
-                givenName: isOrg ? '' : profile.name.givenName,
-                familyName: isOrg ? '' : profile.name.familyName,
-                dob: isOrg || !dobSharedSecret ? null : new Date(dobSharedSecret.value),
-                showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission])
-            },
-            organisation: {
-                abn: '',
-                organisationName: ''
-            }
-        };
-
-        // access period
-        this.originalStartDate = relationship.startTimestamp;
-
-        const todayMidnight = new Date();
-        todayMidnight.setHours(0, 0, 0, 0);
-        this.relationshipComponentData.accessPeriod = {
-            startDate: relationship.startTimestamp,
-            endDate: relationship.endTimestamp,
-            noEndDate: relationship.endTimestamp === undefined || relationship.endTimestamp === null,
-            startDateEnabled: this.originalStartDate > todayMidnight
-        };
-
-        // authorisation type
+        // ensure authorisation type is supported
         const relationshipType = this.relationship.relationshipType.getFromList(this.relationshipTypeRefs);
-        console.log('current', this.relationship.relationshipType);
-        console.log('all', this.relationshipTypeRefs);
         if (!relationshipType) {
-            // todo probably Associate - what should we do?
-            alert('TODO: Associate Relationships are not currently supported');
-            return;
-        }
-        this.relationshipComponentData.authType = {authType: relationshipType};
+            this.services.route.goToRelationshipsPage(this.identityHref);
+        } else {
 
-        // trigger authType change update before doing the rest
-        this.changeDetectorRef.detectChanges();
+            // name, dob, abn
+            const delegate = this.relationship.delegate.value;
+            const profile = delegate.identities[0].value.profile;
+            const isOrganisation = delegate.partyType === Constants.PartyTypeCode.ABN;
 
-        // auth management
-        const userAuthorisedToManage = this.relationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND).value[0];
-        this.relationshipComponentData.authorisationManagement = {
-            value: userAuthorisedToManage
-        };
+            // note - sharedsecrets are currently not returned - so the dob can not be populated!
+            const dobSharedSecret = profile.getSharedSecret(Constants.SharedSecretCode.DATE_OF_BIRTH);
 
-        // access levels
-        let permAttributes: IRelationshipAttribute[] = [];
-        for (let att of this.relationship.attributes) {
-            if (att.attributeName.value.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
-                if (!att.value) {
-                    att.value = [];
+            // representative details
+            this.relationshipComponentData.representativeDetails = {
+                isOrganisation: isOrganisation,
+                individual: !isOrganisation ? {
+                    readOnly: true,
+                    givenName: isOrganisation ? '' : profile.name.givenName,
+                    familyName: isOrganisation ? '' : profile.name.familyName,
+                    dob: isOrganisation || !dobSharedSecret ? null : new Date(dobSharedSecret.value),
+                    showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission])
+                } : undefined,
+                organisation: isOrganisation ? {
+                    readOnly: true,
+                    abn: '',
+                    organisationName: ''
+                } : undefined
+            };
+
+            // access period
+            this.originalStartDate = relationship.startTimestamp;
+
+            const todayMidnight = new Date();
+            todayMidnight.setHours(0, 0, 0, 0);
+            this.relationshipComponentData.accessPeriod = {
+                startDate: relationship.startTimestamp,
+                endDate: relationship.endTimestamp,
+                noEndDate: relationship.endTimestamp === undefined || relationship.endTimestamp === null,
+                startDateEnabled: this.originalStartDate > todayMidnight
+            };
+
+            this.relationshipComponentData.authType = {authType: relationshipType};
+
+            // trigger authType change update before doing the rest
+            this.changeDetectorRef.detectChanges();
+
+            // auth management
+            const userAuthorisedToManage = this.relationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND).value[0];
+            this.relationshipComponentData.authorisationManagement = {
+                value: userAuthorisedToManage
+            };
+
+            // access levels
+            let permAttributes: IRelationshipAttribute[] = [];
+            for (let att of this.relationship.attributes) {
+                if (att.attributeName.value.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
+                    if (!att.value) {
+                        att.value = [];
+                    }
+                    permAttributes.push(att);
                 }
-                permAttributes.push(att);
             }
-        }
-        this.relationshipComponentData.permissionAttributes = permAttributes;
+            this.relationshipComponentData.permissionAttributes = permAttributes;
 
-        // tell angular we've changed things to please the checks that are done to confirm change propagation
-        this.changeDetectorRef.detectChanges();
+            // tell angular we've changed things to please the checks that are done to confirm change propagation
+            this.changeDetectorRef.detectChanges();
+
+        }
 
     }
 
@@ -273,6 +278,9 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         this.originalStartDate = this.relationshipComponentData.accessPeriod.startDate;
         this.relationshipComponentData.representativeDetails.individual.showDob = this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]);
+        this.relationshipComponentData.representativeDetails.individual.readOnly = false;
+        this.relationshipComponentData.representativeDetails.organisation.readOnly = false;
+
     }
 
     public back() {

@@ -52,9 +52,14 @@ export class IndividualRepresentativeDetailsComponent implements OnInit, OnChang
         return undefined;
     }
 
+    public isDisabled() {
+        return this.data.readOnly;
+    }
+
 }
 
 export interface IndividualRepresentativeDetailsComponentData {
+    readOnly: boolean;
     givenName: string;
     familyName?: string;
     dob?: Date;
