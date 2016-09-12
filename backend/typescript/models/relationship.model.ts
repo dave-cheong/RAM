@@ -1,4 +1,3 @@
-import {logger} from '../logger';
 import * as mongoose from 'mongoose';
 import {Model, RAMEnum, RAMSchema, IRAMObject, RAMObject, Query, Assert} from './base';
 import {PermissionTemplates} from '../../../commons/permissions/allPermission.templates';
@@ -383,7 +382,7 @@ class Relationship extends RAMObject implements IRelationship {
                         values,
                         new HrefValue(await Url.forRelationshipAttributeName(attributeNameUsage.attributeName), attributeNameUsage.attributeName)
                     )
-                )
+                );
             }
         }
 

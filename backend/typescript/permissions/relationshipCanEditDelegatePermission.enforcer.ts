@@ -1,8 +1,6 @@
 import {PermissionEnforcer} from '../models/base';
 import {IPermission, Permission} from '../../../commons/dtos/permission.dto';
-import {
-    RelationshipCanViewDobPermission, RelationshipCanEditDelegatePermission
-} from '../../../commons/permissions/relationshipPermission.templates';
+import {RelationshipCanEditDelegatePermission} from '../../../commons/permissions/relationshipPermission.templates';
 import {IRelationship, RelationshipStatus} from '../models/relationship.model';
 import {context} from '../providers/context.provider';
 import {Translator} from '../ram/translator';
@@ -18,7 +16,7 @@ export class RelationshipCanEditDelegatePermissionEnforcer extends PermissionEnf
     public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
         let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
-        let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
+        let authenticatedIdentity = context.getAuthenticatedIdentity();
         let relationshipStatus = relationship.statusEnum();
 
         // validate authenticated

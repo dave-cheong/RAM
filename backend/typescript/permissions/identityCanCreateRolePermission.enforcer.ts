@@ -5,21 +5,22 @@ import {Link} from '../../../commons/dtos/link.dto';
 import {IIdentity} from '../models/identity.model';
 import {Translator} from '../ram/translator';
 import {context} from '../providers/context.provider';
-import {IdentityCanCreateRelationshipPermission} from '../../../commons/permissions/identityPermission.templates';
+import {IdentityCanCreateRolePermission} from '../../../commons/permissions/identityPermission.templates';
 
 export class IdentityCanCreateRolePermissionEnforcer extends PermissionEnforcer<IIdentity> {
 
     constructor() {
-        super(IdentityCanCreateRelationshipPermission);
+        super(IdentityCanCreateRolePermission);
     }
 
     // todo this needs to check party access
     public async evaluate(identity: IIdentity): Promise<IPermission> {
 
         let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
+        let authenticatedAgencyUser = context.getAuthenticatedAgencyUser();
 
         // validate authenticated
-        if (!context.getAuthenticatedPrincipalIdValue()) {
+        if (!authenticatedAgencyUser) {
             permission.messages.push(Translator.get('security.notAuthenticated'));
         }
 
