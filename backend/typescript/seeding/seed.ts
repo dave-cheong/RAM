@@ -118,6 +118,26 @@ const truncateString = (input:String):String => {
     return input && input.length > 60 ? (input.substring(0, 60) + '...') : input;
 };
 
+const getSubjectDeclaration = (): string => {
+    return `### This is a sample declaration text for the subject
+    
+* written in **markdown**
+* kept in database
+* relationshipTypeUsage.defaultValue
+* Use seed or admin UI to change it
+    `;
+};
+
+const getDelegateDeclaration = (): string => {
+    return `### This is a sample declaration text for the delegate
+    
+* written in **markdown**
+* kept in database
+* relationshipTypeUsage.defaultValue
+* Use seed or admin UI to change it
+    `;
+};
+
 // seeder .............................................................................................................
 
 /* tslint:disable:no-any */
@@ -945,17 +965,9 @@ export class Seeder {
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
-                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Delegate Universal Representative Declaration', sortOrder: 3},
+                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getDelegateDeclaration(), sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
-                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: `# This is declaration text
-
-* written in markdown
-* kept in database
-* relationshipTypeUsage.defaultValue
-* Use seed or admin UI to change it
-                    `, sortOrder: 4},
+                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getSubjectDeclaration(), sortOrder: 4},
                 {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 5},
                 {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 6},
                 {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 7},
@@ -975,11 +987,9 @@ export class Seeder {
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
-                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Delegate Universal Representative Declaration', sortOrder: 3},
+                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getDelegateDeclaration(), sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
-                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Subject Universal Representative Declaration', sortOrder: 4},
+                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getSubjectDeclaration(), sortOrder: 4},
                 {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 5},
                 {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 6},
                 {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 7},
@@ -1001,11 +1011,9 @@ export class Seeder {
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 2},
                 {attribute: Seeder.delegateManageAuthorisationUserConfigurableInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: -1},
                 {attribute: Seeder.delegateRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
-                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Delegate Custom Representative Declaration', sortOrder: 3},
+                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getDelegateDeclaration(), sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
-                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: 'Markdown for Subject Custom Representative Declaration', sortOrder: 4},
+                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getSubjectDeclaration(), sortOrder: 4},
                 {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 5},
                 {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 6},
                 {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 7},
@@ -1025,14 +1033,7 @@ export class Seeder {
                 {attribute: Seeder.selectedGovernmentServicesList_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.ssid_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 2},
                 {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
-                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false,
-                    defaultValue: `# This is declaration text
-
-* written in markdown
-* kept in database
-* relationshipTypeUsage.defaultValue
-* Use seed or admin UI to change it
-                    `, sortOrder: 3}
+                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getSubjectDeclaration(), sortOrder: 3}
             ]);
 
         } catch (e) {
