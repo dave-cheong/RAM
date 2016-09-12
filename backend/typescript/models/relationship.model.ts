@@ -514,6 +514,7 @@ class Relationship extends RAMObject implements IRelationship {
         await this.save();
         if (this.invitationIdentity) {
             await this.invitationIdentity.profile.name.save();
+            await this.invitationIdentity.profile.save();
             await this.invitationIdentity.save();
         }
         for (let attribute of this.attributes) {
