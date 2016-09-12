@@ -117,10 +117,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             enabled: false
         },
         declaration: {
-            accepted: false,
-            markdown: 'TODO'
+            accepted: false
         }
     };
+
+    public declarationText: string;
 
     constructor(route: ActivatedRoute, router: Router, fb: FormBuilder, services: RAMServices, cdr: ChangeDetectorRef) {
         super(route, router, fb, services);
@@ -190,7 +191,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // access period
             this.originalStartDate = relationship.startTimestamp;
-
             const todayMidnight = new Date();
             todayMidnight.setHours(0, 0, 0, 0);
             this.relationshipComponentData.accessPeriod = {
@@ -200,8 +200,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 startDateEnabled: this.originalStartDate > todayMidnight
             };
 
-            this.relationshipComponentData.authType = {authType: relationshipType};
-
+            // auth type
+            this.relationshipComponentData.authType = {
+                authType: relationshipType
+            };
             this.authTypeChange(this.relationshipComponentData.authType);
 
             // auth management
@@ -217,9 +219,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                     permissionAttribute.value = existingAttribute.value;
                 }
             }
-
-            // tell angular we've changed things to please the checks that are done to confirm change propagation
-            this.changeDetectorRef.detectChanges();
 
         }
 
@@ -255,7 +254,12 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         );
 
         this.originalStartDate = this.relationshipComponentData.accessPeriod.startDate;
+
+        // representative details
         this.updateRepresentativeDetails();
+
+        // declaration
+        this.updateDeclarationText(null);
 
     }
 
@@ -283,6 +287,25 @@ export class EditRelationshipComponent extends AbstractPageComponent {
                 organisationName: ''
             } : undefined
         };
+
+    }
+
+    public updateDeclarationText(relationshipTypeRef: IHrefValue<IRelationshipType>) {
+
+        // TODO calculate declaration markdown based on relationship type AND services selected
+
+        let markdown: string = null;
+
+        if (relationshipTypeRef) {
+            markdown = this.services.model.getRelationshipTypeAttributeNameUsage(relationshipTypeRef,
+                Constants.RelationshipAttributeNameCode.SUBJECT_RELATIONSHIP_TYPE_DECLARATION).defaultValue;
+        }
+
+        this.relationshipComponentData.declaration = {
+            accepted: false
+        };
+
+        this.declarationText = markdown;
 
     }
 
@@ -476,13 +499,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     public authTypeChange = (data: AuthorisationTypeComponentData) => {
 
-        // TODO calculate declaration markdown based on relationship type and services selected
-        // TODO update declaration component to show new text
-        this.relationshipComponentData.declaration = {
-            accepted: false,
-            markdown: 'TODO ' + data.authType.value.code
-        };
-
         // find the selected relationship type by code
         let selectedRelationshipTypeRef = data.authType;
 
@@ -520,6 +536,9 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         } else {
             this.disableAuthMgmt = true;
         }
+
+        // compute declaration
+        this.updateDeclarationText(selectedRelationshipTypeRef);
 
     };
 
