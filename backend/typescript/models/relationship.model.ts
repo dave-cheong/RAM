@@ -352,6 +352,41 @@ class Relationship extends RAMObject implements IRelationship {
     }
 
     public async toDTO(): Promise<DTO> {
+
+        // map model attributes to dtos
+        const attributeDTOs: RelationshipAttributeDTO[] = await Promise.all<RelationshipAttributeDTO>(this.attributes.map(
+            async(attribute: IRelationshipAttribute) => {
+                return await attribute.toDTO();
+            }));
+
+        // for the relationship type get all attribute name usages which have appliesToInstance
+        const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(this.relationshipType.code);
+        const attributeNameUsagesAppliesToInstanceRequired = relationshipType.attributeNameUsages
+            .filter((attributeNameUsage) => attributeNameUsage.attributeName.appliesToInstance);
+
+        // add missing attributes where applicable
+        for (let attributeNameUsage of attributeNameUsagesAppliesToInstanceRequired) {
+            let foundAttribute = false;
+            for (let attributeDTO of attributeDTOs) {
+                if (attributeNameUsage.attributeName.code === attributeDTO.attributeName.value.code) {
+                    foundAttribute = true;
+                    break;
+                }
+            }
+            if (!foundAttribute) {
+                const values = [];
+                if (attributeNameUsage.defaultValue) {
+                    values.push(attributeNameUsage.defaultValue);
+                }
+                attributeDTOs.push(
+                    new RelationshipAttributeDTO(
+                        values,
+                        new HrefValue(await Url.forRelationshipAttributeName(attributeNameUsage.attributeName), attributeNameUsage.attributeName)
+                    )
+                )
+            }
+        }
+
         return new DTO(
             await this.getPermissions(),
             await this.relationshipType.toHrefValue(false),
@@ -365,10 +400,7 @@ class Relationship extends RAMObject implements IRelationship {
             this.status,
             this.initiatedBy,
             this.supersededBy ? await this.supersededBy.toHrefValue(false) : undefined,
-            await Promise.all<RelationshipAttributeDTO>(this.attributes.map(
-                async(attribute: IRelationshipAttribute) => {
-                    return await attribute.toDTO();
-                }))
+            attributeDTOs
         );
     }
 
@@ -469,6 +501,8 @@ class Relationship extends RAMObject implements IRelationship {
     }
 
     public async modify(dto: DTO): Promise<IRelationship> {
+
+        console.log('this.invitationIdentity.profile.sharedSecrets1=', this.invitationIdentity.profile.sharedSecrets);
 
         // lookup identities, evaluate permissions on these
         const subjectIdentity = await IdentityModel.findByIdValue(Url.lastPathElement(dto.subject.href));
