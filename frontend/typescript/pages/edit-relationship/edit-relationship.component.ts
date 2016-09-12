@@ -97,12 +97,12 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         },
         representativeDetails: {
             readOnly: true,
+            showDob: false,
             isOrganisation: false,
             individual: {
                 givenName: '',
                 familyName: '',
-                dob: null,
-                showDob: false
+                dob: null
             },
             organisation: undefined
         },
@@ -269,12 +269,12 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         this.relationshipComponentData.representativeDetails = {
             readOnly: this.relationshipHref !== null && this.relationshipHref !== undefined,
+            showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]),
             isOrganisation: isOrganisation,
             individual: !isOrganisation ? {
                 givenName: isOrganisation || !profile ? '' : profile.name.givenName,
                 familyName: isOrganisation || !profile ? '' : profile.name.familyName,
-                dob: isOrganisation || !dobSharedSecret ? null : new Date(dobSharedSecret.value),
-                showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission])
+                dob: isOrganisation || !dobSharedSecret ? null : new Date(dobSharedSecret.value)
             } : undefined,
             organisation: isOrganisation ? {
                 abn: '',

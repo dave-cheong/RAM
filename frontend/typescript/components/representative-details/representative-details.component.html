@@ -31,6 +31,7 @@
         <individual-representative-details
                 *ngIf='!isOrganisation'
                 [readOnly]='data.readOnly'
+                [showDob]='data.showDob'
                 [(data)]='data.individual'
                 (isValid)="setChildValidationStatus(false,$event)">
         </individual-representative-details>

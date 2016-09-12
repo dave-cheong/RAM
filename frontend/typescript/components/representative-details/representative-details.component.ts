@@ -47,8 +47,7 @@ export class RepresentativeDetailsComponent {
             this.data.individual = {
                 givenName: '',
                 familyName: '',
-                dob: null,
-                showDob: true
+                dob: null
             };
         }
     }
@@ -61,6 +60,7 @@ export class RepresentativeDetailsComponent {
 
 export interface RepresentativeDetailsComponentData {
     readOnly: boolean;
+    showDob: boolean;
     individual?: IndividualRepresentativeDetailsComponentData;
     organisation?: OrganisationRepresentativeDetailsComponentData;
     isOrganisation: boolean;
