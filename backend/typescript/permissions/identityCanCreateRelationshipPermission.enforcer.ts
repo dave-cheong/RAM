@@ -24,7 +24,7 @@ export class IdentityCanCreateRelationshipPermissionEnforcer extends PermissionE
             permission.messages.push(Translator.get('security.notAuthenticated'));
         }
 
-        // validate is business
+        // validate is business (B2I, B2B)
         if (identity.party.partyTypeEnum() !== PartyType.ABN) {
             permission.messages.push(Translator.get('identity.createRelationship.notABN'));
         }
