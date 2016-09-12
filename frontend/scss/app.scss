@@ -546,7 +546,11 @@ div.checkbox.disabled > label, div.radio.disabled > label {
 
 .ui-calendar input {
   background: url('../images/calendar_font_awesome.png') no-repeat 97% 50%;
-  background-size: 25px 25px;
+  background-size: 20px 20px;
+}
+
+.ui-calendar input.ui-state-disabled {
+  background: $input-bg-disabled;
 }
 
 .hasDatepicker {
