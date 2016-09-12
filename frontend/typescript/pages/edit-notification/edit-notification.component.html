@@ -51,6 +51,7 @@
     </div>
 
     <div *ngIf="delegateParty && delegateIdentityRef">
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4>Notification Details</h4>
@@ -108,7 +109,10 @@
             </div>
             <div class="panel-body">
                 <div class="col-md-12">
-                    <ng2-markdown [markdown]="declarationText"></ng2-markdown>
+                    <h4>By authorising the nominated representative to act on behalf of the selected
+                        {{services.model.partyTypeLabelForParty(relationship.subject)}}, it is acknowledged that
+                        they will be able to perform all of the selected transactions on their behalf.</h4>
+                    <blockquote><ng2-markdown [markdown]="declarationText"></ng2-markdown></blockquote>
                     <div class="checkbox">
                         <label><input type="checkbox" [formControl]='form.controls["accepted"]'> <strong>I agree to this declaration</strong></label>
                     </div>
