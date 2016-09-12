@@ -21,6 +21,7 @@ export class RelationshipDeclarationComponent implements OnInit {
     }
 
     public ngOnInit() {
+
         this.form = this._fb.group({
             'accepted': [false, RAMNgValidators.mustBeTrue]
         });
