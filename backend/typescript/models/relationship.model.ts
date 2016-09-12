@@ -474,12 +474,15 @@ class Relationship extends RAMObject implements IRelationship {
         const subjectIdentity = await IdentityModel.findByIdValue(Url.lastPathElement(dto.subject.href));
         const delegateIdentity = await IdentityModel.findByIdValue(Url.lastPathElement(dto.delegate.href));
 
-        // update fields before permission evluation
+        // update fields before permission evaluation
         this.relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(Url.lastPathElement(dto.relationshipType.href));
         this.subject = subjectIdentity.party;
         this.delegate = delegateIdentity.party;
         this.attributes = await RelationshipModel.mergeAttributes(this.relationshipType, this.attributes, dto.attributes as RelationshipAttributeDTO[]);
         this.invitationIdentity = await this.mergeInvitationIdentityIfRequired(dto);
+        if (this.invitationIdentity) {
+            this.delegateNickName = this.invitationIdentity.profile.name;
+        }
 
         // todo if new, start date can not be past only today and future
         // todo if edit, start date can be future and past.
@@ -498,8 +501,7 @@ class Relationship extends RAMObject implements IRelationship {
         await new RelationshipCanModifyPermissionEnforcer().assert(this);
 
         // if re-acceptance required, create new pending relationship
-        const reAcceptanceRequired = await this.isReAcceptanceRequired();
-        if (reAcceptanceRequired) {
+        if (await this.isReAcceptanceRequired()) {
             const supersededPendingRelationship = await RelationshipModel.createFromDto(dto);
             const invitationIdentity = await IdentityModel.createInvitationCodeIdentity(this.delegateNickName.givenName, this.delegateNickName.familyName, null);
             supersededPendingRelationship.delegate = invitationIdentity.party;
@@ -510,8 +512,9 @@ class Relationship extends RAMObject implements IRelationship {
 
         // general flow - save relationship and cascade save on dependents
         await this.save();
-        for (let sharedSecret of delegateIdentity.profile.sharedSecrets) {
-            await sharedSecret.save();
+        if (this.invitationIdentity) {
+            await this.invitationIdentity.profile.name.save();
+            await this.invitationIdentity.save();
         }
         for (let attribute of this.attributes) {
             await attribute.save();
@@ -655,6 +658,7 @@ export class RelationshipModel {
             delegateIdentity = await IdentityModel.findByIdValue(delegateIdValue);
         }
 
+        // get relationship members
         const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(Url.lastPathElement(dto.relationshipType.href));
         const initiatedBy = RelationshipInitiatedBy.valueOf(dto.initiatedBy);
         const invitationIdentity: IIdentity = await this.createInvitationIdentityIfRequired(dto);
@@ -668,7 +672,6 @@ export class RelationshipModel {
         }
 
         // todo if new, start date can not be past only today and future
-        // todo if edit, start date can be future and past.
         // todo end must be after start
 
         // todo zero hours
