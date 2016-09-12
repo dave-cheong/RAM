@@ -20,7 +20,6 @@ import {
     IdentityInvitationCodeStatus,
     IdentityPublicIdentifierScheme
 } from './identity.model';
-import {context} from '../providers/context.provider';
 import {
     HrefValue,
     Relationship as DTO,
@@ -171,6 +170,10 @@ const RelationshipSchema = RAMSchema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Relationship'
     },
+    supersedes: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Relationship'
+    },
     attributes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'RelationshipAttribute'
@@ -281,6 +284,7 @@ export interface IRelationship extends IRAMObject {
     status: string;
     initiatedBy: string;
     supersededBy: IRelationship;
+    supersedes: IRelationship;
     attributes: IRelationshipAttribute[];
     _subjectNickNameString: string;
     _delegateNickNameString: string;
@@ -318,6 +322,7 @@ class Relationship extends RAMObject implements IRelationship {
     public status: string;
     public initiatedBy: string;
     public supersededBy: IRelationship;
+    public supersedes: IRelationship;
     public attributes: IRelationshipAttribute[];
     public _subjectNickNameString: string;
     public _delegateNickNameString: string;
@@ -476,7 +481,9 @@ class Relationship extends RAMObject implements IRelationship {
 
         const reAcceptanceRequired = this.isReAcceptanceRequired();
         if (reAcceptanceRequired) {
-            throw new Error('400:Re-acceptance required'); // todo handle by creating new relationship
+            const superseedingRelationship = await RelationshipModel.createFromDto(dto);
+            superseedingRelationship.supersedes = this;
+            return await superseedingRelationship.save();
         }
 
         await this.save();
