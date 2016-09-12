@@ -265,8 +265,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         // note - shared secrets are currently not returned - so the dob can not be populated!
         const dobSharedSecret = profile ? profile.getSharedSecret(Constants.SharedSecretCode.DATE_OF_BIRTH) : undefined;
 
-        console.log('showDob', this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]));
-
         this.relationshipComponentData.representativeDetails = {
             readOnly: !this.relationship.isPermissionAllowed([RelationshipCanEditDelegatePermission]),
             showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]),
@@ -476,7 +474,10 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // TODO calculate declaration markdown based on relationship type and services selected
         // TODO update declaration component to show new text
-        this.relationshipComponentData.declaration.markdown = 'TODO ' + data.authType;
+        this.relationshipComponentData.declaration = {
+            accepted: false,
+            markdown: 'TODO ' + data.authType.value.code
+        };
 
         // find the selected relationship type by code
         let selectedRelationshipTypeRef = data.authType;

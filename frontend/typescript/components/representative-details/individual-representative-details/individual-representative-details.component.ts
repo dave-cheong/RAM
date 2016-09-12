@@ -32,15 +32,21 @@ export class IndividualRepresentativeDetailsComponent implements OnInit, OnChang
     }
 
     public ngOnInit() {
+
         this.form = this._fb.group({
             'givenName': [this.data.givenName, Validators.required],
             'familyName': [this.data.familyName],
             'dob': [this.data.dob, Validators.compose([RAMNgValidators.dateFormatValidator])]
         });
+
         this.form.valueChanges.subscribe((v: IndividualRepresentativeDetailsComponentData) => {
             this.dataChanges.emit(v);
             this.isValid.emit(this.form.valid);
         });
+
+        // emit initial valid
+        this.isValid.emit(this.form.valid);
+
     }
 
     public ngOnChanges(changes: SimpleChanges): any {

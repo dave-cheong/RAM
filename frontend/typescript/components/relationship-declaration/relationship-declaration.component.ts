@@ -11,7 +11,6 @@ import {MarkdownComponent} from '../ng2-markdown/ng2-markdown.component';
 export class RelationshipDeclarationComponent implements OnInit {
 
     @Input('data') public data: DeclarationComponentData;
-    @Input('markdown') public markdown: string;
 
     @Output('dataChange') public dataChanges = new EventEmitter<DeclarationComponentData>();
     @Output('isValid') public isValid = new EventEmitter<boolean>();
@@ -30,6 +29,10 @@ export class RelationshipDeclarationComponent implements OnInit {
             this.dataChanges.emit(v);
             this.isValid.emit(this.form.valid);
         });
+
+        // emit initial valid
+        this.isValid.emit(this.form.valid);
+
     }
 
 }

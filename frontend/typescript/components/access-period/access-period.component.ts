@@ -65,7 +65,9 @@ export class AccessPeriodComponent implements OnInit, OnChanges {
             this.isValid.emit(this.form.valid);
         });
 
+        // emit initial valid
         this.isValid.emit(this.form.valid);
+
     }
 
     public ngOnChanges(changes: SimpleChanges): any {

@@ -41,6 +41,9 @@ export class AuthorisationTypeComponent implements OnInit, OnChanges {
             this.isValid.emit(this.form.isValid());
         });
 
+        // emit initial valid
+        this.isValid.emit(this.form.isValid());
+
     }
 
     public ngOnChanges(changes: SimpleChanges): any {

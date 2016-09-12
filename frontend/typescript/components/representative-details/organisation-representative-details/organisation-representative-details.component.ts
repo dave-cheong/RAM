@@ -35,14 +35,20 @@ export class OrganisationRepresentativeDetailsComponent implements OnInit {
     }
 
     public ngOnInit() {
+
         this.form = this._fb.group({
             'abn': [this.data.abn, Validators.compose([
                 Validators.required, RAMNgValidators.validateABNFormat])]
         });
+
         this.form.valueChanges.subscribe(
             (v: OrganisationRepresentativeDetailsComponentData) => {
                 this.dataChanges.emit(v);
             });
+
+        // emit initial valid
+        this.isValid.emit(this.form.valid);
+
     }
 
     // operator has pressed "Check ABN" button
