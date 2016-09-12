@@ -479,11 +479,14 @@ class Relationship extends RAMObject implements IRelationship {
 
         await new RelationshipCanModifyPermissionEnforcer().assert(this);
 
-        const reAcceptanceRequired = this.isReAcceptanceRequired();
+        const reAcceptanceRequired = await this.isReAcceptanceRequired();
         if (reAcceptanceRequired) {
-            const superseedingRelationship = await RelationshipModel.createFromDto(dto);
-            superseedingRelationship.supersedes = this;
-            return await superseedingRelationship.save();
+            const superSeedingRelationship = await RelationshipModel.createFromDto(dto);
+            const invitationIdentity = await IdentityModel.createInvitationCodeIdentity(this.delegateNickName.givenName, this.delegateNickName.familyName, null);
+            superSeedingRelationship.delegate = invitationIdentity.party;
+            superSeedingRelationship.invitationIdentity = invitationIdentity;
+            superSeedingRelationship.supersedes = this;
+            return await superSeedingRelationship.save();
         }
 
         await this.save();
@@ -497,7 +500,7 @@ class Relationship extends RAMObject implements IRelationship {
         return this;
     }
 
-    private async isReAcceptanceRequired(): boolean {
+    private async isReAcceptanceRequired(): Promise<boolean> {
         let reAcceptanceRequired = false;
 
         // re-acceptance can only happen while accepted
