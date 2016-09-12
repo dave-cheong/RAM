@@ -1139,6 +1139,13 @@ export class RelationshipModel {
         const permissionCustomisationAllowed = relationshipType.findAttributeNameUsage('PERMISSION_CUSTOMISATION_ALLOWED_IND');
         let isPermissionAttributeAllowed = permissionCustomisationAllowed !== null;
 
+        // add attribute names which apply to instance with default values
+        const attributeNameUsagesWhereAppliesToInstanceRequired = relationshipType.attributeNameUsages.filter((attributeNameUsage) => attributeNameUsage.attributeName.appliesToInstance);
+        for (let attributeNameUsage of attributeNameUsagesWhereAppliesToInstanceRequired) {
+            await RelationshipModel.updateOrAddAttribute(attributes, attributeNameUsage.attributeName, [attributeNameUsage.defaultValue]);
+        }
+
+        // iterate thru dto attributes and update or add attributes as needed
         for (let dtoAttribute of dtoAttributes) {
 
             // attribute value
