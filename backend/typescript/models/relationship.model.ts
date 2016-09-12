@@ -24,6 +24,7 @@ import {
     Relationship as DTO,
     RelationshipStatus as RelationshipStatusDTO,
     RelationshipAttribute as RelationshipAttributeDTO,
+    RelationshipAttributeName as RelationshipAttributeNameDTO,
     SearchResult
 } from '../../../commons/api';
 import {Permissions} from '../../../commons/dtos/permission.dto';
@@ -352,35 +353,24 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async toDTO(): Promise<DTO> {
 
-        // map model attributes to dtos
-        const attributeDTOs: RelationshipAttributeDTO[] = await Promise.all<RelationshipAttributeDTO>(this.attributes.map(
-            async(attribute: IRelationshipAttribute) => {
-                return await attribute.toDTO();
-            }));
+        // map attribute models to dtos
+        const attributeDTOs: RelationshipAttributeDTO[] = await Promise.all<RelationshipAttributeDTO>(
+            this.attributes.map(async(attribute: IRelationshipAttribute) => await attribute.toDTO())
+        );
 
-        // for the relationship type get all attribute name usages which have appliesToInstance
+        // get relationship type attribute name usages which have appliesToInstance
         const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(this.relationshipType.code);
         const attributeNameUsagesAppliesToInstanceRequired = relationshipType.attributeNameUsages
             .filter((attributeNameUsage) => attributeNameUsage.attributeName.appliesToInstance);
 
-        // add missing attributes where applicable
+        // add missing attribute dtos
         for (let attributeNameUsage of attributeNameUsagesAppliesToInstanceRequired) {
-            let foundAttribute = false;
-            for (let attributeDTO of attributeDTOs) {
-                if (attributeNameUsage.attributeName.code === attributeDTO.attributeName.value.code) {
-                    foundAttribute = true;
-                    break;
-                }
-            }
-            if (!foundAttribute) {
-                const values = [];
-                if (attributeNameUsage.defaultValue) {
-                    values.push(attributeNameUsage.defaultValue);
-                }
+            const matchedAttributeDTO = attributeDTOs.find((attributeDTO: RelationshipAttributeDTO) => attributeNameUsage.attributeName.code === attributeDTO.attributeName.value.code);
+            if (!matchedAttributeDTO) {
                 attributeDTOs.push(
                     new RelationshipAttributeDTO(
-                        values,
-                        new HrefValue(await Url.forRelationshipAttributeName(attributeNameUsage.attributeName), attributeNameUsage.attributeName)
+                        attributeNameUsage.defaultValue ? [attributeNameUsage.defaultValue] : [],
+                        new HrefValue(await Url.forRelationshipAttributeName(attributeNameUsage.attributeName), RelationshipAttributeNameDTO.build(attributeNameUsage.attributeName))
                     )
                 );
             }
