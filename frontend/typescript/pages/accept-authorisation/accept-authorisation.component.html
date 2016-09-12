@@ -41,7 +41,29 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h4><span class="badge square">3</span> Access period</h4>
+        <h4><span class="badge square">3</span> Authorisation management</h4>
+    </div>
+    <div class="panel-body">
+        <h4 *ngIf="isManageAuthorisationAllowed()">
+            You <b>will be able</b> to manage authorisations for this subject.</h4>
+        <h4 *ngIf="!isManageAuthorisationAllowed()">
+            You <b>will NOT be</b> able to manage authorisations for this subject.</h4>
+        {{delegateManageAuthorisationAllowedIndAttribute?.attributeName?.value?.longDecodeText}}
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4><span class="badge square">4</span> Online government agency services access level settings</h4>
+    </div>
+    <div class="panel-body">
+        <h4 class="todo">NOT IN SCOPE</h4>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4><span class="badge square">5</span> Access period</h4>
     </div>
     <div class="panel-body">
         <h4>You will be able to act on behalf of the subject for the period:</h4>
@@ -62,27 +84,6 @@
     </div>
 </div>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h4><span class="badge square">4</span> Online government agency services access level settings</h4>
-    </div>
-    <div class="panel-body">
-        <h4>NOT IN SCOPE</h4>
-    </div>
-</div>
-
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h4><span class="badge square">5</span> Authorisation management</h4>
-    </div>
-    <div class="panel-body">
-        <h4 *ngIf="isManageAuthorisationAllowed()">
-            You <b>will be able</b> to manage authorisations for this subject.</h4>
-        <h4 *ngIf="!isManageAuthorisationAllowed()">
-            You <b>will NOT be</b> able to manage authorisations for this subject.</h4>
-        {{delegateManageAuthorisationAllowedIndAttribute?.attributeName?.value?.longDecodeText}}
-    </div>
-</div>
 
 <div class="panel panel-default">
     <div class="panel-heading">
