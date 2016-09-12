@@ -10,16 +10,11 @@ import {MarkdownComponent} from '../ng2-markdown/ng2-markdown.component';
 })
 export class RelationshipDeclarationComponent implements OnInit {
 
-    @Input() public isAuthorizedBtnEnabled: boolean;
-
     @Input('data') public data: DeclarationComponentData;
     @Input('markdown') public markdown: string;
 
     @Output('dataChange') public dataChanges = new EventEmitter<DeclarationComponentData>();
-
     @Output('isValid') public isValid = new EventEmitter<boolean>();
-    @Output('backEvent') public backEvent = new EventEmitter<boolean>();
-    @Output('createRelationshipEvent') public createRelationshipEvent = new EventEmitter<boolean>();
 
     public form: FormGroup;
 
@@ -35,14 +30,6 @@ export class RelationshipDeclarationComponent implements OnInit {
             this.dataChanges.emit(v);
             this.isValid.emit(this.form.valid);
         });
-    }
-
-    public back() {
-        this.backEvent.emit(true);
-    }
-
-    public createRelationship() {
-        this.createRelationshipEvent.emit(true);
     }
 
 }

@@ -47,10 +47,22 @@
             <relationship-declaration
                     [(data)]='relationshipComponentData.declaration'
                     [markdown]="markdown"
-                    (backEvent)="back()"
-                    (createRelationshipEvent)="submit()"
-                    (isValid)='declarationIsValid=$event'
-                    [isAuthorizedBtnEnabled]='accessPeriodIsValid && authTypeIsValid && representativeIsValid'></relationship-declaration>
+                    (isValid)='declarationIsValid=$event'></relationship-declaration>
+        </div>
+    </div>
+
+    <br/>
+    <br/>
+
+    <div id="action-button-bar">
+        <div class="pull-left">
+            <button class="btn btn-default align-center"
+               (click)="back()">← {{'back' | translate}}</button>
+        </div>
+        <div class="pull-right">
+            <button class="btn btn-primary align-center"
+               [disabled]="!(accessPeriodIsValid && authTypeIsValid && representativeIsValid && declarationIsValid)"
+               (click)="submit()">{{'addRelationship.authorise' | translate}} →</button>
         </div>
     </div>
 

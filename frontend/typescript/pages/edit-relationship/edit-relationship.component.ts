@@ -518,6 +518,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     };
 
+    public isAuthorizedBtnEnabled(): boolean {
+        // return this.accessPeriodIsValid && authTypeIsValid && representativeIsValid;
+        return true;
+    }
+
 }
 
 export interface EditRelationshipComponentData {
