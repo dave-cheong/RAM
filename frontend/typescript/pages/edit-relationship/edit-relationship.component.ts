@@ -96,19 +96,15 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             authType: null
         },
         representativeDetails: {
+            readOnly: true,
             isOrganisation: false,
             individual: {
-                readOnly: true,
                 givenName: '',
-                familyName: null,
+                familyName: '',
                 dob: null,
                 showDob: false
             },
-            organisation: {
-                readOnly: true,
-                abn: '',
-                organisationName: ''
-            }
+            organisation: undefined
         },
         authorisationManagement: {
             value: 'false'
@@ -189,30 +185,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.services.route.goToRelationshipsPage(this.identityHref);
         } else {
 
-            // name, dob, abn
-            const delegate = this.relationship.delegate.value;
-            const profile = delegate.identities[0].value.profile;
-            const isOrganisation = delegate.partyType === Constants.PartyTypeCode.ABN;
-
-            // note - sharedsecrets are currently not returned - so the dob can not be populated!
-            const dobSharedSecret = profile.getSharedSecret(Constants.SharedSecretCode.DATE_OF_BIRTH);
-
             // representative details
-            this.relationshipComponentData.representativeDetails = {
-                isOrganisation: isOrganisation,
-                individual: !isOrganisation ? {
-                    readOnly: true,
-                    givenName: isOrganisation ? '' : profile.name.givenName,
-                    familyName: isOrganisation ? '' : profile.name.familyName,
-                    dob: isOrganisation || !dobSharedSecret ? null : new Date(dobSharedSecret.value),
-                    showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission])
-                } : undefined,
-                organisation: isOrganisation ? {
-                    readOnly: true,
-                    abn: '',
-                    organisationName: ''
-                } : undefined
-            };
+            this.updateRepresentativeDetails();
 
             // access period
             this.originalStartDate = relationship.startTimestamp;
@@ -277,9 +251,36 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         );
 
         this.originalStartDate = this.relationshipComponentData.accessPeriod.startDate;
-        this.relationshipComponentData.representativeDetails.individual.showDob = this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]);
-        this.relationshipComponentData.representativeDetails.individual.readOnly = false;
-        this.relationshipComponentData.representativeDetails.organisation.readOnly = false;
+        this.updateRepresentativeDetails();
+
+    }
+
+    public updateRepresentativeDetails() {
+
+        // name, dob, abn
+        const delegate = this.relationship.delegate ? this.relationship.delegate.value : undefined;
+        const profile = delegate ? delegate.identities[0].value.profile : undefined;
+        const isOrganisation = delegate ? delegate.partyType === Constants.PartyTypeCode.ABN : false;
+
+        // note - shared secrets are currently not returned - so the dob can not be populated!
+        const dobSharedSecret = profile ? profile.getSharedSecret(Constants.SharedSecretCode.DATE_OF_BIRTH) : undefined;
+
+        console.log('showDob', this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]));
+
+        this.relationshipComponentData.representativeDetails = {
+            readOnly: this.relationshipHref !== null && this.relationshipHref !== undefined,
+            isOrganisation: isOrganisation,
+            individual: !isOrganisation ? {
+                givenName: isOrganisation || !profile ? '' : profile.name.givenName,
+                familyName: isOrganisation || !profile ? '' : profile.name.familyName,
+                dob: isOrganisation || !dobSharedSecret ? null : new Date(dobSharedSecret.value),
+                showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission])
+            } : undefined,
+            organisation: isOrganisation ? {
+                abn: '',
+                organisationName: ''
+            } : undefined
+        };
 
     }
 

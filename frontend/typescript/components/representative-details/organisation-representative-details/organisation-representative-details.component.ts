@@ -25,6 +25,7 @@ export class OrganisationRepresentativeDetailsComponent implements OnInit {
 
     public ABNNotValidMsg = 'ABN is not valid';
 
+    @Input('readOnly') public readOnly: boolean;
     @Input('data') public data: OrganisationRepresentativeDetailsComponentData;
 
     @Output('dataChange') public dataChanges = new EventEmitter<OrganisationRepresentativeDetailsComponentData>();
@@ -65,17 +66,16 @@ export class OrganisationRepresentativeDetailsComponent implements OnInit {
     }
 
     public isCompanyNameSet() {
-        return (this.organisationName !== '' && this.organisationName !== this.ABNNotValidMsg) || this.data.readOnly;
+        return this.organisationName !== '' && this.organisationName !== this.ABNNotValidMsg;
     }
 
     public isDisabled() {
-        return this.isCompanyNameSet() || this.data.readOnly;
+        return this.isCompanyNameSet() || this.readOnly;
     }
 
 }
 
 export interface OrganisationRepresentativeDetailsComponentData {
-    readOnly: boolean;
     abn: string;
     organisationName: string;
 }

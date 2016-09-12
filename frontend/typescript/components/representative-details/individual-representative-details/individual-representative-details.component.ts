@@ -21,6 +21,8 @@ export class IndividualRepresentativeDetailsComponent implements OnInit, OnChang
     public form: FormGroup;
     public dateFormat: string = 'dd/mm/yy';
 
+    @Input('readOnly') public readOnly: boolean;
+    @Input('showDob') public showDob: boolean;
     @Input('data') public data: IndividualRepresentativeDetailsComponentData;
 
     @Output('dataChange') public dataChanges = new EventEmitter<IndividualRepresentativeDetailsComponentData>();
@@ -53,13 +55,12 @@ export class IndividualRepresentativeDetailsComponent implements OnInit, OnChang
     }
 
     public isDisabled() {
-        return this.data.readOnly;
+        return this.readOnly;
     }
 
 }
 
 export interface IndividualRepresentativeDetailsComponentData {
-    readOnly: boolean;
     givenName: string;
     familyName?: string;
     dob?: Date;
