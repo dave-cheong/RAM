@@ -550,6 +550,14 @@ footer {
   position: inherit;
 }
 
+.table .btn {
+  min-width: 80px;
+}
+
+div.checkbox input[type="checkbox"] {
+  margin-top: 5px;
+}
+
 div.checkbox.disabled > label, div.radio.disabled > label {
   color: $text-muted;
 }

@@ -21,7 +21,7 @@
                 <div class="text-muted">{{services.model.roleAttributeLabel(roleRef.value, 'CREATOR_NAME')}}</div>
             </td>
             <td>{{services.model.roleStatusLabel(roleStatusRefs, roleRef.value.status)}}</td>
-            <td><a class="btn btn-sm btn-secondary align-center" (click)="goToRolePage(roleRef)" *ngIf="isEditRoleEnabled(roleRef)">Manage <span class="caret"></span></a></td>
+            <td><a class="btn btn-sm btn-secondary align-center" (click)="goToRolePage(roleRef)" *ngIf="isEditRoleEnabled(roleRef)">{{'edit' | translate}}</a></td>
         </tr>
     </tbody>
     <tbody *ngIf="isLoading">
