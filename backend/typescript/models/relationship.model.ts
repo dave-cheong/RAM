@@ -423,7 +423,7 @@ class Relationship extends RAMObject implements IRelationship {
             supersededRelationship.status = RelationshipStatus.Superseded.code;
             supersededRelationship.endTimestamp = date;
             supersededRelationship.supersededBy = this;
-            supersededRelationship.save();
+            await supersededRelationship.save();
             this.startTimestamp = date;
         }
         await this.save();
