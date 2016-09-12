@@ -360,21 +360,19 @@ class Relationship extends RAMObject implements IRelationship {
 
         // get relationship type attribute name usages which have appliesToInstance
         const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(this.relationshipType.code);
-        const attributeNameUsagesAppliesToInstanceRequired = relationshipType.attributeNameUsages
-            .filter((attributeNameUsage) => attributeNameUsage.attributeName.appliesToInstance);
-
-        // add missing attribute dtos
-        for (let attributeNameUsage of attributeNameUsagesAppliesToInstanceRequired) {
-            const matchedAttributeDTO = attributeDTOs.find((attributeDTO: RelationshipAttributeDTO) => attributeNameUsage.attributeName.code === attributeDTO.attributeName.value.code);
-            if (!matchedAttributeDTO) {
-                attributeDTOs.push(
-                    new RelationshipAttributeDTO(
-                        attributeNameUsage.defaultValue ? [attributeNameUsage.defaultValue] : [],
-                        new HrefValue(await Url.forRelationshipAttributeName(attributeNameUsage.attributeName), RelationshipAttributeNameDTO.build(attributeNameUsage.attributeName))
-                    )
-                );
-            }
-        }
+        relationshipType.attributeNameUsages
+            .filter((attributeNameUsage) => attributeNameUsage.attributeName.appliesToInstance)
+            .forEach(async(attributeNameUsage) => {
+                const matchedAttributeDTO = attributeDTOs.find((attributeDTO: RelationshipAttributeDTO) => attributeNameUsage.attributeName.code === attributeDTO.attributeName.value.code);
+                if (!matchedAttributeDTO) {
+                    attributeDTOs.push(
+                        new RelationshipAttributeDTO(
+                            attributeNameUsage.defaultValue ? [attributeNameUsage.defaultValue] : [],
+                            new HrefValue(await Url.forRelationshipAttributeName(attributeNameUsage.attributeName), RelationshipAttributeNameDTO.build(attributeNameUsage.attributeName))
+                        )
+                    );
+                }
+            });
 
         return new DTO(
             await this.getPermissions(),
