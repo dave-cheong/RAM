@@ -1,24 +1,33 @@
 import {OnInit, OnChanges, Input, Output, EventEmitter, Component, SimpleChanges} from '@angular/core';
-import {Validators, REACTIVE_FORM_DIRECTIVES, FormBuilder, FormGroup, FormControl, FORM_DIRECTIVES } from '@angular/forms';
+import {
+    Validators,
+    REACTIVE_FORM_DIRECTIVES,
+    FormBuilder,
+    FormGroup,
+    FormControl,
+    FORM_DIRECTIVES
+} from '@angular/forms';
 import {RAMNgValidators} from '../../../commons/ram-ng-validators';
 import {Calendar} from 'primeng/primeng';
 
 @Component({
     selector: 'individual-representative-details',
     templateUrl: 'individual-representative-details.component.html',
-    directives: [FORM_DIRECTIVES,REACTIVE_FORM_DIRECTIVES,Calendar]
+    directives: [FORM_DIRECTIVES, REACTIVE_FORM_DIRECTIVES, Calendar]
 })
+
 export class IndividualRepresentativeDetailsComponent implements OnInit, OnChanges {
+
     public form: FormGroup;
     public dateFormat: string = 'dd/mm/yy';
 
     @Input('data') public data: IndividualRepresentativeDetailsComponentData;
 
     @Output('dataChange') public dataChanges = new EventEmitter<IndividualRepresentativeDetailsComponentData>();
-
     @Output('isValid') public isValid = new EventEmitter<boolean>();
 
-    constructor(private _fb: FormBuilder) { }
+    constructor(private _fb: FormBuilder) {
+    }
 
     public ngOnInit() {
         this.form = this._fb.group({

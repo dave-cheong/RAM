@@ -1,12 +1,12 @@
 import {Input, Output, EventEmitter, Component} from '@angular/core';
 import {
     IndividualRepresentativeDetailsComponent,
-    IndividualRepresentativeDetailsComponentData} from
-'./individual-representative-details/individual-representative-details.component';
+    IndividualRepresentativeDetailsComponentData
+} from './individual-representative-details/individual-representative-details.component';
 import {
     OrganisationRepresentativeDetailsComponent,
-    OrganisationRepresentativeDetailsComponentData} from
-'./organisation-representative-details/organisation-representative-details.component';
+    OrganisationRepresentativeDetailsComponentData
+} from './organisation-representative-details/organisation-representative-details.component';
 
 @Component({
     selector: 'representative-details',
@@ -22,7 +22,6 @@ export class RepresentativeDetailsComponent {
     @Input('data') public data: RepresentativeDetailsComponentData;
 
     @Output('dataChange') public dataChanges = new EventEmitter<RepresentativeDetailsComponentData>();
-
     @Output('isValid') public isValid = new EventEmitter<boolean>();
 
     public isOrganisation: boolean = false;
