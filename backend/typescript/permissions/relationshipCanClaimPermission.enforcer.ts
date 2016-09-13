@@ -56,9 +56,15 @@ export class RelationshipCanClaimPermissionEnforcer extends PermissionEnforcer<I
         // validate identity match
         // todo shared secret (dob) is not current checked
         if (invitationIdentity) {
-            if (!Assert.checkCaseInsensitiveEqual(authenticatedIdentity.profile.name.givenName, invitationIdentity.profile.name.givenName) ||
-                !Assert.checkCaseInsensitiveEqual(authenticatedIdentity.profile.name.familyName, invitationIdentity.profile.name.familyName)) {
-                permission.messages.push(Translator.get('relationship.claim.mismatchedName'));
+            if (!authenticatedIdentity) {
+                // agency user
+                permission.messages.push(Translator.get('relationship.claim.agencyUserNotAllowed'));
+            } else {
+                // identity user
+                if (!Assert.checkCaseInsensitiveEqual(authenticatedIdentity.profile.name.givenName, invitationIdentity.profile.name.givenName) ||
+                    !Assert.checkCaseInsensitiveEqual(authenticatedIdentity.profile.name.familyName, invitationIdentity.profile.name.familyName)) {
+                    permission.messages.push(Translator.get('relationship.claim.mismatchedName'));
+                }
             }
         }
 

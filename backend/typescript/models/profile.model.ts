@@ -23,6 +23,7 @@ let ProfileMongooseModel: mongoose.Model<IProfileDocument>;
 export class ProfileProvider extends RAMEnum {
 
     public static ABR = new ProfileProvider('ABR', 'ABR');
+    public static AUSkey = new ProfileProvider('AUSKEY', 'AUSKEY');
     public static AuthenticatorApp = new ProfileProvider('AUTHENTICATOR_APP', 'Authenticator App');
     public static Invitation = new ProfileProvider('INVITATION', 'Invitation');
     public static MyGov = new ProfileProvider('MY_GOV', 'myGov');
@@ -32,6 +33,7 @@ export class ProfileProvider extends RAMEnum {
 
     protected static AllValues = [
         ProfileProvider.ABR,
+        ProfileProvider.AUSkey,
         ProfileProvider.AuthenticatorApp,
         ProfileProvider.Invitation,
         ProfileProvider.MyGov,

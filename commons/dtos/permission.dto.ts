@@ -41,6 +41,10 @@ export class Permission implements IPermission {
         return !this.isAllowed();
     }
 
+    public hasMessages(): boolean {
+        return this.messages && this.messages.length > 0;
+    }
+
 }
 
 export interface IHasPermissions {

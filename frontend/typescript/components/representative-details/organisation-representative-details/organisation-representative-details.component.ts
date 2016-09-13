@@ -37,14 +37,13 @@ export class OrganisationRepresentativeDetailsComponent implements OnInit {
     public ngOnInit() {
 
         this.form = this._fb.group({
-            'abn': [this.data.abn, Validators.compose([
-                Validators.required, RAMNgValidators.validateABNFormat])]
+            'abn': [this.data ? this.data.abn : '', Validators.compose([Validators.required, RAMNgValidators.validateABNFormat])],
+            'organisationName': [this.data ? this.data.organisationName : '']
         });
 
-        this.form.valueChanges.subscribe(
-            (v: OrganisationRepresentativeDetailsComponentData) => {
-                this.dataChanges.emit(v);
-            });
+        this.form.valueChanges.subscribe((v: OrganisationRepresentativeDetailsComponentData) => {
+            this.dataChanges.emit(v);
+        });
 
         // emit initial valid
         this.isValid.emit(this.form.valid);

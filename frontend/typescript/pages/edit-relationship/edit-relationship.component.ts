@@ -98,7 +98,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         representativeDetails: {
             readOnly: true,
             showDob: false,
-            isOrganisation: false,
             individual: {
                 givenName: '',
                 familyName: '',
@@ -267,7 +266,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // name, dob, abn
         const delegate = this.relationship.delegate ? this.relationship.delegate.value : undefined;
-        const profile = delegate ? delegate.identities[0].value.profile : undefined;
+        let delegateFirstIdentityRef = delegate ? delegate.identities[0] : undefined;
+        const profile = delegate ? delegateFirstIdentityRef.value.profile : undefined;
         const isOrganisation = delegate ? delegate.partyType === Constants.PartyTypeCode.ABN : false;
 
         // note - shared secrets are currently not returned - so the dob can not be populated!
@@ -276,15 +276,14 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         this.relationshipComponentData.representativeDetails = {
             readOnly: !this.relationship.isPermissionAllowed([RelationshipCanEditDelegatePermission]),
             showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]),
-            isOrganisation: isOrganisation,
             individual: !isOrganisation ? {
-                givenName: isOrganisation || !profile ? '' : profile.name.givenName,
-                familyName: isOrganisation || !profile ? '' : profile.name.familyName,
-                dob: isOrganisation || !dobSharedSecret ? null : new Date(dobSharedSecret.value)
+                givenName: profile ? profile.name.givenName : '',
+                familyName: profile ? profile.name.familyName : '',
+                dob: !dobSharedSecret ? null : new Date(dobSharedSecret.value)
             } : undefined,
             organisation: isOrganisation ? {
-                abn: '',
-                organisationName: ''
+                abn: delegateFirstIdentityRef ? delegateFirstIdentityRef.value.rawIdValue : '',
+                organisationName: profile ? profile.name.unstructuredName : ''
             } : undefined
         };
 
@@ -322,7 +321,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // insert relationship
 
-            let partyType = this.relationshipComponentData.representativeDetails.isOrganisation ? Constants.PartyTypeCode.ABN : Constants.PartyTypeCode.INDIVIDUAL;
+            let partyType = this.relationshipComponentData.representativeDetails.organisation ? Constants.PartyTypeCode.ABN : Constants.PartyTypeCode.INDIVIDUAL;
             let relationshipType = this.relationshipComponentData.authType.authType;
 
             // name
@@ -444,6 +443,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             // permission attributes
             // todo this needs to replace any existing permissions
             if (relationshipType.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND)) {
+                // remove existing permission attributes
+                this.relationship.attributes = this.relationship.attributes.filter((att) => {
+                    return att.attributeName.value.classifier !== Constants.RelationshipAttributeNameClassifier.PERMISSION;
+                });
+                // add new/changed ones
                 for (let permissionAttribute of this.relationshipComponentData.permissionAttributes) {
                     this.relationship.attributes.push(permissionAttribute);
                 }
@@ -490,7 +494,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     }
 
     public displayName(repDetails: RepresentativeDetailsComponentData) {
-        if (repDetails.isOrganisation) {
+        if (repDetails.organisation) {
             return repDetails.organisation.abn;
         } else {
             return repDetails.individual.givenName + (repDetails.individual.familyName ? ' ' + repDetails.individual.familyName : '');

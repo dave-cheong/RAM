@@ -9,6 +9,7 @@ import {Translator} from '../ram/translator';
 import {RelationshipTypeModel} from '../models/relationshipType.model';
 import {Constants} from '../../../commons/constants';
 
+// todo a whole bunch of rules are in https://relationshipaccessmanager.atlassian.net/browse/RAMREQ-115
 export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<IRelationship> {
 
     constructor() {
@@ -19,12 +20,16 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
     public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
         let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
-        let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
+        let authenticatedPrincipal = context.getAuthenticatedPrincipal();
+        let authenticatedIdentity = authenticatedPrincipal ? authenticatedPrincipal.identity : null;
+        let authenticatedParty = authenticatedIdentity ? authenticatedIdentity.party : null;
         let relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(relationship.relationshipType.code);
         let relationshipStatus = relationship.statusEnum();
+        let delegateParty = relationship.delegate;
+        let delegateCanEditOwnAttributeUsage = relationshipType.findAttributeNameUsage(Constants.RelationshipAttributeNameCode.DELEGATE_EDIT_OWN_IND);
 
         // validate authenticated
-        if (!authenticatedIdentity) {
+        if (!authenticatedPrincipal) {
             permission.messages.push(Translator.get('security.notAuthenticated'));
         }
 
@@ -37,6 +42,15 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
         // validate status
         if (relationshipStatus !== RelationshipStatus.Pending && relationshipStatus !== RelationshipStatus.Accepted) {
             permission.messages.push(Translator.get('relationship.modify.invalidStatus'));
+        }
+
+        // validate not same delegate
+        if (authenticatedParty) {
+            if (authenticatedParty.id === delegateParty.id) {
+                if (!delegateCanEditOwnAttributeUsage) {
+                    permission.messages.push(Translator.get('relationship.modify.sameDelegate'));
+                }
+            }
         }
 
         // set value and link

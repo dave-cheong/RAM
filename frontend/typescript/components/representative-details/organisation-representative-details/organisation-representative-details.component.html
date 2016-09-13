@@ -1,4 +1,4 @@
-<form [formGroup]="form">
+<form [formGroup]="form" *ngIf="!readOnly">
     <div>
         <div class="col-md-12">
             <h4>{{'addRelationship.abn.label' | translate}}*</h4>
@@ -25,6 +25,27 @@
                 <button class="col-md-12 btn btn-default"
                         (click)="clearOrganisationABN()">{{'addRelationship.changeABN' | translate}}</button>
             </span>
+        </div>
+    </div>
+</form>
+
+<form [formGroup]=form *ngIf="readOnly">
+    <div>
+        <div class="col-md-4" [class.has-error]="!form.controls['abn'].valid">
+            <h4>{{'addRelationship.abn.label' | translate}}*</h4>
+            <input class="form-control"
+                   type="text"
+                   name="abn"
+                   [disabled]=true
+                   [formControl]="form.controls['abn']">
+        </div>
+        <div class="col-md-4" [class.has-error]="!form.controls['organisationName'].valid">
+            <h4>{{'addRelationship.organisationName.label' | translate}}</h4>
+            <input class="form-control"
+                   type="text"
+                   name="organisationName"
+                   [disabled]=true
+                   [formControl]="form.controls['organisationName']">
         </div>
     </div>
 </form>

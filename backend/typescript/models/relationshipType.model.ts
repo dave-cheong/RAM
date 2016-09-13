@@ -52,6 +52,11 @@ const RelationshipTypeSchema = CodeDecodeSchema({
         required: [true, 'Min Identity Strength is required'],
         default: 0
     },
+    strength: {
+        type: Number,
+        required: [true, 'Strength is required'],
+        default: 0
+    },
     category: {
         type: String,
         required: [true, 'Category is required'],
@@ -67,6 +72,7 @@ const RelationshipTypeSchema = CodeDecodeSchema({
 // interfaces .........................................................................................................
 
 export interface IRelationshipType extends ICodeDecode {
+    strength: number;
     minCredentialStrength: number;
     minIdentityStrength: number;
     category: string;
@@ -79,6 +85,7 @@ export interface IRelationshipType extends ICodeDecode {
 
 class RelationshipType extends CodeDecode implements IRelationshipType {
 
+    public strength: number;
     public minCredentialStrength: number;
     public minIdentityStrength: number;
     public category: string;
@@ -111,6 +118,7 @@ class RelationshipType extends CodeDecode implements IRelationshipType {
             this.longDecodeText,
             this.startDate,
             this.endDate,
+            this.strength,
             this.minCredentialStrength,
             this.minIdentityStrength,
             this.category,
