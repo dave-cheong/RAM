@@ -20,7 +20,8 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
     public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
         let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
-        let authenticatedIdentity = context.getAuthenticatedPrincipal().identity;
+        let authenticatedPrincipal = context.getAuthenticatedPrincipal();
+        let authenticatedIdentity = authenticatedPrincipal ? authenticatedPrincipal.identity : null;
         let authenticatedParty = authenticatedIdentity ? authenticatedIdentity.party : null;
         let relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(relationship.relationshipType.code);
         let relationshipStatus = relationship.statusEnum();
@@ -28,7 +29,7 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
         let delegateCanEditOwnAttributeUsage = relationshipType.findAttributeNameUsage(Constants.RelationshipAttributeNameCode.DELEGATE_EDIT_OWN_IND);
 
         // validate authenticated
-        if (!authenticatedIdentity) {
+        if (!authenticatedPrincipal) {
             permission.messages.push(Translator.get('security.notAuthenticated'));
         }
 

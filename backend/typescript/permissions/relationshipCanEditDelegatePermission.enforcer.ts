@@ -16,11 +16,11 @@ export class RelationshipCanEditDelegatePermissionEnforcer extends PermissionEnf
     public async evaluate(relationship: IRelationship): Promise<IPermission> {
 
         let permission = new Permission(this.template.code, this.template.description, this.template.value, this.template.linkType);
-        let authenticatedIdentity = context.getAuthenticatedIdentity();
+        let authenticatedPrincipal = context.getAuthenticatedPrincipal();
         let relationshipStatus = relationship.statusEnum();
 
         // validate authenticated
-        if (!authenticatedIdentity) {
+        if (!authenticatedPrincipal) {
             permission.messages.push(Translator.get('security.notAuthenticated'));
         }
 
