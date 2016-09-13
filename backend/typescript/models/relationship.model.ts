@@ -1007,7 +1007,7 @@ export class RelationshipModel {
 
             listOfIntersectingPartyIds.forEach(async(partyId: string) => {
                 let party = await PartyModel.findById(partyId);
-                let relationshipA = await RelationshipMongooseModel
+                let relationship_requested_to_intermediary = await RelationshipMongooseModel
                     .findOne({
                         subject: requestedParty,
                         delegate: party,
@@ -1017,7 +1017,7 @@ export class RelationshipModel {
                     })
                     .sort({strength: -1})
                     .exec();
-                let relationshipB = await RelationshipMongooseModel
+                let relationship_intermediary_to_requester = await RelationshipMongooseModel
                     .findOne({
                         subject: party,
                         delegate: requestingParty,
@@ -1027,7 +1027,10 @@ export class RelationshipModel {
                     })
                     .sort({strength: -1})
                     .exec();
-                let strength = Math.min(relationshipA ? relationshipA.strength : 0, relationshipB ? relationshipB.strength : 0);
+                let strength = Math.min(
+                    relationship_requested_to_intermediary ? relationship_requested_to_intermediary.strength : 0,
+                    relationship_intermediary_to_requester ? relationship_intermediary_to_requester.strength : 0
+                );
                 strongestStrength = Math.max(strength, strongestStrength);
             });
 
