@@ -836,7 +836,6 @@ export class RelationshipModel {
         return null;
     }
 
-    // todo what about start date?
     public static async hasActiveInDateRange1stOr2ndLevelConnection(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<boolean> {
 
         const requestedParty = await PartyModel.findByIdentityIdValue(requestedIdValue);
