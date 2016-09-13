@@ -589,12 +589,12 @@ class Relationship extends RAMObject implements IRelationship {
 
                         // has the permission been changed from limited to full
                         const permittedValues = originalAttribute.attributeName.permittedValues;
-                        const permissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === originalAttribute.value[0]);
-                        const dtoPermissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === attribute.value[0]);
+                        const originalPermissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === originalAttribute.value[0]);
+                        const permissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === attribute.value[0]);
                         const attributeValueValid = permittedValues.find((value: string) => value === attribute.value[0]);
                         if (attributeValueValid) {
-                            const previouslyHadNoValueButNowDoes = permissionAttributeValueIndex === -1 && dtoPermissionAttributeValueIndex >= 0;
-                            const upgradedValue = dtoPermissionAttributeValueIndex < permissionAttributeValueIndex;
+                            const previouslyHadNoValueButNowDoes = originalPermissionAttributeValueIndex === -1 && permissionAttributeValueIndex >= 0;
+                            const upgradedValue = permissionAttributeValueIndex > originalPermissionAttributeValueIndex;
                             if (previouslyHadNoValueButNowDoes || upgradedValue) {
                                 console.info('Re-acceptance required due to upgrading of access level');
                                 reAcceptanceRequired = true;
