@@ -489,8 +489,6 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async modify(dto: DTO): Promise<IRelationship> {
 
-        console.log('this.invitationIdentity.profile.sharedSecrets1=', this.invitationIdentity.profile.sharedSecrets);
-
         // lookup identities, evaluate permissions on these
         const subjectIdentity = await IdentityModel.findByIdValue(Url.lastPathElement(dto.subject.href));
         const delegateIdentity = await IdentityModel.findByIdValue(Url.lastPathElement(dto.delegate.href));
@@ -721,19 +719,14 @@ export class RelationshipModel {
 
     // this is a static method because we may be constructing attributes for a new relationship that has not been created yet
     public static async updateOrAddAttribute(attributes: IRelationshipAttribute[], attributeName: IRelationshipAttributeName, attributeValue: string[]): Promise<void> {
-
-        let foundAttribute = false;
-        for (let attribute of attributes) {
-            if (attribute.attributeName.code === attributeName.code) {
-                attribute.value = attributeValue;
-                foundAttribute = true;
-                break;
+        if (attributes && attributeName) {
+            const matchedAttribute = attributes.find((attribute) => attribute.attributeName.code === attributeName.code);
+            if (matchedAttribute) {
+                matchedAttribute.value = attributeValue;
+            } else {
+                attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
             }
         }
-        if (!foundAttribute) {
-            attributes.push(await RelationshipAttributeModel.add(attributeValue, attributeName));
-        }
-
     }
 
     public static async add(relationshipType: IRelationshipType,
@@ -1162,10 +1155,12 @@ export class RelationshipModel {
         let isPermissionAttributeAllowed = permissionCustomisationAllowed !== null;
 
         // add attribute names which apply to instance with default values
-        const attributeNameUsagesWhereAppliesToInstanceRequired = relationshipType.attributeNameUsages.filter((attributeNameUsage) => attributeNameUsage.attributeName.appliesToInstance);
-        for (let attributeNameUsage of attributeNameUsagesWhereAppliesToInstanceRequired) {
-            await RelationshipModel.updateOrAddAttribute(attributes, attributeNameUsage.attributeName, [attributeNameUsage.defaultValue]);
-        }
+        relationshipType.attributeNameUsages
+            .filter((attributeNameUsage) => attributeNameUsage.attributeName.appliesToInstance)
+            .forEach(async(attributeNameUsage) => {
+                const attributeValue = attributeNameUsage.defaultValue ? [attributeNameUsage.defaultValue] : [];
+                await RelationshipModel.updateOrAddAttribute(attributes, attributeNameUsage.attributeName, attributeValue);
+            });
 
         // iterate thru dto attributes and update or add attributes as needed
         for (let dtoAttribute of dtoAttributes) {
