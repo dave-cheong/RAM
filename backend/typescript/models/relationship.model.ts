@@ -514,7 +514,7 @@ class Relationship extends RAMObject implements IRelationship {
         }
 
         // todo if new, start date can not be past only today and future
-        // todo if edit, start date can be future and past.
+        // todo if edit, start date can be future and past. (start can be the same....), but if pending, then whatever
         this.startTimestamp = dto.startTimestamp;
 
         // todo end must be after start
@@ -666,7 +666,7 @@ class Relationship extends RAMObject implements IRelationship {
         if (!attribute) {
             const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(this.relationshipType.code);
             const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsage(code);
-            if (relationshipAttributeNameUsage.attributeName.appliesToInstance) {
+            if (relationshipAttributeNameUsage && relationshipAttributeNameUsage.attributeName.appliesToInstance) {
                 attribute = await RelationshipAttributeModel.createInstance(relationshipAttributeNameUsage);
             }
         }
