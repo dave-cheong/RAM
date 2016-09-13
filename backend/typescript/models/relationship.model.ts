@@ -489,8 +489,6 @@ class Relationship extends RAMObject implements IRelationship {
 
     public async modify(dto: DTO): Promise<IRelationship> {
 
-        console.log('this.invitationIdentity.profile.sharedSecrets1=', this.invitationIdentity.profile.sharedSecrets);
-
         // lookup identities, evaluate permissions on these
         const subjectIdentity = await IdentityModel.findByIdValue(Url.lastPathElement(dto.subject.href));
         const delegateIdentity = await IdentityModel.findByIdValue(Url.lastPathElement(dto.delegate.href));
