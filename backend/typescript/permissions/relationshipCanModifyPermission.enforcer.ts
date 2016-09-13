@@ -54,9 +54,9 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
 
         // validate not same delegate
         if (authenticatedParty) {
-            if (myStrongestStrength <= relationship.strength) {
+            if (!delegateCanEditOwnAttributeUsage) {
                 if (authenticatedParty.id === delegateParty.id) {
-                    if (!delegateCanEditOwnAttributeUsage) {
+                    if (myStrongestStrength <= relationship.strength) {
                         permission.messages.push(Translator.get('relationship.modify.sameDelegate'));
                     }
                 }
