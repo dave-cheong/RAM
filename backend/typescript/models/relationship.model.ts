@@ -908,7 +908,7 @@ export class RelationshipModel {
 
                 let arrays = [
                     listOfDelegateIds.map((obj: {_id: string}): string => obj['_id'].toString()),
-                    listOfSubjectIds.map((obj: {_id: string}) => obj['_id'].toString())
+                    listOfSubjectIds.map((obj: {_id: string}): string => obj['_id'].toString())
                 ];
 
                 const listOfIntersectingPartyIds = arrays.shift().filter(function (v: string) {
