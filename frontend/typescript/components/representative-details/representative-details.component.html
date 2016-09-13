@@ -38,7 +38,7 @@
 
         <organisation-representative-details
                 *ngIf='isOrganisation()'
-                [readOnly]='readOnly'
+                [readOnly]='data.readOnly'
                 [(data)]='data.organisation'
                 (isValid)="emitOrganisationValidStatus($event)">
         </organisation-representative-details>

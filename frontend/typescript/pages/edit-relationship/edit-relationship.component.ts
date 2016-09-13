@@ -266,7 +266,8 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
         // name, dob, abn
         const delegate = this.relationship.delegate ? this.relationship.delegate.value : undefined;
-        const profile = delegate ? delegate.identities[0].value.profile : undefined;
+        let delegateFirstIdentityRef = delegate.identities[0];
+        const profile = delegate ? delegateFirstIdentityRef.value.profile : undefined;
         const isOrganisation = delegate ? delegate.partyType === Constants.PartyTypeCode.ABN : false;
 
         // note - shared secrets are currently not returned - so the dob can not be populated!
@@ -276,13 +277,13 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             readOnly: !this.relationship.isPermissionAllowed([RelationshipCanEditDelegatePermission]),
             showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]),
             individual: !isOrganisation ? {
-                givenName: isOrganisation || !profile ? '' : profile.name.givenName,
-                familyName: isOrganisation || !profile ? '' : profile.name.familyName,
+                givenName: !profile ? '' : profile.name.givenName,
+                familyName: !profile ? '' : profile.name.familyName,
                 dob: isOrganisation || !dobSharedSecret ? null : new Date(dobSharedSecret.value)
             } : undefined,
             organisation: isOrganisation ? {
-                abn: '',
-                organisationName: ''
+                abn: delegateFirstIdentityRef.value.rawIdValue,
+                organisationName: !profile ? '' : profile.name.unstructuredName
             } : undefined
         };
 
