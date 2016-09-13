@@ -29,7 +29,7 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
         let delegateParty = relationship.delegate;
         let delegateCanEditOwnAttributeUsage = relationshipType.findAttributeNameUsage(Constants.RelationshipAttributeNameCode.DELEGATE_EDIT_OWN_IND);
         let subjectDefaultIdentity = await relationship.subject.findDefaultIdentity();
-        let strength = await PartyModel.getStrongestAccessStrength(subjectDefaultIdentity.idValue, authenticatedPrincipal);
+        let myStrongestStrength = await PartyModel.getStrongestAccessStrength(subjectDefaultIdentity.idValue, authenticatedPrincipal);
 
         // validate authenticated
         if (!authenticatedPrincipal) {
@@ -48,13 +48,13 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
         }
 
         // validate strength
-        if (strength < relationship.strength) {
+        if (myStrongestStrength < relationship.strength) {
             permission.messages.push(Translator.get('relationship.modify.insufficientStrength'));
         }
 
         // validate not same delegate
         if (authenticatedParty) {
-            if (strength <= relationship.strength) {
+            if (myStrongestStrength <= relationship.strength) {
                 if (authenticatedParty.id === delegateParty.id) {
                     if (!delegateCanEditOwnAttributeUsage) {
                         permission.messages.push(Translator.get('relationship.modify.sameDelegate'));
