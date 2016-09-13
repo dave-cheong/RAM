@@ -5,6 +5,7 @@ import {IRelationshipAttributeNameUsage, RelationshipAttributeNameUsage} from '.
 import {IRelationshipAttributeName} from './relationshipAttributeName.dto';
 
 export interface IRelationshipType extends ICodeDecode {
+    strength: number;
     minCredentialStrength: number;
     minIdentityStrength: number;
     relationshipAttributeNames: IRelationshipAttributeNameUsage[];
@@ -27,6 +28,7 @@ export class RelationshipType extends CodeDecode implements IRelationshipType {
                 longDecodeText: string,
                 startTimestamp: Date,
                 endTimestamp: Date,
+                public strength: number,
                 public minCredentialStrength: number,
                 public minIdentityStrength: number,
                 public category: string,

@@ -966,6 +966,7 @@ export class Seeder {
                 shortDecodeText: 'Associate',
                 longDecodeText: 'Associate',
                 startDate: now,
+                strength: 200,
                 minIdentityStrength: 2,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
@@ -990,6 +991,7 @@ export class Seeder {
                 shortDecodeText: 'Universal Representative',
                 longDecodeText: 'The same level of authorisation as an Associate of the organisation (e.g., Owner, Director). All permissions will be defaulted to maximum access.',
                 startDate: now,
+                strength: 200,
                 minIdentityStrength: 2,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
@@ -1014,6 +1016,7 @@ export class Seeder {
                 longDecodeText: `Select the representative authorisation type if you want to customise access.
                 Select which permissions this representative will have, including restricting access to some services.`,
                 startDate: now,
+                strength: 100,
                 minIdentityStrength: 1,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
