@@ -90,6 +90,19 @@ describe('RAM Party', () => {
             });
     });
 
+    it('finds by id', async(done) => {
+        try {
+            const instance = await PartyModel.findById(party1.id);
+            expect(instance).not.toBeNull();
+            expect(instance.id).toBe(party1.id);
+            expect(instance.partyType).not.toBeNull();
+            done();
+        } catch (e) {
+            fail('Because ' + e);
+            done();
+        }
+    });
+
     it('finds by identity id value', async(done) => {
         try {
             const instance = await PartyModel.findByIdentityIdValue(identity1.idValue);

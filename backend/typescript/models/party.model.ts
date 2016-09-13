@@ -87,6 +87,7 @@ export interface IParty extends IRAMObject {
     addRelationship2(relationshipDTO: IRelationshipDTO): Promise<IRelationship>;
     addOrModifyRole(role: RoleDTO, agencyUser: IAgencyUser): Promise<IRole>;
     modifyRole(role: RoleDTO): Promise<IRole>;
+    findDefaultIdentity(): Promise<IIdentity>;
 }
 
 class Party extends RAMObject implements IParty {
@@ -391,6 +392,11 @@ class Party extends RAMObject implements IParty {
         return Promise.resolve(role);
     }
 
+    public async findDefaultIdentity(): Promise<IIdentity> {
+        return IdentityModel.findDefaultByPartyId(this.id);
+    }
+
+
 }
 
 interface IPartyDocument extends IParty, mongoose.Document {
@@ -404,9 +410,12 @@ export class PartyModel {
         return PartyMongooseModel.create(source);
     }
 
+    public static async findById(id: string): Promise<IParty> {
+        return await PartyMongooseModel.findById(id);
+    }
+
     public static async findByIdentityIdValue(idValue: string): Promise<IParty> {
-        const identity = await
-            IdentityModel.findByIdValue(idValue);
+        const identity = await IdentityModel.findByIdValue(idValue);
         return identity ? identity.party : null;
     }
 
@@ -427,16 +436,44 @@ export class PartyModel {
                     return true;
                 } else {
                     // check 1st and 2nd level relationships
-                    return await
-                        RelationshipModel.hasActiveInDateRange1stOr2ndLevelConnection(
-                            requestingParty,
-                            requestedIdValue,
-                            new Date()
-                        );
+                    return await RelationshipModel.hasActiveInDateRange1stOr2ndLevelConnection(
+                        requestingParty,
+                        requestedIdValue,
+                        new Date()
+                    );
                 }
             }
         }
         return false;
+    }
+
+    public static async getStrongestAccessStrength(requestedIdValue: string, requestingPrincipal: IPrincipal): Promise<number> {
+        const maxStrength = Number.MAX_SAFE_INTEGER;
+        const requestedIdentity = await IdentityModel.findByIdValue(requestedIdValue);
+        const requestingIdentity = requestingPrincipal ? requestingPrincipal.identity : null;
+        if (requestedIdentity) {
+            // requested party exists
+            if (requestingPrincipal && requestingPrincipal.agencyUserInd) {
+                // agency users have implicit global access
+                return maxStrength;
+            } else if (requestingIdentity) {
+                // regular users have explicit access
+                let requestingParty = requestingIdentity.party;
+                const requestedParty = requestedIdentity.party;
+                if (requestingParty.id === requestedParty.id) {
+                    // requested and requester are the same
+                    return maxStrength;
+                } else {
+                    // check 1st and 2nd level relationships
+                    return await RelationshipModel.getStrongestActiveInDateRange1stOr2ndLevelConnectionStrength(
+                        requestingParty,
+                        requestedIdValue,
+                        new Date()
+                    );
+                }
+            }
+        }
+        return 0;
     }
 
     public static populate(listOfIds: Object[], options: {path: string}) {

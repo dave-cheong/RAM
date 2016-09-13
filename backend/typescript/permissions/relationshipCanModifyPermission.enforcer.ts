@@ -8,6 +8,7 @@ import {context} from '../providers/context.provider';
 import {Translator} from '../ram/translator';
 import {RelationshipTypeModel} from '../models/relationshipType.model';
 import {Constants} from '../../../commons/constants';
+import {PartyModel} from '../models/party.model';
 
 // todo a whole bunch of rules are in https://relationshipaccessmanager.atlassian.net/browse/RAMREQ-115
 export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<IRelationship> {
@@ -42,6 +43,13 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
         // validate status
         if (relationshipStatus !== RelationshipStatus.Pending && relationshipStatus !== RelationshipStatus.Accepted) {
             permission.messages.push(Translator.get('relationship.modify.invalidStatus'));
+        }
+
+        // validate strength
+        let subjectDefaultIdentity = await relationship.subject.findDefaultIdentity();
+        let strength = await PartyModel.getStrongestAccessStrength(subjectDefaultIdentity.idValue, authenticatedPrincipal);
+        if (strength < relationship.strength) {
+            permission.messages.push(Translator.get('relationship.modify.insufficientStrength'));
         }
 
         // validate not same delegate

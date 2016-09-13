@@ -113,6 +113,11 @@ const RelationshipSchema = RAMSchema({
         ref: 'RelationshipType',
         required: [true, 'Relationship Type is required']
     },
+    strength: {
+        type: Number,
+        required: [true, 'Strength is required'],
+        default: 0
+    },
     subject: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Party',
@@ -231,6 +236,9 @@ RelationshipSchema.pre('validate', function (next: () => void) {
         this._relationshipTypeCode = this.relationshipType.code;
     }
     if (this.relationshipType) {
+        this.strength = this.relationshipType.strength;
+    }
+    if (this.relationshipType) {
         this._relationshipTypeCategory = this.relationshipType.category;
     }
     if (this.subjectNickName) {
@@ -275,6 +283,7 @@ RelationshipSchema.pre('validate', function (next: () => void) {
 export interface IRelationship extends IRAMObject {
     id: string;
     relationshipType: IRelationshipType;
+    strength: number;
     subject: IParty;
     subjectNickName: IName;
     delegate: IParty;
@@ -313,6 +322,7 @@ class Relationship extends RAMObject implements IRelationship {
 
     public id: string;
     public relationshipType: IRelationshipType;
+    public strength: number;
     public subject: IParty;
     public subjectNickName: IName;
     public delegate: IParty;
@@ -922,6 +932,109 @@ export class RelationshipModel {
             }
 
         }
+    }
+
+    public static async getStrongestActiveInDateRange1stOr2ndLevelConnectionStrength(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<number> {
+
+        const requestedParty = await PartyModel.findByIdentityIdValue(requestedIdValue);
+
+        if (!requestedParty) {
+            // no such subject
+            return Promise.resolve(0);
+        } else {
+
+            let strongestStrength = 0;
+
+            // 1st level
+
+            const strongestFirstLevelRelationship = await RelationshipMongooseModel
+                .findOne({
+                    subject: requestedParty,
+                    delegate: requestingParty,
+                    status: RelationshipStatus.Accepted.code,
+                    startTimestamp: {$lte: date},
+                    $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
+                })
+                .sort({strength: -1})
+                .exec();
+
+            strongestStrength = strongestFirstLevelRelationship ? strongestFirstLevelRelationship.strength : 0;
+
+            // 2nd level
+
+            const listOfDelegateIds = await RelationshipMongooseModel
+                .aggregate([
+                    {
+                        '$match': {
+                            '$and': [
+                                {'subject': new mongoose.Types.ObjectId(requestedParty.id)},
+                                {'status': RelationshipStatus.Accepted.code},
+                                {'startTimestamp': {$lte: date}},
+                                {'$or': [{endTimestamp: null}, {endTimestamp: {$gte: date}}]}
+                            ]
+                        }
+                    },
+                    {'$group': {'_id': '$delegate'}}
+                ])
+                .exec();
+
+            const listOfSubjectIds = await RelationshipMongooseModel
+                .aggregate([
+                    {
+                        '$match': {
+                            '$and': [
+                                {'delegate': new mongoose.Types.ObjectId(requestingParty.id)},
+                                {'status': RelationshipStatus.Accepted.code},
+                                {'startTimestamp': {$lte: date}},
+                                {'$or': [{endTimestamp: null}, {endTimestamp: {$gte: date}}]}
+                            ]
+                        }
+                    },
+                    {'$group': {'_id': '$subject'}}
+                ])
+                .exec();
+
+            let arrays = [
+                listOfDelegateIds.map((obj: {_id: string}): string => obj['_id'].toString()),
+                listOfSubjectIds.map((obj: {_id: string}): string => obj['_id'].toString())
+            ];
+
+            const listOfIntersectingPartyIds = arrays.shift().filter(function (v: string) {
+                return arrays.every(function (a) {
+                    return a.indexOf(v) !== -1;
+                });
+            });
+
+            listOfIntersectingPartyIds.forEach(async(partyId: string) => {
+                let party = await PartyModel.findById(partyId);
+                let relationshipA = await RelationshipMongooseModel
+                    .findOne({
+                        subject: requestedParty,
+                        delegate: party,
+                        status: RelationshipStatus.Accepted.code,
+                        startTimestamp: {$lte: date},
+                        $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
+                    })
+                    .sort({strength: -1})
+                    .exec();
+                let relationshipB = await RelationshipMongooseModel
+                    .findOne({
+                        subject: party,
+                        delegate: requestingParty,
+                        status: RelationshipStatus.Accepted.code,
+                        startTimestamp: {$lte: date},
+                        $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
+                    })
+                    .sort({strength: -1})
+                    .exec();
+                let strength = Math.min(relationshipA ? relationshipA.strength : 0, relationshipB ? relationshipB.strength : 0);
+                strongestStrength = Math.max(strength, strongestStrength);
+            });
+
+            return Promise.resolve(strongestStrength);
+
+        }
+
     }
 
     // todo this search might no longer be useful from SS2
