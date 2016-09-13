@@ -1007,17 +1007,7 @@ export class RelationshipModel {
 
             listOfIntersectingPartyIds.forEach(async(partyId: string) => {
                 let party = await PartyModel.findById(partyId);
-                let relationship_requested_to_intermediary = await RelationshipMongooseModel
-                    .findOne({
-                        subject: requestedParty,
-                        delegate: party,
-                        status: RelationshipStatus.Accepted.code,
-                        startTimestamp: {$lte: date},
-                        $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
-                    })
-                    .sort({strength: -1})
-                    .exec();
-                let relationship_intermediary_to_requester = await RelationshipMongooseModel
+                let relationship_intermediaryParty_to_requestingParty = await RelationshipMongooseModel
                     .findOne({
                         subject: party,
                         delegate: requestingParty,
@@ -1027,9 +1017,19 @@ export class RelationshipModel {
                     })
                     .sort({strength: -1})
                     .exec();
+                let relationship_requestedParty_to_intermediaryParty = await RelationshipMongooseModel
+                    .findOne({
+                        subject: requestedParty,
+                        delegate: party,
+                        status: RelationshipStatus.Accepted.code,
+                        startTimestamp: {$lte: date},
+                        $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
+                    })
+                    .sort({strength: -1})
+                    .exec();
                 let strength = Math.min(
-                    relationship_requested_to_intermediary ? relationship_requested_to_intermediary.strength : 0,
-                    relationship_intermediary_to_requester ? relationship_intermediary_to_requester.strength : 0
+                    relationship_intermediaryParty_to_requestingParty ? relationship_intermediaryParty_to_requestingParty.strength : 0,
+                    relationship_requestedParty_to_intermediaryParty ? relationship_requestedParty_to_intermediaryParty.strength : 0
                 );
                 strongestStrength = Math.max(strength, strongestStrength);
             });
