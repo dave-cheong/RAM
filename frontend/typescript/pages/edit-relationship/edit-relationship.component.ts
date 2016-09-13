@@ -98,7 +98,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         representativeDetails: {
             readOnly: true,
             showDob: false,
-            isOrganisation: false,
             individual: {
                 givenName: '',
                 familyName: '',
@@ -276,7 +275,6 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         this.relationshipComponentData.representativeDetails = {
             readOnly: !this.relationship.isPermissionAllowed([RelationshipCanEditDelegatePermission]),
             showDob: this.relationship.isPermissionAllowed([RelationshipCanViewDobPermission]),
-            isOrganisation: isOrganisation,
             individual: !isOrganisation ? {
                 givenName: isOrganisation || !profile ? '' : profile.name.givenName,
                 familyName: isOrganisation || !profile ? '' : profile.name.familyName,
@@ -322,7 +320,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // insert relationship
 
-            let partyType = this.relationshipComponentData.representativeDetails.isOrganisation ? Constants.PartyTypeCode.ABN : Constants.PartyTypeCode.INDIVIDUAL;
+            let partyType = this.relationshipComponentData.representativeDetails.organisation ? Constants.PartyTypeCode.ABN : Constants.PartyTypeCode.INDIVIDUAL;
             let relationshipType = this.relationshipComponentData.authType.authType;
 
             // name
@@ -495,7 +493,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     }
 
     public displayName(repDetails: RepresentativeDetailsComponentData) {
-        if (repDetails.isOrganisation) {
+        if (repDetails.organisation) {
             return repDetails.organisation.abn;
         } else {
             return repDetails.individual.givenName + (repDetails.individual.familyName ? ' ' + repDetails.individual.familyName : '');
