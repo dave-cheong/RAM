@@ -444,6 +444,11 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             // permission attributes
             // todo this needs to replace any existing permissions
             if (relationshipType.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND)) {
+                // remove existing permission attributes
+                this.relationship.attributes = this.relationship.attributes.filter((att) => {
+                    return att.attributeName.value.classifier !== Constants.RelationshipAttributeNameClassifier.PERMISSION;
+                });
+                // add new/changed ones
                 for (let permissionAttribute of this.relationshipComponentData.permissionAttributes) {
                     this.relationship.attributes.push(permissionAttribute);
                 }
