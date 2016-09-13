@@ -21,6 +21,7 @@
   "relationship.claim.invalidInvitationStatus" : "Unable to claim a non-pending relationship",
   "relationship.claim.expiredInvitation" : "Unable to claim an expired relationship invitation",
   "relationship.claim.mismatchedName" : "Identity does not match",
+  "relationship.claim.agencyUserNotAllowed" : "Agency Users cannot claim relationships",
   "relationship.claim.mismatchedABN" : "You cannot accept an authorisation with an AUSkey from a different ABN. AUSkeys only have authorisation for the ABN they are issued under.",
 
   "relationship.accept.notPending" : "Unable to accept a non-pending relationship",
