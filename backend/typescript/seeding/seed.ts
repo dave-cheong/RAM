@@ -161,6 +161,7 @@ export class Seeder {
 
     // relationship attribute names (other)
     public static managedExternallyInd_relAttributeName:IRelationshipAttributeName;
+    public static delegateEditOwnInd_relAttributeName:IRelationshipAttributeName;
     public static autoAcceptIfInitiatedFromDelegateInd_relAttributeName:IRelationshipAttributeName;
     public static autoAcceptIfInitiatedFromSubjectInd_relAttributeName:IRelationshipAttributeName;
     public static permissionCustomisationAllowedInd_relAttributeName:IRelationshipAttributeName;
@@ -373,8 +374,7 @@ export class Seeder {
         }
     }
 
-    public static async createRelationshipAttributeNameUsageModels
-    <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string, sortOrder:number}>(attributeValues:T[]) {
+    public static async createRelationshipAttributeNameUsageModels <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string, sortOrder:number}>(attributeValues:T[]) {
         const attributeNameUsages:IRelationshipAttributeNameUsage[] = [];
         if (attributeValues) {
             for (let i = 0; i < attributeValues.length; i = i + 1) {
@@ -393,8 +393,7 @@ export class Seeder {
         return attributeNameUsages;
     }
 
-    public static async createRelationshipTypeModel
-    <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string, sortOrder:number}>
+    public static async createRelationshipTypeModel <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string, sortOrder:number}>
     (values:IRelationshipType, attributeValues:T[]) {
         const code = values.code;
         const existingModel = await RelationshipTypeModel.findByCodeIgnoringDateRange(code);
@@ -428,8 +427,7 @@ export class Seeder {
         }
     }
 
-    public static async createRoleAttributeNameUsageModels
-    <T extends { attribute:IRoleAttributeName, optionalInd:boolean, defaultValue:string}>(attributeValues:T[]) {
+    public static async createRoleAttributeNameUsageModels <T extends { attribute:IRoleAttributeName, optionalInd:boolean, defaultValue:string}>(attributeValues:T[]) {
         const attributeNameUsages:IRoleAttributeNameUsage[] = [];
         if (attributeValues) {
             for (let i = 0; i < attributeValues.length; i = i + 1) {
@@ -447,9 +445,7 @@ export class Seeder {
         return attributeNameUsages;
     }
 
-    public static async createRoleTypeModel
-    <T extends { attribute:IRoleAttributeName, optionalInd:boolean, defaultValue:string}>
-    (values:IRoleType, attributeValues:T[]) {
+    public static async createRoleTypeModel <T extends { attribute: IRoleAttributeName, optionalInd: boolean, defaultValue: string}>(values: IRoleType, attributeValues: T[]) {
         const code = values.code;
         const existingModel = await RoleTypeModel.findByCodeIgnoringDateRange(code);
         if (existingModel === null) {
@@ -602,6 +598,19 @@ export class Seeder {
                 classifier: RelationshipAttributeNameClassifier.Other.code,
                 category: null,
                 purposeText: 'Indicator of whether this relationship type is sourced from an external truth store',
+                permittedValues: null,
+                appliesToInstance: false
+            } as any);
+
+            Seeder.delegateEditOwnInd_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
+                code: Constants.RelationshipAttributeNameCode.DELEGATE_EDIT_OWN_IND,
+                shortDecodeText: 'Delegate Edit Own Indicator',
+                longDecodeText: 'Delegate Edit Own Indicator',
+                startDate: now,
+                domain: RelationshipAttributeNameDomain.Null.code,
+                classifier: RelationshipAttributeNameClassifier.Other.code,
+                category: null,
+                purposeText: 'Indicator of whether this relationship type allows the delegate to edit their own instance',
                 permittedValues: null,
                 appliesToInstance: false
             } as any);
@@ -961,6 +970,7 @@ export class Seeder {
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
                 {attribute: Seeder.managedExternallyInd_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
+                {attribute: Seeder.delegateEditOwnInd_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
@@ -983,6 +993,7 @@ export class Seeder {
                 minIdentityStrength: 2,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
+                {attribute: Seeder.delegateEditOwnInd_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},

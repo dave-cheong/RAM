@@ -39,6 +39,7 @@
 
   "relationship.modify.managedExternally": "Unable to modify an externally managed relationship",
   "relationship.modify.invalidStatus": "Unable to modify a non-pending or non-accepted relationship",
+  "relationship.modify.sameDelegate": "Unable to modify your own delegate relationship",
 
   "relationship.canEditDelegate.invalidStatus": "Unable to modify delegate for a non-pending",
 
