@@ -1,6 +1,7 @@
 import * as mongoose from 'mongoose';
 import {RelationshipModel} from './relationship.model';
 import {IRelationshipAttributeName, RelationshipAttributeNameModel} from './relationshipAttributeName.model';
+import {IRelationshipAttributeNameUsage} from './relationshipAttributeNameUsage.model';
 import {IRelationshipAttribute as DTO} from '../../../commons/api';
 import {IRAMObject, RAMObject, Model} from './base';
 import {Permissions} from '../../../commons/dtos/permission.dto';
@@ -44,8 +45,10 @@ export interface IRelationshipAttribute extends IRAMObject {
 
 export class RelationshipAttribute extends RAMObject implements IRelationshipAttribute {
 
-    public value: string[];
-    public attributeName: IRelationshipAttributeName;
+    // needed for when appliesToInstance is flagged on attribute name and the attribute does not exist in the database
+    constructor(public value: string[], public attributeName: IRelationshipAttributeName) {
+        super(undefined, undefined, undefined, undefined, undefined);
+    }
 
     public getPermissions(): Promise<Permissions> {
         return this.enforcePermissions(PermissionTemplates.relationshipAttribute, PermissionEnforcers.relationshipAttribute);
@@ -71,6 +74,10 @@ export class RelationshipAttributeModel {
 
     public static async create(source: any): Promise<IRelationshipAttribute> {
         return await RelationshipAttributeMongooseModel.create(source);
+    }
+
+    public static createInstance(source: IRelationshipAttributeNameUsage): Promise<IRelationshipAttribute> {
+        return Promise.resolve(new RelationshipAttribute(source.defaultValue ? [source.defaultValue] : [], source.attributeName));
     }
 
     public static async add(value: string[], attributeName: IRelationshipAttributeName): Promise<IRelationshipAttribute> {

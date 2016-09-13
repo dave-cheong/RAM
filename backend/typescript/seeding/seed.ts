@@ -151,7 +151,7 @@ export class Seeder {
 
     public static full_accessLevel = 'Full access';
     public static limited_accessLevel = 'Limited access';
-    public static accessLevels = [Seeder.full_accessLevel, Seeder.limited_accessLevel];
+    public static accessLevels = [Seeder.limited_accessLevel, Seeder.full_accessLevel]; // order is important, higher is right most
 
     // relationship types
     public static associate_delegate_relationshipType:IRelationshipType;

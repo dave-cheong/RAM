@@ -306,7 +306,7 @@ export interface IRelationship extends IRAMObject {
     rejectPendingInvitation(rejectingDelegateIdentity: IIdentity): Promise<IRelationship>;
     notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship>;
     modify(dto: DTO): Promise<IRelationship>;
-    getAttribute(code: string): IRelationshipAttribute;
+    getAttribute(code: string): Promise<IRelationshipAttribute>;
 }
 
 class Relationship extends RAMObject implements IRelationship {
@@ -560,10 +560,10 @@ class Relationship extends RAMObject implements IRelationship {
             }
 
             // has authorisation management been changed from no to yes
-            const relationshipAttributeDelegateManageAuthorisationAllowedInd = originalRelationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+            const relationshipAttributeDelegateManageAuthorisationAllowedInd = await originalRelationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
             if (relationshipAttributeDelegateManageAuthorisationAllowedInd) {
                 if (relationshipAttributeDelegateManageAuthorisationAllowedInd.value[0] === 'false') {
-                    const dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd = this.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+                    const dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd = await this.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
                     if (dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd) {
                         if (dtoRelationshipAttributeDelegateManageAuthorisationAllowedInd.value[0] === 'true') {
                             console.info('Re-acceptance required due to authorisation management upgrade');
@@ -577,27 +577,32 @@ class Relationship extends RAMObject implements IRelationship {
             for (let attribute of this.attributes) {
                 if (attribute.attributeName.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
 
-                    const originalAttribute = originalRelationship.getAttribute(attribute.attributeName.code);
+                    const originalAttribute = await originalRelationship.getAttribute(attribute.attributeName.code);
+
+                    // service was added
                     if (!originalAttribute) {
+
                         console.info('Re-acceptance required due addition of government service');
                         reAcceptanceRequired = true;
-                    } else {
+
+                    } else if (attribute.value && attribute.value.length > 0) {
 
                         // has the permission been changed from limited to full
                         const permittedValues = originalAttribute.attributeName.permittedValues;
                         const permissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === originalAttribute.value[0]);
-                        const originalAttributeValueValid = permittedValues.find((value: string) => value === originalAttribute.value[0]);
-                        if (originalAttributeValueValid) {
-                            const dtoPermissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === attribute.value[0]);
-                            const attributeValueValid = permittedValues.find((value: string) => value === attribute.value[0]);
-                            if (attributeValueValid) {
-                                if (dtoPermissionAttributeValueIndex < permissionAttributeValueIndex) {
-                                    console.info('Re-acceptance required due to upgrading of access level');
-                                    reAcceptanceRequired = true;
-                                }
+                        const dtoPermissionAttributeValueIndex = permittedValues.findIndex((value: string) => value === attribute.value[0]);
+                        const attributeValueValid = permittedValues.find((value: string) => value === attribute.value[0]);
+                        if (attributeValueValid) {
+                            const previouslyHadNoValueButNowDoes = permissionAttributeValueIndex === -1 && dtoPermissionAttributeValueIndex >= 0;
+                            const upgradedValue = dtoPermissionAttributeValueIndex < permissionAttributeValueIndex;
+                            if (previouslyHadNoValueButNowDoes || upgradedValue) {
+                                console.info('Re-acceptance required due to upgrading of access level');
+                                reAcceptanceRequired = true;
                             }
                         }
+
                     }
+
                 }
             }
         }
@@ -643,13 +648,19 @@ class Relationship extends RAMObject implements IRelationship {
         return invitationIdentity;
     }
 
-    public getAttribute(code: string): IRelationshipAttribute {
-        for (let attribute of this.attributes) {
-            if (attribute.attributeName.code === code) {
-                return attribute;
+    public async getAttribute(code: string): Promise<IRelationshipAttribute> {
+        let attribute: IRelationshipAttribute;
+        if (this.attributes) {
+            attribute = this.attributes.find((attribute) => attribute.attributeName.code === code);
+        }
+        if (!attribute) {
+            const relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(this.relationshipType.code);
+            const relationshipAttributeNameUsage = relationshipType.findAttributeNameUsage(code);
+            if (relationshipAttributeNameUsage.attributeName.appliesToInstance) {
+                attribute = await RelationshipAttributeModel.createInstance(relationshipAttributeNameUsage);
             }
         }
-        return null;
+        return Promise.resolve(attribute);
     }
 
 }
@@ -1152,14 +1163,6 @@ export class RelationshipModel {
     public static async mergeAttributes(relationshipType: IRelationshipType, attributes: IRelationshipAttribute[], dtoAttributes: RelationshipAttributeDTO[]): Promise<IRelationshipAttribute[]> {
         const permissionCustomisationAllowed = relationshipType.findAttributeNameUsage('PERMISSION_CUSTOMISATION_ALLOWED_IND');
         let isPermissionAttributeAllowed = permissionCustomisationAllowed !== null;
-
-        // add attribute names which apply to instance with default values
-        relationshipType.attributeNameUsages
-            .filter((attributeNameUsage) => attributeNameUsage.attributeName.appliesToInstance)
-            .forEach(async(attributeNameUsage) => {
-                const attributeValue = attributeNameUsage.defaultValue ? [attributeNameUsage.defaultValue] : [];
-                await RelationshipModel.updateOrAddAttribute(attributes, attributeNameUsage.attributeName, attributeValue);
-            });
 
         // iterate thru dto attributes and update or add attributes as needed
         for (let dtoAttribute of dtoAttributes) {
