@@ -33,10 +33,10 @@ paths:
   /agencyUsers:
     get:
       tags:
-        - Business - Agency User
+        - Agency User
       operationId: AgencyUser.search
-      summary: Search Agency Users (non-prod only)
-      description: Search Agency Users (non-prod only)
+      summary: 'Convenience Method - Search Agency Users [NON-PRODUCTION]'
+      description: Search Agency Users (non-prod only).  This is being used to support the testers.
       responses:
         200:
           schema:
@@ -53,7 +53,7 @@ paths:
   /me:
     get:
       tags:
-        - Business - Principal
+        - Principal
       operationId: Principal.findMe
       summary: Get the logged in principal
       description: Get the logged in principal
@@ -74,7 +74,7 @@ paths:
   /identity/me:
     get:
       tags:
-        - Business - Identity
+        - Identity
       operationId: Identity.findMe
       summary: Get the logged in identity
       description: Get the logged in identity
@@ -93,7 +93,7 @@ paths:
   /identity/{idValue}:
     get:
       tags:
-        - Business - Identity
+        - Identity
       operationId: Identity.findMe
       summary: Get the identity by its id value
       description: Get the identity by its id value
@@ -114,7 +114,7 @@ paths:
   /identity/invitationCode/{invitationCode}:
     get:
       tags:
-        - Business - Identity
+        - Identity
       operationId: Identity.findMe
       summary: Get the identity by its invitation code
       description: Get the identity by its invitation code
@@ -137,7 +137,7 @@ paths:
   /party/identity/me:
     get:
       tags:
-        - Business - Party
+        - Party
       operationId: Party.findMe
       summary: Get the party of the logged in identity
       description: Get the party of the logged in identity
@@ -156,7 +156,7 @@ paths:
   /party/identity/{idValue}:
     get:
       tags:
-        - Business - Party
+        - Party
       operationId: Party.findByIdentityIdValue
       summary: Get the party by its identity id value
       description: Get the party by its identity id value
@@ -179,7 +179,7 @@ paths:
   /partyType/{code}:
     get:
       tags:
-        - Business - Party Type
+        - Reference - Party Type
       operationId: Party.findTypeByName
       summary: Get the party type by code
       description: Get the party type by code
@@ -200,9 +200,9 @@ paths:
   /partyTypes:
     get:
       tags:
-        - Business - Party Type
+        - Reference - Party Type
       operationId: Party.listTypes
-      summary: Get the party types
+      summary: Reference data - Get the party types
       description: Get the party types
       responses:
         200:
@@ -218,7 +218,7 @@ paths:
   /profileProvider/{code}:
     get:
       tags:
-        - Business - Profile Provider
+        - Profile Provider
       operationId: Profile.findProviderByName
       summary: Get the profile provider by code
       description: Get the profile provider by code
@@ -239,7 +239,7 @@ paths:
   /profileProviders:
     get:
       tags:
-        - Business - Profile Provider
+        - Profile Provider
       operationId: Profile.listProviders
       summary: Get the pprofile providers
       description: Get the profile providers
@@ -257,7 +257,7 @@ paths:
   /relationship/{id}:
     get:
       tags:
-        - Business - Relationship
+        - Relationship
       operationId: Relationship.findByIdentifier
       summary: Get Relationship
       description: Get Relationship
@@ -278,7 +278,7 @@ paths:
           $ref: '#/responses/500'
     put:
       tags:
-        - Business - Relationship
+        - Relationship
       operationId: Relationship.modify
       summary: Update Relationship
       description: Update Relationship
@@ -305,7 +305,7 @@ paths:
   /relationship:
     post:
       tags:
-        - Business - Relationship
+        - Relationship
       operationId: Relationship.create
       summary: Create Relationship
       description: Create Relationship
@@ -327,7 +327,7 @@ paths:
   /relationship/invitationCode/{invitationCode}:
     get:
       tags:
-        - Business - Relationship
+        - Relationship
       operationId: Relationship.findPendingByInvitationCodeInDateRange
       summary: Get pending Relationship by invitation code
       description: Get pending Relationship by invitation code
@@ -347,7 +347,7 @@ paths:
   /relationship/invitationCode/{invitationCode}/accept:
     post:
       tags:
-        - Business - Relationship
+        - Relationship
       operationId: Relationship.acceptByInvitationCode
       summary: Accepts a pending Relationship by invitation code
       description: Accepts a pending Relationship by invitation code
@@ -367,7 +367,7 @@ paths:
   /relationship/invitationCode/{invitationCode}/reject:
     post:
       tags:
-        - Business - Relationship
+        - Relationship
       operationId: Relationship.rejectByInvitationCode
       summary: Rejects a pending Relationship by invitation code
       description: Rejects a pending Relationship by invitation code
@@ -387,7 +387,7 @@ paths:
   /relationship/invitationCode/{invitationCode}/notifyDelegate:
     post:
       tags:
-        - Business - Relationship
+        - Relationship
       operationId: Relationship.notifyDelegate
       summary: Notifies the delegate of a Relationship by invitation code
       description: Notifies the delegate of a Relationship by invitation code
@@ -411,7 +411,7 @@ paths:
   /relationships/identity/{idValue}:
     get:
       tags:
-        - Business - Relationship
+        - Relationship
       operationId: Relationship.searchByIdentity
       summary: Search Relationships for an identity
       description: Search Relationships for an identity
@@ -446,7 +446,7 @@ paths:
   /relationships/identity/subjects:
     get:
       tags:
-        - Business - Relationship
+        - Relationship
       operationId: Relationship.searchDistinctSubjectsForMe
       summary: Search Relationships for an identity and return the distinct subjects
       description: Search Relationships for an identity and return the distinct subjects
@@ -490,7 +490,7 @@ paths:
   /relationshipStatus/{code}:
     get:
       tags:
-        - Business - Relationship Status
+        - Reference - Relationship Status
       operationId: Relationship.findStatusByName
       summary: Get the relationship status by code
       description: Get the relationship status by code
@@ -511,7 +511,7 @@ paths:
   /relationshipStatuses:
     get:
       tags:
-        - Business - Relationship Status
+        - Reference - Relationship Status
       operationId: Relationship.listStatuses
       summary: Get the relationship statuses
       description: Get the relationship statuses
@@ -529,7 +529,7 @@ paths:
   /auskeys/identity/{idValue}:
     get:
       tags:
-        - Business - AUSkey
+        - AUSkey
       operationId: Auskey.listAusKeys
       summary: Search AUSkeys for an identity
       description: Search AUSkeys for an identity
@@ -550,7 +550,7 @@ paths:
   /auskeys/{id}:
     get:
       tags:
-        - Business - AUSkey
+        - AUSkey
       operationId: Auskey.findAusKey
       summary: Get the AUSkey by identifier
       description: Get the AUSkey by identifier
@@ -719,7 +719,7 @@ paths:
   /role:
     post:
       tags:
-        - Business - Role
+        - Role
       operationId: Role.createByIdentity
       summary: Create a role with an agency service
       description: Create a role with an agency service as an agency user
