@@ -627,7 +627,7 @@ class Relationship extends RAMObject implements IRelationship {
                         if (attributeValueValid) {
                             const previouslyHadNoValueButNowDoes = originalPermissionAttributeValueIndex === -1 && permissionAttributeValueIndex >= 0;
                             const upgradedValue = permissionAttributeValueIndex > originalPermissionAttributeValueIndex;
-                            if (previouslyHadNoValueButNowDoes || upgradedValue) {
+                            if (previouslyHadNoValueButNowDoes) {
                                 console.info('Re-acceptance required due to upgrading of access level');
                                 reAcceptanceRequired = true;
                             }
