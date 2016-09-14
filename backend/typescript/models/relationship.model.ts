@@ -541,16 +541,6 @@ class Relationship extends RAMObject implements IRelationship {
             throw new Error('400:Relationship access period start date can not be greater than end date');
         }
 
-        // if start date future dated and is accepted, create new accepted relationship
-        if (this.statusEnum() === RelationshipStatus.Accepted && !startTimestampSame && startTimestampFutureDated) {
-            this.endTimestamp = todayDate;
-            this.status = RelationshipStatus.Cancelled.code;
-            await this.save();
-            const newFutureDatedAcceptedRelationship = await RelationshipModel.createFromDto(dto);
-            newFutureDatedAcceptedRelationship.status = RelationshipStatus.Accepted.code;
-            return newFutureDatedAcceptedRelationship.save();
-        }
-
         // if re-acceptance required, create new pending relationship
         if (await this.isReAcceptanceRequired()) {
             const supersededPendingRelationship = await RelationshipModel.createFromDto(dto);
@@ -559,6 +549,16 @@ class Relationship extends RAMObject implements IRelationship {
             supersededPendingRelationship.invitationIdentity = invitationIdentity;
             supersededPendingRelationship.supersedes = this;
             return supersededPendingRelationship.save();
+        }
+
+        // if start date future dated and is accepted, create new accepted relationship
+        if (this.statusEnum() === RelationshipStatus.Accepted && !startTimestampSame && startTimestampFutureDated) {
+            this.endTimestamp = todayDate;
+            this.status = RelationshipStatus.Cancelled.code;
+            await this.save();
+            const newFutureDatedAcceptedRelationship = await RelationshipModel.createFromDto(dto);
+            newFutureDatedAcceptedRelationship.status = RelationshipStatus.Accepted.code;
+            return newFutureDatedAcceptedRelationship.save();
         }
 
         // general flow - save relationship and cascade save on dependents
