@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "RAM",
-		"_postman_id": "5c6b545c-af58-7f7c-edd9-b938f6298a44",
+		"_postman_id": "f2f2beb2-1ea1-203a-4830-86d522a7f289",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -15,6 +15,33 @@
 					"name": "Get (me)",
 					"request": {
 						"url": "{{host}}/api/v1/agencyUser/me",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "credentials",
+									"value": "LINK_ID:MY_GOV:jennifermaxims_identity_1",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Search (NON-PROD)",
+					"request": {
+						"url": "{{host}}/api/v1/agencyUsers",
 						"method": "GET",
 						"header": [
 							{
@@ -75,7 +102,7 @@
 				{
 					"name": "Find AUSkey (EdTech)",
 					"request": {
-						"url": "{{host}}/api/v1/auskey/10000000001-device-1",
+						"url": "{{host}}/api/v1/auskey/10000000001-DEVICE-1",
 						"method": "GET",
 						"header": [],
 						"body": {
