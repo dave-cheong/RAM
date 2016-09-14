@@ -49,6 +49,7 @@ import {
     RelationshipCanViewPermission,
     RelationshipCanViewDobPermission, RelationshipCanEditDelegatePermission
 } from '../../../../commons/permissions/relationshipPermission.templates';
+import {Utils} from '../../../../commons/utils';
 
 @Component({
     selector: 'edit-relationship',
@@ -190,13 +191,12 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // access period
             this.originalStartDate = relationship.startTimestamp;
-            const todayMidnight = new Date();
-            todayMidnight.setHours(0, 0, 0, 0);
             this.relationshipComponentData.accessPeriod = {
                 startDate: relationship.startTimestamp,
                 endDate: relationship.endTimestamp,
                 noEndDate: relationship.endTimestamp === undefined || relationship.endTimestamp === null,
-                startDateEnabled: this.originalStartDate > todayMidnight
+                // todo change this to use permission
+                startDateEnabled: this.originalStartDate > Utils.startOfToday()
             };
 
             // auth type
@@ -472,15 +472,15 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     }
 
     public onUpdate(relationship: IRelationship) {
-        if (this.relationship.getLinkHrefByPermission(RelationshipCanViewPermission) === relationship.getLinkHrefByPermission(RelationshipCanViewPermission)) {
-            // edited existing relationship
-            this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
-        } else {
-            // created new superceding relationship requiring acceptance
+        if (this.relationship.getLinkHrefByPermission(RelationshipCanViewPermission) !== relationship.getLinkHrefByPermission(RelationshipCanViewPermission) && relationship.isPending()) {
+            // created new superseding relationship requiring acceptance
             this.services.route.goToRelationshipAddCompletePage(
                 this.identityHref,
                 this.services.model.getLinkHrefByType(Constants.Link.SELF, relationship)
             );
+        } else {
+            // edited existing relationship that does not require acceptance
+            this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
         }
     }
 
