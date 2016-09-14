@@ -527,9 +527,10 @@ class Relationship extends RAMObject implements IRelationship {
         const originalRelationship = await RelationshipModel.findByIdentifier(this.id);
         const startTimestampSame = Utils.startOfDate(originalRelationship.startTimestamp).getTime() === this.startTimestamp.getTime();
         const startTimestampFutureDated = Utils.dateIsInFuture(this.startTimestamp);
+        const startTimestampNotGreaterThanToday = !Utils.dateIsTodayOrInFuture(this.startTimestamp);
 
         // check accepted relationship start timestamp not changed into the past
-        if (this.statusEnum() === RelationshipStatus.Accepted && !startTimestampSame && !startTimestampFutureDated) {
+        if (this.statusEnum() === RelationshipStatus.Accepted && !startTimestampSame && startTimestampNotGreaterThanToday) {
             throw new Error('400:Relationship access period start date can not be changed to a past date');
         }
 
