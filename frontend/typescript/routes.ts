@@ -17,7 +17,6 @@ import {BusinessesComponent} from './pages/businesses/businesses.component';
 import {NotificationsComponent} from './pages/notifications/notifications.component';
 import {EditNotificationComponent} from './pages/edit-notification/edit-notification.component';
 import {AgencySelectBusinessComponent} from './pages/agency-select-business/agency-select-business.component';
-import {TestComponent} from './pages/test/test';
 
 export const routes: RouterConfig = [
     {
@@ -28,10 +27,6 @@ export const routes: RouterConfig = [
     {
         path: 'home',
         component: WelcomeHomeComponent,
-    },
-    {
-        path: 'test',
-        component: TestComponent,
     },
     {
         path: 'home/:dashboard',
