@@ -507,27 +507,47 @@ class Relationship extends RAMObject implements IRelationship {
         this.relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(Url.lastPathElement(dto.relationshipType.href));
         this.subject = subjectIdentity.party;
         this.delegate = delegateIdentity.party;
-        this.attributes = await RelationshipModel.mergeAttributes(this.relationshipType, this.attributes, dto.attributes as RelationshipAttributeDTO[]);
         this.invitationIdentity = await this.mergeInvitationIdentityIfRequired(dto);
         if (this.invitationIdentity) {
             this.delegateNickName = this.invitationIdentity.profile.name;
         }
-
-        // todo if new, start date can not be past only today and future
-        // todo if edit, start date can be future and past. (start can be the same....), but if pending, then whatever
+        this.attributes = await RelationshipModel.mergeAttributes(this.relationshipType, this.attributes, dto.attributes as RelationshipAttributeDTO[]);
         this.startTimestamp = dto.startTimestamp;
-
-        // todo end must be after start
         this.endTimestamp = dto.endTimestamp;
 
-        // todo zero hours
-        // startTimestamp.setHours(0, 0, 0);
-        // if (endTimestamp) {
-        //     endTimestamp.setHours(0, 0, 0);
-        // }
+        // zero hours on timestamps
+        this.startTimestamp.setHours(0, 0, 0);
+        if (this.endTimestamp) {
+            this.endTimestamp.setHours(0, 0, 0);
+        }
 
         // evaluate permissions
         await new RelationshipCanModifyPermissionEnforcer().assert(this);
+
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0);
+        const originalRelationship = await RelationshipModel.findByIdentifier(this.id);
+        const startTimestampSame = originalRelationship.startTimestamp === this.startTimestamp;
+        const startTimestampFutureDated = this.startTimestamp > todayDate;
+
+        // check accepted relationship start timestamp not changed into the past
+        if (this.statusEnum() === RelationshipStatus.Accepted && !startTimestampSame && !startTimestampFutureDated) {
+            throw new Error('400:Relationship access period start date can not be changed to a past date');
+        }
+
+        // check start date not greater than end date
+        if (this.endTimestamp && this.startTimestamp > this.endTimestamp) {
+            throw new Error('400:Relationship access period start date can not be greater than end date');
+        }
+
+        // if start date future dated and is accepted, create new accepted relationship
+        if (this.statusEnum() === RelationshipStatus.Accepted && !startTimestampSame && startTimestampFutureDated) {
+            this.endTimestamp = todayDate;
+            this.status = RelationshipStatus.Cancelled.code;
+            await this.save();
+            const newFutureDatedAcceptedRelationship = await RelationshipModel.createFromDto(dto);
+            return newFutureDatedAcceptedRelationship.save();
+        }
 
         // if re-acceptance required, create new pending relationship
         if (await this.isReAcceptanceRequired()) {
@@ -536,7 +556,7 @@ class Relationship extends RAMObject implements IRelationship {
             supersededPendingRelationship.delegate = invitationIdentity.party;
             supersededPendingRelationship.invitationIdentity = invitationIdentity;
             supersededPendingRelationship.supersedes = this;
-            return await supersededPendingRelationship.save();
+            return supersededPendingRelationship.save();
         }
 
         // general flow - save relationship and cascade save on dependents
@@ -712,14 +732,23 @@ export class RelationshipModel {
             delegateIdentity = invitationIdentity;
         }
 
-        // todo if new, start date can not be past only today and future
-        // todo end must be after start
+        // zero hours on timestamps
+        startTimestamp.setHours(0, 0, 0);
+        if (endTimestamp) {
+            endTimestamp.setHours(0, 0, 0);
+        }
 
-        // todo zero hours
-        // startTimestamp.setHours(0, 0, 0);
-        // if (endTimestamp) {
-        //     endTimestamp.setHours(0, 0, 0);
-        // }
+        // check start date not past date
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0);
+        if (startTimestamp < todayDate) {
+            throw new Error('400:Relationship access period start date can not be a past date');
+        }
+
+        // check start date not greater than end date
+        if (endTimestamp && startTimestamp > endTimestamp) {
+            throw new Error('400:Relationship access period start date can not be greater than end date');
+        }
 
         Assert.assertNotNull(subjectIdentity, 'Subject identity not found');
         Assert.assertNotNull(delegateIdentity, 'Delegate identity not found');
