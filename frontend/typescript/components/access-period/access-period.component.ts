@@ -40,7 +40,7 @@ export class AccessPeriodComponent implements OnInit {
         this.form = this._fb.group(
             {
                 'startDateEnabled': [this.data.startDateEnabled],
-                'startDate': [formattedStartDate, Validators.compose([Validators.required, RAMNgValidators.dateFormatValidator])],
+                'startDate': [formattedStartDate, Validators.compose([Validators.required, RAMNgValidators.dateFormatValidator, this.dateNotInPastValidator.bind(this)])],
                 'endDate': [formattedEndDate, Validators.compose([RAMNgValidators.dateFormatValidator])],
                 'noEndDate': [this.data.noEndDate]
             },
@@ -68,6 +68,33 @@ export class AccessPeriodComponent implements OnInit {
         // emit initial valid
         this.isValid.emit(this.form.valid);
 
+    }
+
+    public dateNotInPastValidator(dateCtrl: FormControl) {
+        // valid
+        if (!this.data.startDateEnabled) {
+            return null;
+        }
+        // valid
+        if (this.dateIsTodayOrInFuture(dateCtrl.value)) {
+            return null;
+        }
+        // invalid
+        return {
+            startDateInPast: {
+                valid: false
+            }
+        };
+    }
+
+    private dateIsTodayOrInFuture(ctrlValue: string | Date) {
+        if (ctrlValue) {
+            const date = Utils.parseDate(ctrlValue);
+            if (Utils.dateIsTodayOrInFuture(date)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private formatDate(d: Date) {

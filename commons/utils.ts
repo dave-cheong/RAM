@@ -14,6 +14,16 @@ export class Utils {
         }
     }
 
+    public static dateIsTodayOrInFuture(date: Date) {
+        return date && date.getTime() >= Utils.startOfToday().getTime();
+    }
+
+    public static startOfToday(): Date {
+        const todayMidnight = new Date();
+        todayMidnight.setHours(0, 0, 0, 0);
+        return todayMidnight;
+    }
+
     public static parseDate(date: string | Date): Date {
         if (date === null) {
             return null;
