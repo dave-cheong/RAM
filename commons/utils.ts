@@ -28,10 +28,11 @@ export class Utils {
         return todayMidnight;
     }
 
-    public static startOfDate(date: Date): void {
+    public static startOfDate(date: Date): Date {
         if (date) {
             date.setHours(0, 0, 0, 0);
         }
+        return date;
     }
 
     public static parseDate(date: string | Date): Date {

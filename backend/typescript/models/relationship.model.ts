@@ -525,7 +525,7 @@ class Relationship extends RAMObject implements IRelationship {
         await new RelationshipCanModifyPermissionEnforcer().assert(this);
 
         const originalRelationship = await RelationshipModel.findByIdentifier(this.id);
-        const startTimestampSame = originalRelationship.startTimestamp.getTime() === this.startTimestamp.getTime();
+        const startTimestampSame = Utils.startOfDate(originalRelationship.startTimestamp).getTime() === this.startTimestamp.getTime();
         const startTimestampFutureDated = Utils.dateIsInFuture(this.startTimestamp);
 
         // check accepted relationship start timestamp not changed into the past
