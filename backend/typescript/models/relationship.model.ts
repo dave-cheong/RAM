@@ -34,6 +34,7 @@ import {RelationshipCanNotifyDelegatePermissionEnforcer} from '../permissions/re
 import {RelationshipCanRejectPermissionEnforcer} from '../permissions/relationshipCanRejectPermission.enforcer';
 import {RelationshipCanAcceptPermissionEnforcer} from '../permissions/relationshipCanAcceptPermission.enforcer';
 import {RelationshipCanModifyPermissionEnforcer} from '../permissions/relationshipCanModifyPermission.enforcer';
+import {Utils} from '../../../commons/utils';
 
 // force schema to load first (see https://github.com/atogov/RAM/pull/220#discussion_r65115456)
 /* tslint:disable:no-unused-variable */
@@ -517,19 +518,15 @@ class Relationship extends RAMObject implements IRelationship {
         this.endTimestamp = dto.endTimestamp;
 
         // zero hours on timestamps
-        this.startTimestamp.setHours(0, 0, 0);
-        if (this.endTimestamp) {
-            this.endTimestamp.setHours(0, 0, 0);
-        }
+        Utils.startOfDate(this.startTimestamp);
+        Utils.startOfDate(this.endTimestamp);
 
         // evaluate permissions
         await new RelationshipCanModifyPermissionEnforcer().assert(this);
 
-        const todayDate = new Date();
-        todayDate.setHours(0, 0, 0);
         const originalRelationship = await RelationshipModel.findByIdentifier(this.id);
         const startTimestampSame = originalRelationship.startTimestamp.getTime() === this.startTimestamp.getTime();
-        const startTimestampFutureDated = this.startTimestamp > todayDate;
+        const startTimestampFutureDated = Utils.dateIsInFuture(this.startTimestamp);
 
         // check accepted relationship start timestamp not changed into the past
         if (this.statusEnum() === RelationshipStatus.Accepted && !startTimestampSame && !startTimestampFutureDated) {
@@ -553,7 +550,7 @@ class Relationship extends RAMObject implements IRelationship {
 
         // if start date future dated and is accepted, create new accepted relationship
         if (this.statusEnum() === RelationshipStatus.Accepted && !startTimestampSame && startTimestampFutureDated) {
-            this.endTimestamp = todayDate;
+            this.endTimestamp = Utils.startOfToday();
             this.status = RelationshipStatus.Cancelled.code;
             await this.save();
             const newFutureDatedAcceptedRelationship = await RelationshipModel.createFromDto(dto);
@@ -743,15 +740,11 @@ export class RelationshipModel {
         }
 
         // zero hours on timestamps
-        startTimestamp.setHours(0, 0, 0);
-        if (endTimestamp) {
-            endTimestamp.setHours(0, 0, 0);
-        }
+        Utils.startOfDate(startTimestamp);
+        Utils.startOfDate(endTimestamp);
 
         // check start date not past date
-        const todayDate = new Date();
-        todayDate.setHours(0, 0, 0);
-        if (startTimestamp < todayDate) {
+        if (!Utils.dateIsTodayOrInFuture(startTimestamp)) {
             throw new Error('400:Relationship access period start date can not be a past date');
         }
 
