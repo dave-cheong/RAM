@@ -49,6 +49,7 @@ import {
     RelationshipCanViewPermission,
     RelationshipCanViewDobPermission, RelationshipCanEditDelegatePermission
 } from '../../../../commons/permissions/relationshipPermission.templates';
+import {Utils} from '../../../../commons/utils';
 
 @Component({
     selector: 'edit-relationship',
@@ -190,13 +191,12 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             // access period
             this.originalStartDate = relationship.startTimestamp;
-            const todayMidnight = new Date();
-            todayMidnight.setHours(0, 0, 0, 0);
             this.relationshipComponentData.accessPeriod = {
                 startDate: relationship.startTimestamp,
                 endDate: relationship.endTimestamp,
                 noEndDate: relationship.endTimestamp === undefined || relationship.endTimestamp === null,
-                startDateEnabled: this.originalStartDate > todayMidnight
+                // todo change this to use permission
+                startDateEnabled: this.originalStartDate > Utils.startOfToday()
             };
 
             // auth type
