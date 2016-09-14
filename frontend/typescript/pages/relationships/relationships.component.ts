@@ -22,7 +22,7 @@ import {
     FilterParams
 } from '../../../../commons/api';
 import {IdentityCanCreateRelationshipPermission} from '../../../../commons/permissions/identityPermission.templates';
-import {RelationshipCanModifyPermission} from '../../../../commons/permissions/relationshipPermission.templates';
+import {RelationshipCanModifyPermission, RelationshipCanAcceptPermission} from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
     selector: 'list-relationships',
@@ -221,8 +221,7 @@ export class RelationshipsComponent extends AbstractPageComponent {
     };
 
     public goToRelationshipEnterCodePage() {
-        // todo refactor to href
-        this.services.route.goToRelationshipEnterCodePage(this.identity.idValue);
+        this.services.route.goToRelationshipEnterCodePage(this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity));
     };
 
     public goToRelationshipsContext(partyResource: IHrefValue<IParty>) {
@@ -245,10 +244,8 @@ export class RelationshipsComponent extends AbstractPageComponent {
         return relationshipRef.value.isPermissionAllowed([RelationshipCanModifyPermission]);
     }
 
-    // todo auto link to the accept/reject page
     public isAcceptRejectRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
-        // return relationshipRef.value.isPermissionAllowed([RelationshipCanAcceptPermission]);
-        return false;
+        return relationshipRef.value.isPermissionAllowed([RelationshipCanAcceptPermission]);
     }
 
 }

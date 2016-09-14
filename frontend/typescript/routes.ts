@@ -53,11 +53,11 @@ export const routes: RouterConfig = [
         component: AddRelationshipCompleteComponent
     },
     {
-        path: 'relationships/add/enter/:idValue',
+        path: 'relationships/add/enter/:identityHref',
         component: EnterInvitationCodeComponent
     },
     {
-        path: 'relationships/add/accept/:idValue/:invitationCode',
+        path: 'relationships/add/accept/:identityHref/:relationshipHref',
         component: AcceptAuthorisationComponent
     },
     {

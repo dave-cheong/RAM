@@ -17,7 +17,7 @@ import {IIdentity} from '../../../../commons/api';
 
 export class EnterInvitationCodeComponent extends AbstractPageComponent {
 
-    public idValue: string;
+    public identityHref: string;
 
     public identity: IIdentity;
 
@@ -31,7 +31,7 @@ export class EnterInvitationCodeComponent extends AbstractPageComponent {
     public onInit(params: {path:Params, query:Params}) {
 
         // extract path and query parameters
-        this.idValue = params.path['idValue'];
+        this.identityHref = params.path['identityHref'];
 
         // message
         const msg = params.query['msg'];
@@ -40,8 +40,9 @@ export class EnterInvitationCodeComponent extends AbstractPageComponent {
         }
 
         // identity in focus
-        this.services.rest.findIdentityByValue(this.idValue).subscribe((identity) => {
-            this.identity = identity;
+        this.services.rest.findIdentityByHref(this.identityHref).subscribe({
+            next: this.onFindIdentity.bind(this),
+            error: this.onServerError.bind(this)
         });
 
         // forms
@@ -51,13 +52,17 @@ export class EnterInvitationCodeComponent extends AbstractPageComponent {
 
     }
 
+    public onFindIdentity(identity: IIdentity) {
+        this.identity = identity;
+    }
+
     public activateCode(event: Event) {
 
         this.services.rest.claimRelationshipByInvitationCode(this.form.controls['relationshipCode'].value)
             .subscribe((relationship) => {
                 this.services.route.goToRelationshipAcceptPage(
-                    this.idValue,
-                    this.form.controls['relationshipCode'].value
+                    this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity),
+                    this.services.model.getLinkHrefByType(Constants.Link.SELF, relationship)
                 );
             }, (err) => {
                 const status = err.status;
