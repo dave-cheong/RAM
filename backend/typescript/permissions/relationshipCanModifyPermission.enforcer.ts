@@ -29,7 +29,7 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
         let delegateParty = relationship.delegate;
         let delegateCanEditOwnAttributeUsage = relationshipType.findAttributeNameUsage(Constants.RelationshipAttributeNameCode.DELEGATE_EDIT_OWN_IND);
         let subjectDefaultIdentity = await relationship.subject.findDefaultIdentity();
-        let myStrongestStrength = await PartyModel.getStrongestAccessStrength(subjectDefaultIdentity.idValue, authenticatedPrincipal);
+        let myStrongestStrength = await PartyModel.computeConnectionStrength(subjectDefaultIdentity.idValue, authenticatedPrincipal);
 
         // validate authenticated
         if (!authenticatedPrincipal) {
@@ -52,13 +52,22 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
             permission.messages.push(Translator.get('relationship.modify.insufficientStrength'));
         }
 
-        // validate not same delegate
+        // validate cannot edit own
         if (authenticatedParty) {
             if (!delegateCanEditOwnAttributeUsage) {
                 if (authenticatedParty.id === delegateParty.id) {
-                    if (myStrongestStrength <= relationship.strength) {
+                    if (Math.floor(myStrongestStrength) <= relationship.strength) {
                         permission.messages.push(Translator.get('relationship.modify.sameDelegate'));
                     }
+                }
+            }
+        }
+
+        // validate can edit own or someone else's
+        if (authenticatedParty) {
+            if (delegateCanEditOwnAttributeUsage || authenticatedParty.id !== delegateParty.id) {
+                if (Math.floor(myStrongestStrength) === myStrongestStrength) {
+                    permission.messages.push(Translator.get('relationship.modify.notAuthAdmin'));
                 }
             }
         }

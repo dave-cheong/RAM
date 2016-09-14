@@ -667,7 +667,7 @@ export class Seeder {
             } as any);
 
             Seeder.delegateManageAuthorisationAllowedInd_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND',
+                code: Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND,
                 shortDecodeText: 'Do you want this representative to manage authorisations for this organisation?',
                 longDecodeText: '(This includes the ability to create, view, modify and cancel authorisations)',
                 startDate: now,
