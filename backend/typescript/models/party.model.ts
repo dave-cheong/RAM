@@ -396,7 +396,6 @@ class Party extends RAMObject implements IParty {
         return IdentityModel.findDefaultByPartyId(this.id);
     }
 
-
 }
 
 interface IPartyDocument extends IParty, mongoose.Document {
