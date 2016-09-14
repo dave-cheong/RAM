@@ -472,15 +472,15 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     }
 
     public onUpdate(relationship: IRelationship) {
-        if (this.relationship.getLinkHrefByPermission(RelationshipCanViewPermission) === relationship.getLinkHrefByPermission(RelationshipCanViewPermission)) {
-            // edited existing relationship
-            this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
-        } else {
-            // created new superceding relationship requiring acceptance
+        if (this.relationship.getLinkHrefByPermission(RelationshipCanViewPermission) !== relationship.getLinkHrefByPermission(RelationshipCanViewPermission) && relationship.isPending()) {
+            // created new superseding relationship requiring acceptance
             this.services.route.goToRelationshipAddCompletePage(
                 this.identityHref,
                 this.services.model.getLinkHrefByType(Constants.Link.SELF, relationship)
             );
+        } else {
+            // edited existing relationship that does not require acceptance
+            this.services.route.goToRelationshipsPage(relationship.subject.value.identities[0].href);
         }
     }
 
