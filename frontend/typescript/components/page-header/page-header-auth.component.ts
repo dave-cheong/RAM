@@ -60,7 +60,9 @@ export class PageHeaderAuthComponent {
 
     public goToGetAuthorisationPage() {
         if (this.identity) {
-            this.services.route.goToRelationshipEnterCodePage(this.identity.idValue);
+            this.services.route.goToRelationshipEnterCodePage(
+                this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity)
+            );
         }
     };
 

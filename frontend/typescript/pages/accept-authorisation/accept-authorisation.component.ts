@@ -26,8 +26,8 @@ import {RelationshipCanAcceptPermission} from '../../../../commons/permissions/r
 
 export class AcceptAuthorisationComponent extends AbstractPageComponent {
 
-    public idValue: string;
-    public code: string;
+    public identityHref: string;
+    public relationshipHref: string;
 
     public relationship$: Observable<IRelationship>;
     public relationshipType$: Observable<IRelationshipType>;
@@ -48,16 +48,17 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     /* tslint:disable:max-func-body-length */
     public onInit(params: {path: Params, query: Params}) {
         // extract path and query parameters
-        this.idValue = params.path['idValue'];
-        this.code = params.path['invitationCode'];
+        this.identityHref = params.path['identityHref'];
+        this.relationshipHref = params.path['relationshipHref'];
 
         // identity in focus
-        this.services.rest.findIdentityByValue(this.idValue).subscribe((identity) => {
-            this.identity = identity;
+        this.services.rest.findIdentityByHref(this.identityHref).subscribe({
+            next: this.onFindIdentity.bind(this),
+            error: this.onServerError.bind(this)
         });
 
         // relationship
-        this.relationship$ = this.services.rest.findPendingRelationshipByInvitationCode(this.code);
+        this.relationship$ = this.services.rest.findRelationshipByHref(this.relationshipHref);
         this.relationship$.subscribe((relationship) => {
             this.relationship = relationship;
             this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
@@ -84,6 +85,10 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
             }
         });
 
+    }
+
+    public onFindIdentity(identity: IIdentity) {
+        this.identity = identity;
     }
 
     public isManageAuthorisationAllowed() {
@@ -137,7 +142,7 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     }
 
     public goToEnterAuthorisationPage() {
-        this.services.route.goToRelationshipEnterCodePage(this.idValue, Constants.GlobalMessage.INVALID_CODE);
+        this.services.route.goToRelationshipEnterCodePage(this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity), Constants.GlobalMessage.INVALID_CODE);
     };
 
     public goToRelationshipsPage() {
