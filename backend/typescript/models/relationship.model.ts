@@ -528,7 +528,7 @@ class Relationship extends RAMObject implements IRelationship {
         const todayDate = new Date();
         todayDate.setHours(0, 0, 0);
         const originalRelationship = await RelationshipModel.findByIdentifier(this.id);
-        const startTimestampSame = originalRelationship.startTimestamp === this.startTimestamp;
+        const startTimestampSame = originalRelationship.startTimestamp.getTime() === this.startTimestamp.getTime();
         const startTimestampFutureDated = this.startTimestamp > todayDate;
 
         // check accepted relationship start timestamp not changed into the past
