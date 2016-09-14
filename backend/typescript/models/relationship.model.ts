@@ -316,6 +316,7 @@ export interface IRelationship extends IRAMObject {
     notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship>;
     modify(dto: DTO): Promise<IRelationship>;
     getAttribute(code: string): Promise<IRelationshipAttribute>;
+    isManageAuthAllowed(): Promise<boolean>;
 }
 
 class Relationship extends RAMObject implements IRelationship {
@@ -694,6 +695,14 @@ class Relationship extends RAMObject implements IRelationship {
         return Promise.resolve(attribute);
     }
 
+    public async isManageAuthAllowed(): Promise<boolean> {
+        let attribute = await this.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+        if (attribute && attribute.value && attribute.value.length > 0) {
+            return 'true' === attribute.value[0];
+        }
+        return false;
+    }
+
 }
 
 interface IRelationshipDocument extends IRelationship, mongoose.Document {
@@ -920,6 +929,7 @@ export class RelationshipModel {
                             '$match': {
                                 '$and': [
                                     {'subject': new mongoose.Types.ObjectId(requestedParty.id)},
+                                    {'delegate': {'$ne': new mongoose.Types.ObjectId(requestingParty.id)}},
                                     {'status': RelationshipStatus.Accepted.code},
                                     {'startTimestamp': {$lte: date}},
                                     {'$or': [{endTimestamp: null}, {endTimestamp: {$gte: date}}]}
@@ -935,6 +945,7 @@ export class RelationshipModel {
                         {
                             '$match': {
                                 '$and': [
+                                    {'subject': {'$ne': new mongoose.Types.ObjectId(requestedParty.id)}},
                                     {'delegate': new mongoose.Types.ObjectId(requestingParty.id)},
                                     {'status': RelationshipStatus.Accepted.code},
                                     {'startTimestamp': {$lte: date}},
@@ -964,9 +975,11 @@ export class RelationshipModel {
         }
     }
 
-    public static async getStrongestActiveInDateRange1stOr2ndLevelConnectionStrength(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<number> {
+    public static async computeConnectionStrength(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<number> {
 
         const requestedParty = await PartyModel.findByIdentityIdValue(requestedIdValue);
+
+        const manageAuthStrengthOffset = 0.5;
 
         if (!requestedParty) {
             // no such subject
@@ -985,10 +998,18 @@ export class RelationshipModel {
                     startTimestamp: {$lte: date},
                     $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
                 })
+                .deepPopulate([
+                    'attributes.attributeName'
+                ])
                 .sort({strength: -1})
                 .exec();
 
-            strongestStrength = strongestFirstLevelRelationship ? strongestFirstLevelRelationship.strength : 0;
+            if (strongestFirstLevelRelationship) {
+                strongestStrength = strongestFirstLevelRelationship.strength;
+                if (await strongestFirstLevelRelationship.isManageAuthAllowed()) {
+                    strongestStrength = strongestStrength + manageAuthStrengthOffset;
+                }
+            }
 
             // 2nd level
 
@@ -998,6 +1019,7 @@ export class RelationshipModel {
                         '$match': {
                             '$and': [
                                 {'subject': new mongoose.Types.ObjectId(requestedParty.id)},
+                                {'delegate': {'$ne': new mongoose.Types.ObjectId(requestingParty.id)}},
                                 {'status': RelationshipStatus.Accepted.code},
                                 {'startTimestamp': {$lte: date}},
                                 {'$or': [{endTimestamp: null}, {endTimestamp: {$gte: date}}]}
@@ -1013,6 +1035,7 @@ export class RelationshipModel {
                     {
                         '$match': {
                             '$and': [
+                                {'subject': {'$ne': new mongoose.Types.ObjectId(requestedParty.id)}},
                                 {'delegate': new mongoose.Types.ObjectId(requestingParty.id)},
                                 {'status': RelationshipStatus.Accepted.code},
                                 {'startTimestamp': {$lte: date}},
@@ -1037,17 +1060,7 @@ export class RelationshipModel {
 
             listOfIntersectingPartyIds.forEach(async(partyId: string) => {
                 let party = await PartyModel.findById(partyId);
-                let relationshipA = await RelationshipMongooseModel
-                    .findOne({
-                        subject: requestedParty,
-                        delegate: party,
-                        status: RelationshipStatus.Accepted.code,
-                        startTimestamp: {$lte: date},
-                        $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
-                    })
-                    .sort({strength: -1})
-                    .exec();
-                let relationshipB = await RelationshipMongooseModel
+                let relationship_intermediaryParty_to_requestingParty = await RelationshipMongooseModel
                     .findOne({
                         subject: party,
                         delegate: requestingParty,
@@ -1055,10 +1068,35 @@ export class RelationshipModel {
                         startTimestamp: {$lte: date},
                         $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
                     })
+                    .deepPopulate([
+                        'attributes.attributeName'
+                    ])
                     .sort({strength: -1})
                     .exec();
-                let strength = Math.min(relationshipA ? relationshipA.strength : 0, relationshipB ? relationshipB.strength : 0);
-                strongestStrength = Math.max(strength, strongestStrength);
+                let relationship_requestedParty_to_intermediaryParty = await RelationshipMongooseModel
+                    .findOne({
+                        subject: requestedParty,
+                        delegate: party,
+                        status: RelationshipStatus.Accepted.code,
+                        startTimestamp: {$lte: date},
+                        $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
+                    })
+                    .deepPopulate([
+                        'attributes.attributeName'
+                    ])
+                    .sort({strength: -1})
+                    .exec();
+                if (relationship_intermediaryParty_to_requestingParty && relationship_requestedParty_to_intermediaryParty) {
+                    let strength = Math.min(
+                        relationship_intermediaryParty_to_requestingParty.strength,
+                        relationship_requestedParty_to_intermediaryParty.strength
+                    );
+                    if (await relationship_intermediaryParty_to_requestingParty.isManageAuthAllowed() &&
+                        await relationship_requestedParty_to_intermediaryParty.isManageAuthAllowed()) {
+                        strength = strength + manageAuthStrengthOffset;
+                    }
+                    strongestStrength = Math.max(strength, strongestStrength);
+                }
             });
 
             return Promise.resolve(strongestStrength);

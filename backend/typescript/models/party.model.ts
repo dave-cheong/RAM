@@ -447,7 +447,7 @@ export class PartyModel {
         return false;
     }
 
-    public static async getStrongestAccessStrength(requestedIdValue: string, requestingPrincipal: IPrincipal): Promise<number> {
+    public static async computeConnectionStrength(requestedIdValue: string, requestingPrincipal: IPrincipal): Promise<number> {
         const maxStrength = Number.MAX_SAFE_INTEGER;
         const requestedIdentity = await IdentityModel.findByIdValue(requestedIdValue);
         const requestingIdentity = requestingPrincipal ? requestingPrincipal.identity : null;
@@ -465,7 +465,7 @@ export class PartyModel {
                     return maxStrength;
                 } else {
                     // check 1st and 2nd level relationships
-                    return await RelationshipModel.getStrongestActiveInDateRange1stOr2ndLevelConnectionStrength(
+                    return await RelationshipModel.computeConnectionStrength(
                         requestingParty,
                         requestedIdValue,
                         new Date()
