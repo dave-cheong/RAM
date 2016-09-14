@@ -546,6 +546,7 @@ class Relationship extends RAMObject implements IRelationship {
             this.status = RelationshipStatus.Cancelled.code;
             await this.save();
             const newFutureDatedAcceptedRelationship = await RelationshipModel.createFromDto(dto);
+            newFutureDatedAcceptedRelationship.status = RelationshipStatus.Accepted.code;
             return newFutureDatedAcceptedRelationship.save();
         }
 
