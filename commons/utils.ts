@@ -15,7 +15,7 @@ export class Utils {
     }
 
     public static dateIsInFuture(date: Date) {
-        return date && date.getTime() > Utils.startOfToday().getTime();
+        return date && date.getTime() >= Utils.startOfTomorrow().getTime();
     }
 
     public static dateIsTodayOrInFuture(date: Date) {
@@ -26,6 +26,12 @@ export class Utils {
         const todayMidnight = new Date();
         todayMidnight.setHours(0, 0, 0, 0);
         return todayMidnight;
+    }
+
+    public static startOfTomorrow(): Date {
+        const date = Utils.startOfToday();
+        date.setDate(date.getDate() + 1);
+        return date;
     }
 
     public static startOfDate(date: Date): Date {

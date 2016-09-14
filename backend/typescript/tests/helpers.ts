@@ -29,4 +29,5 @@ export const resetDataInMongo = () => {
 
 export const login = (identity: IIdentity) => {
     context.set(Headers.Principal, new Principal(identity.idValue, identity.profile.name._displayName, false, undefined, identity));
+    context.set(Headers.PrincipalIdValue, identity.idValue);
 };
