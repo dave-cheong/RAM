@@ -58,6 +58,7 @@ export class EnterInvitationCodeComponent extends AbstractPageComponent {
 
     public activateCode(event: Event) {
 
+        // todo need to discuss with architects to change this api so the href doesn't require the code and we can use HATEOAS?
         this.services.rest.claimRelationshipByInvitationCode(this.form.controls['relationshipCode'].value)
             .subscribe((relationship) => {
                 this.services.route.goToRelationshipAcceptPage(
