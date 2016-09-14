@@ -316,6 +316,7 @@ export interface IRelationship extends IRAMObject {
     notifyDelegate(email: string, notifyingIdentity: IIdentity): Promise<IRelationship>;
     modify(dto: DTO): Promise<IRelationship>;
     getAttribute(code: string): Promise<IRelationshipAttribute>;
+    isManageAuthAllowed(): Promise<boolean>;
 }
 
 class Relationship extends RAMObject implements IRelationship {
@@ -507,27 +508,48 @@ class Relationship extends RAMObject implements IRelationship {
         this.relationshipType = await RelationshipTypeModel.findByCodeIgnoringDateRange(Url.lastPathElement(dto.relationshipType.href));
         this.subject = subjectIdentity.party;
         this.delegate = delegateIdentity.party;
-        this.attributes = await RelationshipModel.mergeAttributes(this.relationshipType, this.attributes, dto.attributes as RelationshipAttributeDTO[]);
         this.invitationIdentity = await this.mergeInvitationIdentityIfRequired(dto);
         if (this.invitationIdentity) {
             this.delegateNickName = this.invitationIdentity.profile.name;
         }
-
-        // todo if new, start date can not be past only today and future
-        // todo if edit, start date can be future and past. (start can be the same....), but if pending, then whatever
+        this.attributes = await RelationshipModel.mergeAttributes(this.relationshipType, this.attributes, dto.attributes as RelationshipAttributeDTO[]);
         this.startTimestamp = dto.startTimestamp;
-
-        // todo end must be after start
         this.endTimestamp = dto.endTimestamp;
 
-        // todo zero hours
-        // startTimestamp.setHours(0, 0, 0);
-        // if (endTimestamp) {
-        //     endTimestamp.setHours(0, 0, 0);
-        // }
+        // zero hours on timestamps
+        this.startTimestamp.setHours(0, 0, 0);
+        if (this.endTimestamp) {
+            this.endTimestamp.setHours(0, 0, 0);
+        }
 
         // evaluate permissions
         await new RelationshipCanModifyPermissionEnforcer().assert(this);
+
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0);
+        const originalRelationship = await RelationshipModel.findByIdentifier(this.id);
+        const startTimestampSame = originalRelationship.startTimestamp === this.startTimestamp;
+        const startTimestampFutureDated = this.startTimestamp > todayDate;
+
+        // check accepted relationship start timestamp not changed into the past
+        if (this.statusEnum() === RelationshipStatus.Accepted && !startTimestampSame && !startTimestampFutureDated) {
+            throw new Error('400:Relationship access period start date can not be changed to a past date');
+        }
+
+        // check start date not greater than end date
+        if (this.endTimestamp && this.startTimestamp > this.endTimestamp) {
+            throw new Error('400:Relationship access period start date can not be greater than end date');
+        }
+
+        // if start date future dated and is accepted, create new accepted relationship
+        if (this.statusEnum() === RelationshipStatus.Accepted && !startTimestampSame && startTimestampFutureDated) {
+            this.endTimestamp = todayDate;
+            this.status = RelationshipStatus.Cancelled.code;
+            await this.save();
+            const newFutureDatedAcceptedRelationship = await RelationshipModel.createFromDto(dto);
+            newFutureDatedAcceptedRelationship.status = RelationshipStatus.Accepted.code;
+            return newFutureDatedAcceptedRelationship.save();
+        }
 
         // if re-acceptance required, create new pending relationship
         if (await this.isReAcceptanceRequired()) {
@@ -536,7 +558,7 @@ class Relationship extends RAMObject implements IRelationship {
             supersededPendingRelationship.delegate = invitationIdentity.party;
             supersededPendingRelationship.invitationIdentity = invitationIdentity;
             supersededPendingRelationship.supersedes = this;
-            return await supersededPendingRelationship.save();
+            return supersededPendingRelationship.save();
         }
 
         // general flow - save relationship and cascade save on dependents
@@ -673,6 +695,14 @@ class Relationship extends RAMObject implements IRelationship {
         return Promise.resolve(attribute);
     }
 
+    public async isManageAuthAllowed(): Promise<boolean> {
+        let attribute = await this.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+        if (attribute && attribute.value && attribute.value.length > 0) {
+            return 'true' === attribute.value[0];
+        }
+        return false;
+    }
+
 }
 
 interface IRelationshipDocument extends IRelationship, mongoose.Document {
@@ -712,14 +742,23 @@ export class RelationshipModel {
             delegateIdentity = invitationIdentity;
         }
 
-        // todo if new, start date can not be past only today and future
-        // todo end must be after start
+        // zero hours on timestamps
+        startTimestamp.setHours(0, 0, 0);
+        if (endTimestamp) {
+            endTimestamp.setHours(0, 0, 0);
+        }
 
-        // todo zero hours
-        // startTimestamp.setHours(0, 0, 0);
-        // if (endTimestamp) {
-        //     endTimestamp.setHours(0, 0, 0);
-        // }
+        // check start date not past date
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0);
+        if (startTimestamp < todayDate) {
+            throw new Error('400:Relationship access period start date can not be a past date');
+        }
+
+        // check start date not greater than end date
+        if (endTimestamp && startTimestamp > endTimestamp) {
+            throw new Error('400:Relationship access period start date can not be greater than end date');
+        }
 
         Assert.assertNotNull(subjectIdentity, 'Subject identity not found');
         Assert.assertNotNull(delegateIdentity, 'Delegate identity not found');
@@ -890,6 +929,7 @@ export class RelationshipModel {
                             '$match': {
                                 '$and': [
                                     {'subject': new mongoose.Types.ObjectId(requestedParty.id)},
+                                    {'delegate': {'$ne': new mongoose.Types.ObjectId(requestingParty.id)}},
                                     {'status': RelationshipStatus.Accepted.code},
                                     {'startTimestamp': {$lte: date}},
                                     {'$or': [{endTimestamp: null}, {endTimestamp: {$gte: date}}]}
@@ -905,6 +945,7 @@ export class RelationshipModel {
                         {
                             '$match': {
                                 '$and': [
+                                    {'subject': {'$ne': new mongoose.Types.ObjectId(requestedParty.id)}},
                                     {'delegate': new mongoose.Types.ObjectId(requestingParty.id)},
                                     {'status': RelationshipStatus.Accepted.code},
                                     {'startTimestamp': {$lte: date}},
@@ -934,9 +975,11 @@ export class RelationshipModel {
         }
     }
 
-    public static async getStrongestActiveInDateRange1stOr2ndLevelConnectionStrength(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<number> {
+    public static async computeConnectionStrength(requestingParty: IParty, requestedIdValue: string, date: Date): Promise<number> {
 
         const requestedParty = await PartyModel.findByIdentityIdValue(requestedIdValue);
+
+        const manageAuthStrengthOffset = 0.5;
 
         if (!requestedParty) {
             // no such subject
@@ -955,10 +998,18 @@ export class RelationshipModel {
                     startTimestamp: {$lte: date},
                     $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
                 })
+                .deepPopulate([
+                    'attributes.attributeName'
+                ])
                 .sort({strength: -1})
                 .exec();
 
-            strongestStrength = strongestFirstLevelRelationship ? strongestFirstLevelRelationship.strength : 0;
+            if (strongestFirstLevelRelationship) {
+                strongestStrength = strongestFirstLevelRelationship.strength;
+                if (await strongestFirstLevelRelationship.isManageAuthAllowed()) {
+                    strongestStrength = strongestStrength + manageAuthStrengthOffset;
+                }
+            }
 
             // 2nd level
 
@@ -968,6 +1019,7 @@ export class RelationshipModel {
                         '$match': {
                             '$and': [
                                 {'subject': new mongoose.Types.ObjectId(requestedParty.id)},
+                                {'delegate': {'$ne': new mongoose.Types.ObjectId(requestingParty.id)}},
                                 {'status': RelationshipStatus.Accepted.code},
                                 {'startTimestamp': {$lte: date}},
                                 {'$or': [{endTimestamp: null}, {endTimestamp: {$gte: date}}]}
@@ -983,6 +1035,7 @@ export class RelationshipModel {
                     {
                         '$match': {
                             '$and': [
+                                {'subject': {'$ne': new mongoose.Types.ObjectId(requestedParty.id)}},
                                 {'delegate': new mongoose.Types.ObjectId(requestingParty.id)},
                                 {'status': RelationshipStatus.Accepted.code},
                                 {'startTimestamp': {$lte: date}},
@@ -1007,17 +1060,7 @@ export class RelationshipModel {
 
             listOfIntersectingPartyIds.forEach(async(partyId: string) => {
                 let party = await PartyModel.findById(partyId);
-                let relationshipA = await RelationshipMongooseModel
-                    .findOne({
-                        subject: requestedParty,
-                        delegate: party,
-                        status: RelationshipStatus.Accepted.code,
-                        startTimestamp: {$lte: date},
-                        $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
-                    })
-                    .sort({strength: -1})
-                    .exec();
-                let relationshipB = await RelationshipMongooseModel
+                let relationship_intermediaryParty_to_requestingParty = await RelationshipMongooseModel
                     .findOne({
                         subject: party,
                         delegate: requestingParty,
@@ -1025,10 +1068,35 @@ export class RelationshipModel {
                         startTimestamp: {$lte: date},
                         $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
                     })
+                    .deepPopulate([
+                        'attributes.attributeName'
+                    ])
                     .sort({strength: -1})
                     .exec();
-                let strength = Math.min(relationshipA ? relationshipA.strength : 0, relationshipB ? relationshipB.strength : 0);
-                strongestStrength = Math.max(strength, strongestStrength);
+                let relationship_requestedParty_to_intermediaryParty = await RelationshipMongooseModel
+                    .findOne({
+                        subject: requestedParty,
+                        delegate: party,
+                        status: RelationshipStatus.Accepted.code,
+                        startTimestamp: {$lte: date},
+                        $or: [{endTimestamp: null}, {endTimestamp: {$gte: date}}]
+                    })
+                    .deepPopulate([
+                        'attributes.attributeName'
+                    ])
+                    .sort({strength: -1})
+                    .exec();
+                if (relationship_intermediaryParty_to_requestingParty && relationship_requestedParty_to_intermediaryParty) {
+                    let strength = Math.min(
+                        relationship_intermediaryParty_to_requestingParty.strength,
+                        relationship_requestedParty_to_intermediaryParty.strength
+                    );
+                    if (await relationship_intermediaryParty_to_requestingParty.isManageAuthAllowed() &&
+                        await relationship_requestedParty_to_intermediaryParty.isManageAuthAllowed()) {
+                        strength = strength + manageAuthStrengthOffset;
+                    }
+                    strongestStrength = Math.max(strength, strongestStrength);
+                }
             });
 
             return Promise.resolve(strongestStrength);
