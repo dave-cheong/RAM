@@ -34,6 +34,7 @@
         <div class="panel-body">
             <access-period
                     [(data)]='relationshipComponentData.accessPeriod'
+                    [originalStartDate]='originalStartDate'
                     (isValid)='accessPeriodIsValid=$event'>
             </access-period>
         </div>

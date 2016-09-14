@@ -49,7 +49,6 @@ import {
     RelationshipCanViewPermission,
     RelationshipCanViewDobPermission, RelationshipCanEditDelegatePermission
 } from '../../../../commons/permissions/relationshipPermission.templates';
-import {Utils} from '../../../../commons/utils';
 
 @Component({
     selector: 'edit-relationship',
@@ -83,8 +82,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     public authType: string = 'choose';
     public disableAuthMgmt: boolean = true;
-
-    public originalStartDate: Date;
+    public originalStartDate: Date = null;
 
     public relationshipComponentData: EditRelationshipComponentData = {
         accessPeriod: {
@@ -190,14 +188,13 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.updateRepresentativeDetails();
 
             // access period
-            this.originalStartDate = relationship.startTimestamp;
             this.relationshipComponentData.accessPeriod = {
                 startDate: relationship.startTimestamp,
                 endDate: relationship.endTimestamp,
                 noEndDate: relationship.endTimestamp === undefined || relationship.endTimestamp === null,
-                // todo change this to use permission
-                startDateEnabled: this.originalStartDate > Utils.startOfToday()
+                startDateEnabled: true
             };
+            this.originalStartDate = relationship.startTimestamp;
 
             // auth type
             this.relationshipComponentData.authType = {

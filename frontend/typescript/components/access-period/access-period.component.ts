@@ -21,6 +21,7 @@ export class AccessPeriodComponent implements OnInit {
     public form: FormGroup;
     public dateFormat: string = 'dd/mm/yy';
 
+    @Input('originalStartDate') public originalStartDate: Date;
     @Input('data') public data: AccessPeriodComponentData;
 
     @Output('dataChange') public dataChanges = new EventEmitter<AccessPeriodComponentData>();
@@ -76,7 +77,7 @@ export class AccessPeriodComponent implements OnInit {
             return null;
         }
         // valid
-        if (this.dateIsTodayOrInFuture(dateCtrl.value)) {
+        if (this.dateIsOriginalOrTodayOrInFuture(dateCtrl.value)) {
             return null;
         }
         // invalid
@@ -87,10 +88,10 @@ export class AccessPeriodComponent implements OnInit {
         };
     }
 
-    private dateIsTodayOrInFuture(ctrlValue: string | Date) {
+    private dateIsOriginalOrTodayOrInFuture(ctrlValue: string | Date) {
         if (ctrlValue) {
             const date = Utils.parseDate(ctrlValue);
-            if (Utils.dateIsTodayOrInFuture(date)) {
+            if (Utils.dateIsTodayOrInFuture(date) || date.getTime() === this.originalStartDate.getTime()) {
                 return true;
             }
         }

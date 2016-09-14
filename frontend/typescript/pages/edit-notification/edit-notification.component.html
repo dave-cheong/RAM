@@ -73,7 +73,9 @@
                             (click)="removeSSID()">Remove</button>
                 </div>
                 <div>
-                    <access-period [(data)]='accessPeriod' (isValid)='accessPeriodIsValid=$event'>
+                    <access-period [(data)]='accessPeriod'
+                                   [originalStartDate]='originalStartDate'
+                                   (isValid)='accessPeriodIsValid=$event'>
                     </access-period>
                 </div>
                 <br style="clear: both"/>
