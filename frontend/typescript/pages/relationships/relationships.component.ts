@@ -190,7 +190,9 @@ export class RelationshipsComponent extends AbstractPageComponent {
                 }
             }
         }
-        return providerNames.join(',');
+        return providerNames
+            .filter((value, index, self) => self.indexOf(value) === index)
+            .join(',');
     }
 
     public get isLoading() {
