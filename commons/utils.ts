@@ -23,9 +23,7 @@ export class Utils {
     }
 
     public static startOfToday(): Date {
-        const todayMidnight = new Date();
-        todayMidnight.setHours(0, 0, 0, 0);
-        return todayMidnight;
+        return Utils.startOfDate(new Date());
     }
 
     public static startOfTomorrow(): Date {

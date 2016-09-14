@@ -35,6 +35,7 @@ import {
     FilterParams,
     ISearchResult
 } from '../../../../commons/api';
+import {Utils} from '../../../../commons/utils';
 
 @Component({
     selector: 'ram-osp-notification-add',
@@ -164,13 +165,11 @@ export class EditNotificationComponent extends AbstractPageComponent {
             // date
             this.originalStartDate = relationship.startTimestamp;
 
-            const todayMidnight = new Date();
-            todayMidnight.setHours(0, 0, 0, 0);
             this.accessPeriod = {
                 startDate: relationship.startTimestamp,
                 endDate: relationship.endTimestamp,
                 noEndDate: relationship.endTimestamp === undefined || relationship.endTimestamp === null,
-                startDateEnabled: this.originalStartDate > todayMidnight
+                startDateEnabled: Utils.dateIsInFuture(this.originalStartDate)
             };
 
             // agency services
