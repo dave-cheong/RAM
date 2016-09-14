@@ -236,8 +236,7 @@ export class RelationshipsComponent extends AbstractPageComponent {
     }
 
     public goToAcceptRejectRelationshipPage(relationshipRef: IHrefValue<IRelationship>) {
-        // todo refactor to href
-        // this.services.route.goToRelationshipAcceptPage(this.identity.idValue, relationshipRef.href);
+        this.services.route.goToRelationshipAcceptPage(this.identityHref, relationshipRef.href);
     }
 
     public isEditRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
