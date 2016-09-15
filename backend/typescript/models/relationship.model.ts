@@ -475,6 +475,8 @@ class Relationship extends RAMObject implements IRelationship {
 
         // mark relationship as invalid
         this.status = RelationshipStatus.Declined.code;
+        this.startTimestamp = Utils.startOfToday();
+        this.endTimestamp = Utils.startOfToday();
         await this.save();
 
         // TODO notify relevant parties
@@ -542,9 +544,11 @@ class Relationship extends RAMObject implements IRelationship {
         // if re-acceptance required, create new pending relationship
         if (await this.isReAcceptanceRequired()) {
             const supersededPendingRelationship = await RelationshipModel.createFromDto(dto);
+            // todo
             const invitationIdentity = await IdentityModel.createInvitationCodeIdentity(this.delegateNickName.givenName, this.delegateNickName.familyName, null);
             supersededPendingRelationship.delegate = invitationIdentity.party;
             supersededPendingRelationship.invitationIdentity = invitationIdentity;
+            supersededPendingRelationship.invitationIdentity.invitationCodeStatus =
             supersededPendingRelationship.supersedes = this;
             return supersededPendingRelationship.save();
         }
