@@ -48,6 +48,53 @@ paths:
         500:
           $ref: '#/responses/500'
 
+  # AUSkey ............................................................................................................
+
+  /auskeys/identity/{idValue}:
+    get:
+      tags:
+        - AUSkey
+      operationId: Auskey.listAusKeys
+      summary: Search AUSkeys by identity
+      description: Search AUSkeys by identity
+      parameters:
+        - $ref: "#/parameters/idValue"
+      responses:
+        200:
+          description: The AUSkeys returned
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/AusKeyListResponse"
+        400:
+          $ref: '#/responses/400'
+        500:
+          $ref: '#/responses/500'
+
+  /auskeys/{id}:
+    get:
+      tags:
+        - AUSkey
+      operationId: Auskey.findAusKey
+      summary: Get the AUSkey by identifier
+      description: Get the AUSkey by identifier
+      parameters:
+        - name: id
+          type: string
+          in: path
+          required: true
+      responses:
+        200:
+          description: The relationship status returned
+          schema:
+            $ref: "#/definitions/AusKeyResourceReference"
+        400:
+          $ref: '#/responses/400'
+        404:
+          $ref: '#/responses/404'
+        500:
+          $ref: '#/responses/500'
+
   # Principals ........................................................................................................
 
   /me:
@@ -521,53 +568,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/RelationshipStatusResourceReference'
-        500:
-          $ref: '#/responses/500'
-
-  # AUSkey ............................................................................................................
-
-  /auskeys/identity/{idValue}:
-    get:
-      tags:
-        - AUSkey
-      operationId: Auskey.listAusKeys
-      summary: Search AUSkeys for an identity
-      description: Search AUSkeys for an identity
-      parameters:
-        - $ref: "#/parameters/idValue"
-      responses:
-        200:
-          description: The AUSkeys returned
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/AusKeyListResponse"
-        400:
-          $ref: '#/responses/400'
-        500:
-          $ref: '#/responses/500'
-
-  /auskeys/{id}:
-    get:
-      tags:
-        - AUSkey
-      operationId: Auskey.findAusKey
-      summary: Get the AUSkey by identifier
-      description: Get the AUSkey by identifier
-      parameters:
-        - name: id
-          type: string
-          in: path
-          required: true
-      responses:
-        200:
-          description: The relationship status returned
-          schema:
-            $ref: "#/definitions/AusKeyResourceReference"
-        400:
-          $ref: '#/responses/400'
-        404:
-          $ref: '#/responses/404'
         500:
           $ref: '#/responses/500'
 
