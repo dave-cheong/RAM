@@ -29,6 +29,7 @@ import {
 } from '../models/relationship.model';
 import {IRelationshipType} from '../models/relationshipType.model';
 import {context} from '../providers/context.provider';
+import {Utils} from '../../../commons/utils';
 
 /* tslint:disable:max-func-body-length */
 describe('RAM Relationship', () => {
@@ -378,6 +379,50 @@ describe('RAM Relationship', () => {
             expect(acceptedInstance.delegate.id).toBe(retrievedAcceptedDelegateIdentity.party.id);
             expect(retrievedAcceptedInstance.delegate.id).toBe(retrievedAcceptedDelegateIdentity.party.id);
             expect(retrievedAcceptedInstance.id).toBe(acceptedInstance.id);
+
+            done();
+
+        } catch (e) {
+            fail(e);
+            done();
+        }
+    });
+
+    it('accepts pending invitation and sets start date to today', async(done) => {
+        try {
+
+            const invitationCodeIdentity = await IdentityModel.createInvitationCodeIdentity('John', 'Delegate 1', '01/01/1999');
+
+            const relationshipToAccept = await RelationshipModel.add(
+                relationshipTypeCustom,
+                subjectParty1,
+                subjectNickName1,
+                invitationCodeIdentity.party,
+                invitationCodeIdentity.profile.name,
+                new Date(2015, 1, 1),
+                new Date(2020, 12, 31),
+                RelationshipInitiatedBy.Subject,
+                invitationCodeIdentity,
+                []
+            );
+
+            const acceptingDelegateIdentity1 = await IdentityModel.create({
+                rawIdValue: 'accepting_delegate_identity_1',
+                identityType: IdentityType.LinkId.code,
+                defaultInd: true,
+                linkIdScheme: IdentityLinkIdScheme.MyGov.code,
+                profile: delegateProfile1,
+                party: delegateParty1,
+                strength: 2
+            });
+
+            login(acceptingDelegateIdentity1);
+
+            await relationshipToAccept.claimPendingInvitation(acceptingDelegateIdentity1, invitationCodeIdentity.rawIdValue);
+            await relationshipToAccept.acceptPendingInvitation(acceptingDelegateIdentity1);
+            const retrievedAcceptedInstance = await RelationshipModel.findByIdentifier(relationshipToAccept.id);
+
+            expect(retrievedAcceptedInstance.startTimestamp.getTime()).toBe(Utils.startOfToday().getTime());
 
             done();
 

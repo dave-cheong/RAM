@@ -447,16 +447,18 @@ class Relationship extends RAMObject implements IRelationship {
 
         // if this relationship is superseding then end date superseded relationship
         if (this.supersedes) {
-            const date = new Date();
-            date.setHours(0, 0, 0);
-
             const supersededRelationship = await RelationshipModel.findByIdentifier(this.supersedes.toString());
             supersededRelationship.status = RelationshipStatus.Superseded.code;
-            supersededRelationship.endTimestamp = date;
+            supersededRelationship.endTimestamp = Utils.startOfToday();
             supersededRelationship.supersededBy = this;
             await supersededRelationship.save();
-            this.startTimestamp = date;
         }
+
+        // if start date is in future, leave as is, otherwise (if it's in the past), set it to today
+        if (!Utils.dateIsInFuture(this.startTimestamp)) {
+            this.startTimestamp = Utils.startOfToday();
+        }
+
         await this.save();
 
         // TODO notify relevant parties

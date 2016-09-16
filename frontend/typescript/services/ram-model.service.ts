@@ -40,7 +40,7 @@ export class RAMModelService {
                 datePipe.transform(date, 'MMMM') + ' ' +
                 datePipe.transform(date, 'yyyy');
         }
-        return 'Not specified';
+        return 'No end date';
     }
 
     public displayName(name: IName): string {
