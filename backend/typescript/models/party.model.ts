@@ -41,7 +41,7 @@ let PartyMongooseModel: mongoose.Model<IPartyDocument>;
 
 export class PartyType extends RAMEnum {
 
-    public static ABN = new PartyType('ABN', 'ABN');
+    public static ABN = new PartyType('ABN', 'Business');
     public static Individual = new PartyType('INDIVIDUAL', 'Individual');
 
     protected static AllValues = [
