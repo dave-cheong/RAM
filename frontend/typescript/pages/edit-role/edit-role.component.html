@@ -7,7 +7,7 @@
     <!-- ROLE TYPE SELECTOR WHEN CREATING A NEW ROLE -->
     <div class="panel panel-default" *ngIf="!roleHref">
         <div class="panel-heading">
-            <h4><span class="badge square">1</span> Select a role</h4>
+            <h4>Select a role</h4>
         </div>
         <div class="panel-body">
             <div class="form-group">
@@ -23,7 +23,7 @@
     <!-- ROLE TYPE DISPLAY IF EDITING AN EXISTING ROLE -->
     <div class="panel panel-default" *ngIf="roleHref">
         <div class="panel-heading">
-            <h4><span class="badge square">1</span> Role Type</h4>
+            <h4>Role Type</h4>
         </div>
         <div class="panel-body">
             {{ role?.roleType?.value?.shortDecodeText }}
@@ -33,7 +33,7 @@
     <!-- AGENCIES ALLOCATED TO THE ROLE -->
     <div class="panel panel-default" *ngIf="role?.roleType">
         <div class="panel-heading">
-            <h4><span class="badge square">2</span> Online software provider agencies services</h4>
+            <h4>Online software provider agencies services</h4>
         </div>
         <div class="panel-body">
                 <h4>Access to government agencies services</h4>
@@ -79,7 +79,7 @@
 
     <div class="panel panel-default" *ngIf="role?.roleType">
         <div class="panel-heading">
-            <h4><span class="badge square">3</span> Online software provider preferences</h4>
+            <h4>Online software provider preferences</h4>
         </div>
         <div class="panel-body">
             <div class="form-group">
