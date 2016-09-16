@@ -90,4 +90,20 @@ export class Relationship extends Resource implements IRelationship {
         return this.status === Constants.RelationshipStatusCode.PENDING;
     }
 
+    public isSubjectABN(): boolean {
+        return this.subject.value.partyType === Constants.PartyTypeCode.ABN;
+    }
+
+    public isSubjectIndividual(): boolean {
+        return this.subject.value.partyType === Constants.PartyTypeCode.INDIVIDUAL;
+    }
+
+    public isDelegateABN(): boolean {
+        return this.delegate.value.partyType === Constants.PartyTypeCode.ABN;
+    }
+
+    public isDelegateIndividual(): boolean {
+        return this.delegate.value.partyType === Constants.PartyTypeCode.INDIVIDUAL;
+    }
+
 }
