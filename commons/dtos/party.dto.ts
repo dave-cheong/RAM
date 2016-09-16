@@ -10,6 +10,7 @@ export interface IParty extends IHasLinks {
 }
 
 export class Party implements IParty {
+
     public static build(sourceObject: any): IParty {
         return new Builder<IParty>(sourceObject, this)
             .mapArray('_links', Link)
@@ -21,4 +22,9 @@ export class Party implements IParty {
                 public partyType: string,
                 public identities: HrefValue<Identity>[]) {
     }
+
+    public getABN(): string {
+        return this.identities[0].value.rawIdValue;
+    }
+
 }
