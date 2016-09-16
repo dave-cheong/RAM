@@ -548,7 +548,7 @@ class Relationship extends RAMObject implements IRelationship {
             const invitationIdentity = await IdentityModel.createInvitationCodeIdentity(this.delegateNickName.givenName, this.delegateNickName.familyName, null);
             supersededPendingRelationship.delegate = invitationIdentity.party;
             supersededPendingRelationship.invitationIdentity = invitationIdentity;
-            supersededPendingRelationship.invitationIdentity.invitationCodeStatus =
+            supersededPendingRelationship.invitationIdentity.invitationCodeStatus = IdentityInvitationCodeStatus.Claimed.code;
             supersededPendingRelationship.supersedes = this;
             return supersededPendingRelationship.save();
         }
