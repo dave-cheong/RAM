@@ -3,14 +3,14 @@
              [messages]="globalMessages"></page-header>
 
 <h4 *ngIf="relationship?.isDelegateABN()">{{relationship?.delegateNickName?.givenName}} has been authorised
-    to act on behalf of the {{relationship?.delegate?.value?.partyType}} below. Review the authorisation request and
-    accept or decline. Once you accept the authorisation, you will then be able to act on behalf of
-    this {{relationship?.delegate?.value?.partyType}} across government.</h4>
+    to act on behalf of the {{("partyType." + relationship?.subject?.value?.partyType) | translate}} below. Review
+    the authorisation request and accept or decline. Once you accept the authorisation, you will then be able to act
+    on behalf of this {{("partyType." + relationship?.subject?.value?.partyType) | translate}} across government.</h4>
 
 <h4 *ngIf="relationship?.isDelegateIndividual()">You have been authorised to act on behalf of
-    the {{relationship?.delegate?.value?.partyType}} below. Review the authorisation request and accept or decline.
-    Once you accept the authorisation, you will then be able to act on behalf of this
-    {{relationship?.delegate?.value?.partyType}} across government.</h4>
+    the {{("partyType." + relationship?.subject?.value?.partyType) | translate}} below. Review the authorisation
+    request and accept or decline. Once you accept the authorisation, you will then be able to act on behalf of this
+    {{("partyType." + relationship?.subject?.value?.partyType) | translate}} across government.</h4>
 
 <br/>
 
