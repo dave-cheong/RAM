@@ -45,6 +45,7 @@
   "relationship.modify.notAuthAdmin": "Unable to modify relationship without auth admin privileges",
 
   "relationship.terminate.notAccepted" : "Unable to terminate a non-accepted relationship",
+  "relationship.terminate.managedExternally" : "Unable to terminate a relationship that is managed externally",
 
   "relationship.editDelegate.invalidStatus": "Unable to modify delegate for a non-pending",
 
