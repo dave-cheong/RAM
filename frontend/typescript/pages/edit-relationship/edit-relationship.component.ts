@@ -293,8 +293,9 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         let markdown: string = null;
 
         if (relationshipTypeRef) {
-            markdown = this.services.model.getRelationshipTypeAttributeNameUsage(relationshipTypeRef,
+            const value = this.services.model.getRelationshipTypeAttributeNameUsage(relationshipTypeRef,
                 Constants.RelationshipAttributeNameCode.SUBJECT_RELATIONSHIP_TYPE_DECLARATION).defaultValue;
+            markdown = value ? value[0] : '';
         }
 
         this.relationshipComponentData.declaration = {
