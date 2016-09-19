@@ -937,6 +937,11 @@ definitions:
     description: A Party is the concept that participates in Relationships.
     type: object
     required: ["roles","identities"]
+    properties:
+      _links:
+        type: array
+        items:
+          $ref: '#/definitions/ILink'
 
   PartyDetails:
     type: object
@@ -1093,8 +1098,7 @@ definitions:
       profile:
         $ref: '#/definitions/Profile'
       party:
-        # todo resource reference or direct party?
-        $ref: '#/definitions/Party'
+        $ref: '#/definitions/Resource'
 
   IdentityResourceReference:
     type: object

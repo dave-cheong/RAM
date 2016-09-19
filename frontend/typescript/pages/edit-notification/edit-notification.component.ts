@@ -129,8 +129,9 @@ export class EditNotificationComponent extends AbstractPageComponent {
         for (let ref of relationshipTypeRefs) {
             if (ref.value.code === Constants.RelationshipTypeCode.OSP) {
                 this.ospRelationshipTypeRef = ref;
-                this.declarationText = this.services.model.getRelationshipTypeAttributeNameUsage(ref,
+                const value = this.services.model.getRelationshipTypeAttributeNameUsage(ref,
                     Constants.RelationshipAttributeNameCode.SUBJECT_RELATIONSHIP_TYPE_DECLARATION).defaultValue;
+                this.declarationText = value ? value[0] : '';
                 break;
             }
         }

@@ -43,7 +43,7 @@ const RelationshipAttributeNameUsageSchema = RAMSchema({
 
 export interface IRelationshipAttributeNameUsage extends IRAMObject {
     optionalInd: boolean;
-    defaultValue?: string;
+    defaultValue: string[];
     attributeName: IRelationshipAttributeName;
     sortOrder: number;
 }
@@ -51,7 +51,7 @@ export interface IRelationshipAttributeNameUsage extends IRAMObject {
 class RelationshipAttributeNameUsage extends RAMObject implements IRelationshipAttributeNameUsage {
 
     public optionalInd: boolean;
-    public defaultValue: string;
+    public defaultValue: string[];
     public attributeName: IRelationshipAttributeName;
     public sortOrder: number;
 

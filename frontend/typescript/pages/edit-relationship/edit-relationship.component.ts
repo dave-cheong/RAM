@@ -515,12 +515,12 @@ export class EditRelationshipComponent extends AbstractPageComponent {
             this.manageAuthAttribute = allowManageAuthorisationUsage;
 
             // authorisation permission component
-            this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue !== 'false';
+            this.relationshipComponentData.authorisationPermissions.customisationEnabled = selectedRelationshipTypeRef.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.PERMISSION_CUSTOMISATION_ALLOWED_IND).defaultValue[0] !== 'false';
             this.relationshipComponentData.authorisationPermissions.enabled = true;
             this.relationshipComponentData.authorisationPermissions.accessLevelsDescription = selectedRelationshipTypeRef.value.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.ACCESS_LEVELS_DESCRIPTION);
 
             // get the default value for the relationship type
-            this.relationshipComponentData.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue : 'false';
+            this.relationshipComponentData.authorisationManagement.value = allowManageAuthorisationUsage ? allowManageAuthorisationUsage.defaultValue[0] : 'false';
             // allow editing of the value only if the DELEGATE_MANAGE_AUTHORISATION_USER_CONFIGURABLE_IND attribute is present on the relationship type
             this.disableAuthMgmt = canChangeManageAuthorisationUsage ? canChangeManageAuthorisationUsage === null : true;
 
@@ -534,7 +534,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
             this.relationshipComponentData.permissionAttributes = [];
             for (let usage of orderedUsages) {
-                let relationshipAttribute = new RelationshipAttribute(usage.defaultValue ? [usage.defaultValue] : [], usage.attributeNameDef);
+                let relationshipAttribute = new RelationshipAttribute(usage.defaultValue, usage.attributeNameDef);
                 this.relationshipComponentData.permissionAttributes.push(relationshipAttribute);
             }
 
