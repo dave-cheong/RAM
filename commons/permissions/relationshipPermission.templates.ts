@@ -64,6 +64,13 @@ export const RelationshipCanViewDobPermission = new Permission(
     true
 );
 
+export const RelationshipCanTerminatePermission = new Permission(
+    'relationship-can-terminate',
+    'A relationship dob can be terminated by the delegate.',
+    false,
+    Constants.Link.TERMINATE
+);
+
 export const Relationships = new Permissions()
         .push(RelationshipCanViewPermission)
         .push(RelationshipCanModifyPermission)
@@ -74,4 +81,5 @@ export const Relationships = new Permissions()
         .push(RelationshipCanPrintInvitationPermission)
         .push(RelationshipCanEditDelegatePermission)
         .push(RelationshipCanViewDobPermission)
+        .push(RelationshipCanTerminatePermission)
     ;
