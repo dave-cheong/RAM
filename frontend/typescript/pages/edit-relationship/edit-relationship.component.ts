@@ -6,6 +6,7 @@ import {AbstractPageComponent} from '../abstract-page/abstract-page.component';
 import {PageHeaderAuthComponent} from '../../components/page-header/page-header-auth.component';
 import {Constants} from '../../../../commons/constants';
 import {RAMServices} from '../../services/ram-services';
+import {Dialog} from 'primeng/primeng';
 
 import {AccessPeriodComponent, AccessPeriodComponentData} from '../../components/access-period/access-period.component';
 import {
@@ -47,7 +48,7 @@ import {
 } from '../../../../commons/api';
 import {
     RelationshipCanViewPermission,
-    RelationshipCanViewDobPermission, RelationshipCanEditDelegatePermission
+    RelationshipCanViewDobPermission, RelationshipCanEditDelegatePermission, RelationshipCanTerminatePermission
 } from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
@@ -61,7 +62,8 @@ import {
         RelationshipDeclarationComponent,
         RepresentativeDetailsComponent,
         AuthorisationManagementComponent,
-        PageHeaderAuthComponent
+        PageHeaderAuthComponent,
+        Dialog
     ]
 })
 
@@ -83,6 +85,7 @@ export class EditRelationshipComponent extends AbstractPageComponent {
     public authType: string = 'choose';
     public disableAuthMgmt: boolean = true;
     public originalStartDate: Date = null;
+    public terminateDisplay: boolean = false;
 
     public relationshipComponentData: EditRelationshipComponentData = {
         accessPeriod: {
@@ -544,9 +547,30 @@ export class EditRelationshipComponent extends AbstractPageComponent {
 
     };
 
+    public showTerminateConfirmation() {
+        this.terminateDisplay = true;
+    };
+
+    public cancelTerminateConfirmation() {
+        this.terminateDisplay = false;
+    };
+
+    // todo implement terminate
+    public confirmTerminate() {
+        alert('TODO: Terminate');
+    };
+
     public isAuthorizedBtnEnabled(): boolean {
         // return this.accessPeriodIsValid && authTypeIsValid && representativeIsValid;
         return true;
+    }
+
+    public isEditEnabled(): boolean {
+        return this.relationship.isPermissionAllowed([RelationshipCanEditDelegatePermission]);
+    }
+
+    public isTerminateEnabled(): boolean {
+        return this.relationship.isPermissionAllowed([RelationshipCanTerminatePermission]);
     }
 
 }
