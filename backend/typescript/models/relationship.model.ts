@@ -683,6 +683,8 @@ class Relationship extends RAMObject implements IRelationship {
         return invitationIdentity;
     }
 
+    // todo trung to consider not filtering by relationshipAttributeNameUsage.attributeName.appliesToInstance
+    // todo trung to consider renaming to something like computeAttribute() or similar ... ?
     public async getAttribute(code: string): Promise<IRelationshipAttribute> {
         let attribute: IRelationshipAttribute;
         if (this.attributes) {
