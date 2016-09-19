@@ -4,7 +4,7 @@ import {IRelationshipAttributeName, RelationshipAttributeName} from './relations
 
 export interface IRelationshipAttributeNameUsage {
     optionalInd: boolean;
-    defaultValue: string;
+    defaultValue: string[];
     attributeNameDef: IHrefValue<IRelationshipAttributeName>;
     sortOrder: number;
 }
@@ -17,7 +17,7 @@ export class RelationshipAttributeNameUsage implements IRelationshipAttributeNam
     }
 
     constructor(public optionalInd: boolean,
-                public defaultValue: string,
+                public defaultValue: string[],
                 public attributeNameDef: HrefValue<RelationshipAttributeName>,
                 public sortOrder: number) {
     }

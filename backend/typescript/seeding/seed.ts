@@ -374,7 +374,7 @@ export class Seeder {
         }
     }
 
-    public static async createRelationshipAttributeNameUsageModels <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:[string], sortOrder:number}>(attributeValues:T[]) {
+    public static async createRelationshipAttributeNameUsageModels <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string[], sortOrder:number}>(attributeValues:T[]) {
         const attributeNameUsages:IRelationshipAttributeNameUsage[] = [];
         if (attributeValues) {
             for (let i = 0; i < attributeValues.length; i = i + 1) {
@@ -393,7 +393,7 @@ export class Seeder {
         return attributeNameUsages;
     }
 
-    public static async createRelationshipTypeModel <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:[string], sortOrder:number}>
+    public static async createRelationshipTypeModel <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string[], sortOrder:number}>
     (values:IRelationshipType, attributeValues:T[]) {
         const code = values.code;
         const existingModel = await RelationshipTypeModel.findByCodeIgnoringDateRange(code);
@@ -427,7 +427,7 @@ export class Seeder {
         }
     }
 
-    public static async createRoleAttributeNameUsageModels <T extends { attribute:IRoleAttributeName, optionalInd:boolean, defaultValue:[string]}>(attributeValues:T[]) {
+    public static async createRoleAttributeNameUsageModels <T extends { attribute:IRoleAttributeName, optionalInd:boolean, defaultValue:string[]}>(attributeValues:T[]) {
         const attributeNameUsages:IRoleAttributeNameUsage[] = [];
         if (attributeValues) {
             for (let i = 0; i < attributeValues.length; i = i + 1) {
@@ -445,7 +445,7 @@ export class Seeder {
         return attributeNameUsages;
     }
 
-    public static async createRoleTypeModel <T extends { attribute: IRoleAttributeName, optionalInd: boolean, defaultValue: [string]}>(values: IRoleType, attributeValues: T[]) {
+    public static async createRoleTypeModel <T extends { attribute: IRoleAttributeName, optionalInd: boolean, defaultValue: string[]}>(values: IRoleType, attributeValues: T[]) {
         const code = values.code;
         const existingModel = await RoleTypeModel.findByCodeIgnoringDateRange(code);
         if (existingModel === null) {
