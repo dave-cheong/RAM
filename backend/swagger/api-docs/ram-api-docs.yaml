@@ -1403,30 +1403,6 @@ definitions:
         schema:
           $ref: '#/definitions/RoleAttributeNameResourceReference'
 
-
-  RoleAttributeNameResourceReference:
-    type: object
-    description: A reference to a Role Attribute Resource
-    required: ["href"]
-    properties:
-      href:
-        type: string
-        description: URL that uniquely identifies this Role Attribute Name
-      value:
-        description: The content of this field is optional, it is the same content for a get request on the href
-        schema:
-          $ref: '#/definitions/RoleAttributeName'
-
-  RoleAttributeName:
-    allOf:
-      - $ref: '#/definitions/ICodeDecode'
-    type: object
-    required: ["code"]
-    properties:
-      code:
-        type: string
-        description: This is the short code value by which Role Attribute Name may be known
-
   # Role Type .........................................................................................................
 
   RoleType:
