@@ -137,6 +137,10 @@ export class Url {
         return '/api/v1/relationship/invitationCode/' + encodeURIComponent(invitationCode) + '/print';
     }
 
+    public static async forRelationshipTerminate(model: relationship.IRelationship): Promise<string> {
+        return '/api/v1/relationship/' + encodeURIComponent(model._id.toString());
+    }
+
     // relationship attribute name ....................................................................................
 
     public static async forRelationshipAttributeName(model: relationshipAttributeName.IRelationshipAttributeName): Promise<string> {

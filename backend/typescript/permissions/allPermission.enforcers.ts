@@ -25,6 +25,7 @@ import {IdentityCanListAuskeysPermissionEnforcer} from './identityCanListAuskeys
 import {IdentityCanListRolesPermissionEnforcer} from './identityCanListRolesPermission.enforcer';
 import {RelationshipCanViewDobPermissionEnforcer} from './relationshipCanViewDobPermission.enforcer';
 import {RelationshipCanEditDelegatePermissionEnforcer} from './relationshipCanEditDelegatePermission.enforcer';
+import {RelationshipCanTerminatePermissionEnforcer} from './relationshipCanTerminatePermission.enforcer';
 
 export class PermissionEnforcers {
 
@@ -53,6 +54,7 @@ export class PermissionEnforcers {
         new RelationshipCanViewPermissionEnforcer(),
         new RelationshipCanEditDelegatePermissionEnforcer(),
         new RelationshipCanViewDobPermissionEnforcer(),
+        new RelationshipCanTerminatePermissionEnforcer(),
     ];
 
     public static relationshipAttribute: IPermissionEnforcer<IRelationshipAttribute>[] = [];
