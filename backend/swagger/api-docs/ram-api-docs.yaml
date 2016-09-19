@@ -391,6 +391,47 @@ paths:
         500:
           $ref: '#/responses/500'
 
+  /relationship/invitationCode/{invitationCode}/print:
+    get:
+      tags:
+        - Relationship
+      operationId: Relationship.printByInvitationCode
+      summary: Renders a printer friendly pending Relationship by invitation code
+      description: Renders a printer friendly pending Relationship by invitation code
+      parameters:
+        - $ref: "#/parameters/invitationCode"
+      produces:
+      - text/html
+      responses:
+        200:
+          description: Printer friendly version of the pending relationship
+        400:
+          $ref: '#/responses/400'
+        404:
+          $ref: '#/responses/404'
+        500:
+          $ref: '#/responses/500'
+
+  /relationship/invitationCode/{invitationCode}/claim:
+    post:
+      tags:
+        - Relationship
+      operationId: Relationship.claimByInvitationCode
+      summary: Claims a pending Relationship by invitation code
+      description: Claims a pending Relationship by invitation code
+      parameters:
+        - $ref: "#/parameters/invitationCode"
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Relationship'
+        400:
+          $ref: '#/responses/400'
+        404:
+          $ref: '#/responses/404'
+        500:
+          $ref: '#/responses/500'
+
   /relationship/invitationCode/{invitationCode}/accept:
     post:
       tags:
