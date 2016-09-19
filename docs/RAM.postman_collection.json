@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "RAM",
-		"_postman_id": "f2f2beb2-1ea1-203a-4830-86d522a7f289",
+		"_postman_id": "9e18df39-8346-bfd5-5183-7183153f85df",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -1092,7 +1092,7 @@
 				{
 					"name": "Get status (ACTIVE)",
 					"request": {
-						"url": "{{host}}/api/v1/relationshipStatus/ACTIVE",
+						"url": "{{host}}/api/v1/relationshipStatus/ACCEPTED",
 						"method": "GET",
 						"header": [],
 						"body": {

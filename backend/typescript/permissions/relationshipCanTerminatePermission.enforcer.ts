@@ -54,7 +54,7 @@ export class RelationshipCanTerminatePermissionEnforcer extends PermissionEnforc
         // set value and link
         if (permission.messages.length === 0) {
             permission.value = true;
-            permission.link = new Link(permission.linkType, Url.DELETE, await Url.forRelationshipTerminate(relationship));
+            permission.link = new Link(permission.linkType, Url.PUT, await Url.forRelationshipTerminate(relationship));
         } else {
             permission.value = false;
         }

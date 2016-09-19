@@ -31,8 +31,8 @@
                                 <button *ngFor="let permittedValue of permissionAttribute.attributeName.value.permittedValues"
                                         [disabled]='(!data.customisationEnabled)'
                                         class="btn"
-                                        [class.btn-secondary]="permissionAttribute.value.length > 0 && permissionAttribute.value[0] === permittedValue"
-                                        [class.btn-inverse]="permissionAttribute.value.length == 0 || permissionAttribute.value[0] !== permittedValue"
+                                        [class.btn-secondary]="permissionAttribute.value && permissionAttribute.value[0] === permittedValue"
+                                        [class.btn-inverse]="!permissionAttribute.value || permissionAttribute.value[0] !== permittedValue"
                                         (click)="toggle(permissionAttribute, permittedValue)"> {{permittedValue}}
                                 </button>
                             </div>

@@ -46,9 +46,7 @@
         </div>
         <div class="panel-body" *ngIf="declarationText !== null">
             <div class="col-md-12">
-                <h4>By authorising the nominated representative to act on behalf of the selected
-                    {{services.model.partyTypeLabelForParty(relationship.subject)}}, it is acknowledged that
-                    they will be able to perform all of the selected transactions on their behalf.</h4>
+                <h4>{{'addRelationship.declaration.instructions' | translate:{partyTypeLabel: services.model.partyTypeLabelForParty(relationship.subject)} }}</h4>
             </div>
             <relationship-declaration
                     [markdown]='declarationText'
@@ -77,8 +75,8 @@
         <p>{{'addRelationship.terminate.confirm.details' | translate}}</p>
         <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
             <div class="pull-right">
-                <button class="btn pull-left" (click)="cancelTerminateConfirmation()">Cancel</button>
-                <button class="btn btn-primary pull-left" (click)="confirmTerminate()">Confirm</button>
+                <button class="btn pull-left" (click)="cancelTerminateConfirmation()">{{'cancel' | translate}}</button>
+                <button class="btn btn-primary pull-left" (click)="confirmTerminate()">{{'confirm' | translate}}</button>
             </div>
         </div>
     </p-dialog>

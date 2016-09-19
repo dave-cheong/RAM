@@ -716,6 +716,54 @@ paths:
 
   # Role ..............................................................................................................
 
+  /roles/identity/{identity_id}:
+    get:
+      tags:
+        - Role
+      operationId: Role.searchByIdentity
+      summary: List roles by identity
+      description: List roles by identity
+      parameters:
+        - name: identity_id
+          in: path
+          type: string
+          required: true
+          description: Identity id for which to list roles
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/RoleListResponse'
+        400:
+          $ref: '#/responses/400'
+        404:
+          $ref: '#/responses/404'
+        500:
+          $ref: '#/responses/500'
+
+  /role/{identifier}:
+    get:
+      tags:
+        - Role
+      operationId: Role.findByIdentifier
+      summary: Find role by identifier
+      description: Find role by identifier
+      parameters:
+        - name: identifier
+          in: path
+          type: string
+          required: true
+          description: Id of role
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Role'
+        400:
+          $ref: '#/responses/400'
+        404:
+          $ref: '#/responses/404'
+        500:
+          $ref: '#/responses/500'
+
   /role:
     post:
       tags:
@@ -738,7 +786,45 @@ paths:
           $ref: '#/responses/404'
         500:
           $ref: '#/responses/500'
+    put:
+      tags:
+        - Role
+      operationId: Role.modify
+      summary: Modify role
+      description: Modify role
+      parameters:
+        - in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Role'
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Role'
+        400:
+          $ref: '#/responses/400'
+        404:
+          $ref: '#/responses/404'
+        500:
+          $ref: '#/responses/500'
 
+  # Role Status ........................................................................................................
+
+  /roleStatuses:
+    get:
+      tags:
+        - Reference - Role Status
+      operationId: Role.listStatuses
+      summary: Get the role statuses
+      description: Get the role statuses
+      responses:
+        200:
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RoleStatusResourceReference'
+        500:
+          $ref: '#/responses/500'
 
   # Role Types ........................................................................................................
 
@@ -847,6 +933,8 @@ definitions:
   # Principal .........................................................................................................
 
   Principal:
+    allOf:
+      - $ref: '#/definitions/IResource'
     type: object
     description: |
       A principal is representation of the logged in user, which could refer to an Identity or an Agency User.
@@ -1203,7 +1291,7 @@ definitions:
         items:
           $ref: '#/definitions/RelationshipResourceReference'
 
-  # Relationship Attribute ............................................................................................
+  # Relationship Status ............................................................................................
 
   RelationshipStatus:
     type: object
@@ -1378,7 +1466,8 @@ definitions:
 
   Role:
     allOf:
-    - $ref: '#/definitions/IRAMObject'
+      - $ref: '#/definitions/IResource'
+      - $ref: '#/definitions/IRAMObject'
     type: object
     description: Role
     properties:
@@ -1394,6 +1483,50 @@ definitions:
         description: Role attributes that may be used with this resource
         items:
           $ref: '#/definitions/RoleAttribute'
+
+  RoleListResponse:
+    allOf:
+    - $ref: '#/definitions/SearchResultResponse'
+    type: object
+    required: ["list"]
+    properties:
+      list:
+        type: array
+        items:
+          $ref: '#/definitions/RoleResourceReference'
+
+  RoleStatus:
+    type: object
+    description: Role status
+    properties:
+      code:
+        type: string
+        description: The code or name
+      shortDecodeText:
+        type: string
+        description: The human friendly label
+
+  RoleStatusResourceReference:
+    type: object
+    description: A reference to a Resource
+    required: ["href"]
+    properties:
+      href:
+        type: string
+        description: URI that uniquely identifies this RoleStatus
+      value:
+        $ref: '#/definitions/RoleStatus'
+
+  RoleResourceReference:
+    type: object
+    description: A reference to a Resource
+    required: ["href"]
+    properties:
+      href:
+        type: string
+        description: URI that uniquely identifies this Relationship
+      value:
+        $ref: '#/definitions/Role'
 
   RoleAttribute:
     type: object
