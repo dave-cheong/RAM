@@ -23,6 +23,7 @@ export const Constants = {
         'ACCEPT': 'accept',
         'REJECT': 'reject',
         'CLAIM': 'claim',
+        'TERMINATE': 'terminate',
     },
 
     AUSkey: {
