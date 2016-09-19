@@ -303,6 +303,14 @@ export class RelationshipController {
                     errorMessage: 'Start timestamp is not a valid date'
                 },
                 errorMessage: 'Start timestamp is not valid'
+            },
+            'status': {
+                in: 'body',
+                notEmpty: true,
+                isIn: {
+                    options: [RelationshipStatus.valueStrings()]
+                },
+                errorMessage: 'Status is not valid'
             }
         };
         validateReqSchema(req, schema)
@@ -345,8 +353,18 @@ export class RelationshipController {
                 in: 'body',
                 notEmpty: true,
                 errorMessage: 'Start timestamp is not valid'
+            },
+            'status': {
+                in: 'body',
+                notEmpty: true,
+                isIn: {
+                    options: [RelationshipStatus.valueStrings()]
+                },
+                errorMessage: 'Status is not valid'
             }
         };
+        console.log(req.body.status);
+        console.log(RelationshipStatus.valueStrings());
         validateReqSchema(req, schema)
             .then((req: Request) => RelationshipModel.findByIdentifier(req.params.identifier))
             .then((model) => model ? model.modify(DTO.build(req.body) as DTO) : null)
