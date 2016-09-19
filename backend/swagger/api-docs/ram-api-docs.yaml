@@ -740,6 +740,30 @@ paths:
         500:
           $ref: '#/responses/500'
 
+  /role/{identifier}:
+    get:
+      tags:
+        - Role
+      operationId: Role.findByIdentifier
+      summary: Find role by identifier
+      description: Find role by identifier
+      parameters:
+        - name: identifier
+          in: path
+          type: string
+          required: true
+          description: Id of role
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/Role'
+        400:
+          $ref: '#/responses/400'
+        404:
+          $ref: '#/responses/404'
+        500:
+          $ref: '#/responses/500'
+
   /role:
     post:
       tags:
@@ -1404,7 +1428,8 @@ definitions:
 
   Role:
     allOf:
-    - $ref: '#/definitions/IRAMObject'
+      - $ref: '#/definitions/IResource'
+      - $ref: '#/definitions/IRAMObject'
     type: object
     description: Role
     properties:
