@@ -76,9 +76,8 @@ export class RelationshipAttributeModel {
         return await RelationshipAttributeMongooseModel.create(source);
     }
 
-    // todo the default value from usage should be changed to string[] in the schema
     public static createInstance(source: IRelationshipAttributeNameUsage): Promise<IRelationshipAttribute> {
-        return Promise.resolve(new RelationshipAttribute(source.defaultValue ? [source.defaultValue] : [], source.attributeName));
+        return Promise.resolve(new RelationshipAttribute(source.defaultValue, source.attributeName));
     }
 
     public static async add(value: string[], attributeName: IRelationshipAttributeName): Promise<IRelationshipAttribute> {

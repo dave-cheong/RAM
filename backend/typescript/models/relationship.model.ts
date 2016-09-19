@@ -379,7 +379,7 @@ class Relationship extends RAMObject implements IRelationship {
                 if (!matchedAttributeDTO) {
                     attributeDTOs.push(
                         new RelationshipAttributeDTO(
-                            attributeNameUsage.defaultValue ? [attributeNameUsage.defaultValue] : [],
+                            attributeNameUsage.defaultValue,
                             new HrefValue(await Url.forRelationshipAttributeName(attributeNameUsage.attributeName), RelationshipAttributeNameDTO.build(attributeNameUsage.attributeName))
                         )
                     );
