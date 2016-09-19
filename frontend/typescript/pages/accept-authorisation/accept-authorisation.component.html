@@ -139,7 +139,7 @@
         <div class="col-md-12">
             <h4>By accepting to act on behalf of <b>{{services.model.displayName((relationship$ | async)?.subjectNickName)}}</b>,
                 you acknowledge that:</h4>
-            <blockquote><ng2-markdown [markdown]="delegateRelationshipTypeDeclarationAttributeUsage?.defaultValue"></ng2-markdown></blockquote>
+            <blockquote><ng2-markdown [markdown]="declarationText"></ng2-markdown></blockquote>
             <div class="checkbox">
                 <label><input type="checkbox" [(ngModel)]="accept" [disabled]="!canAccept"> <strong>I accept this relationship</strong></label>
             </div>

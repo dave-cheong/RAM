@@ -35,10 +35,10 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     public identity: IIdentity;
     public relationship: IRelationship;
     public delegateManageAuthorisationAllowedIndAttribute: IRelationshipAttribute;
-    public delegateRelationshipTypeDeclarationAttributeUsage: IRelationshipAttributeNameUsage;
 
     public declineDisplay: boolean = false;
     public canAccept: boolean;
+    public declarationText: string;
 
     constructor(route: ActivatedRoute, router: Router, fb: FormBuilder, services: RAMServices) {
         super(route, router, fb, services);
@@ -71,11 +71,8 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
 
             this.relationshipType$ = this.services.rest.findRelationshipTypeByHref(relationship.relationshipType.href);
             this.relationshipType$.subscribe((relationshipType) => {
-                for (let attributeUsage of relationshipType.relationshipAttributeNames) {
-                    if (attributeUsage.attributeNameDef.value.code === 'DELEGATE_RELATIONSHIP_TYPE_DECLARATION') {
-                        this.delegateRelationshipTypeDeclarationAttributeUsage = attributeUsage;
-                    }
-                }
+                const relationshipAttributeName: IRelationshipAttributeNameUsage = relationshipType.relationshipAttributeNames.find((attributeUsage) => attributeUsage.attributeNameDef.value.code === Constants.RelationshipAttributeNameCode.DELEGATE_RELATIONSHIP_TYPE_DECLARATION);
+                this.declarationText = relationshipAttributeName ? relationshipAttributeName.defaultValue[0] : '';
             });
         }, (err) => {
             if (err.status === 404) {
