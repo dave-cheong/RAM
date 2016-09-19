@@ -58,6 +58,8 @@ export class RelationshipCanModifyPermissionEnforcer extends PermissionEnforcer<
                 if (authenticatedParty.id === delegateParty.id) {
                     if (Math.floor(myStrongestStrength) <= relationship.strength) {
                         permission.messages.push(Translator.get('relationship.modify.sameDelegate'));
+                    } else if (relationshipStatus === RelationshipStatus.Pending) {
+                        permission.messages.push(Translator.get('relationship.modify.sameDelegatePending'));
                     }
                 }
             }

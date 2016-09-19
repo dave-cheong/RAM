@@ -22,7 +22,10 @@ import {
     FilterParams
 } from '../../../../commons/api';
 import {IdentityCanCreateRelationshipPermission} from '../../../../commons/permissions/identityPermission.templates';
-import {RelationshipCanModifyPermission, RelationshipCanAcceptPermission} from '../../../../commons/permissions/relationshipPermission.templates';
+import {
+    RelationshipCanModifyPermission, RelationshipCanAcceptPermission,
+    RelationshipCanTerminatePermission
+} from '../../../../commons/permissions/relationshipPermission.templates';
 
 @Component({
     selector: 'list-relationships',
@@ -243,6 +246,10 @@ export class RelationshipsComponent extends AbstractPageComponent {
 
     public isEditRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
         return relationshipRef.value.isPermissionAllowed([RelationshipCanModifyPermission]);
+    }
+
+    public isTerminateRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
+        return relationshipRef.value.isPermissionAllowed([RelationshipCanTerminatePermission]);
     }
 
     public isAcceptRejectRelationshipEnabled(relationshipRef: IHrefValue<IRelationship>) {
