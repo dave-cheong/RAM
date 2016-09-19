@@ -1,5 +1,5 @@
-import {Observable} from 'rxjs/Observable';
 import {Component} from '@angular/core';
+import {Response} from '@angular/http';
 import {ROUTER_DIRECTIVES, ActivatedRoute, Router, Params} from '@angular/router';
 import {FormBuilder} from '@angular/forms';
 import {DatePipe} from '@angular/common';
@@ -29,9 +29,6 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     public identityHref: string;
     public relationshipHref: string;
 
-    public relationship$: Observable<IRelationship>;
-    public relationshipType$: Observable<IRelationshipType>;
-
     public identity: IIdentity;
     public relationship: IRelationship;
     public delegateManageAuthorisationAllowedIndAttribute: IRelationshipAttribute;
@@ -58,30 +55,38 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
         });
 
         // relationship
-        this.relationship$ = this.services.rest.findRelationshipByHref(this.relationshipHref);
-        this.relationship$.subscribe((relationship) => {
-            this.relationship = relationship;
-            this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
-
-            let permission = this.relationship.getPermission(RelationshipCanAcceptPermission);
-            this.canAccept = permission.isAllowed();
-            if (!permission.isAllowed()) {
-                this.addGlobalMessages(permission.messages);
-            }
-
-            this.relationshipType$ = this.services.rest.findRelationshipTypeByHref(relationship.relationshipType.href);
-            this.relationshipType$.subscribe((relationshipType) => {
-                const relationshipAttributeName: IRelationshipAttributeNameUsage = relationshipType.relationshipAttributeNames.find((attributeUsage) => attributeUsage.attributeNameDef.value.code === Constants.RelationshipAttributeNameCode.DELEGATE_RELATIONSHIP_TYPE_DECLARATION);
-                this.declarationText = relationshipAttributeName ? relationshipAttributeName.defaultValue[0] : '';
-            });
-        }, (err) => {
-            if (err.status === 404) {
-                this.goToEnterAuthorisationPage();
-            } else {
-                this.addGlobalErrorMessages(err);
-            }
+        this.services.rest.findRelationshipByHref(this.relationshipHref).subscribe({
+            next: this.onFindRelationship.bind(this),
+            error: this.onFindRelationshipError.bind(this)
         });
+    }
 
+    private onFindRelationship(relationship: IRelationship) {
+        this.relationship = relationship;
+        this.delegateManageAuthorisationAllowedIndAttribute = relationship.getAttribute(Constants.RelationshipAttributeNameCode.DELEGATE_MANAGE_AUTHORISATION_ALLOWED_IND);
+
+        let permission = this.relationship.getPermission(RelationshipCanAcceptPermission);
+        this.canAccept = permission.isAllowed();
+        if (!permission.isAllowed()) {
+            this.addGlobalMessages(permission.messages);
+        }
+
+        this.services.rest.findRelationshipTypeByHref(relationship.relationshipType.href).subscribe({
+            next: this.onFindRelationshipType.bind(this)
+        });
+    }
+
+    private onFindRelationshipType(relationshipType: IRelationshipType) {
+        const relationshipAttributeName: IRelationshipAttributeNameUsage = relationshipType.relationshipAttributeNames.find((attributeUsage) => attributeUsage.attributeNameDef.value.code === Constants.RelationshipAttributeNameCode.DELEGATE_RELATIONSHIP_TYPE_DECLARATION);
+        this.declarationText = relationshipAttributeName ? relationshipAttributeName.defaultValue[0] : '';
+    }
+
+    protected onFindRelationshipError(err: Response) {
+        if (err.status === 404) {
+            this.goToEnterAuthorisationPage();
+        } else {
+            this.onServerError(err);
+        }
     }
 
     public onFindIdentity(identity: IIdentity) {
@@ -121,35 +126,33 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
 
     private onDecline() {
         this.declineDisplay = false;
-        this.services.route.goToRelationshipsPage(
-            this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity),
-            null,
-            1,
-            Constants.GlobalMessage.DECLINED_RELATIONSHIP
-        );
+        this.goToRelationshipPageWithMessage(Constants.GlobalMessage.DECLINED_RELATIONSHIP);
     }
 
     private onAccept() {
-        this.services.route.goToRelationshipsPage(
-            this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity),
-            null,
-            1,
-            Constants.GlobalMessage.ACCEPTED_RELATIONSHIP
-        );
+        this.goToRelationshipPageWithMessage(Constants.GlobalMessage.ACCEPTED_RELATIONSHIP);
     }
 
     public goToEnterAuthorisationPage() {
-        this.services.route.goToRelationshipEnterCodePage(this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity), Constants.GlobalMessage.INVALID_CODE);
+        this.services.route.goToRelationshipEnterCodePage(this.getSelfIdentityHref(), Constants.GlobalMessage.INVALID_CODE);
     };
 
     public goToRelationshipsPage() {
+        this.goToRelationshipPageWithMessage(Constants.GlobalMessage.CANCEL_ACCEPT_RELATIONSHIP);
+    };
+
+    private goToRelationshipPageWithMessage(msg: string) {
         this.services.route.goToRelationshipsPage(
-            this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity),
+            this.getSelfIdentityHref(),
             null,
             1,
-            Constants.GlobalMessage.CANCEL_ACCEPT_RELATIONSHIP
+            msg
         );
-    };
+    }
+
+    private getSelfIdentityHref() {
+        return this.services.model.getLinkHrefByType(Constants.Link.SELF, this.identity);
+    }
 
     // TODO: not sure how to set the locale, Implement as a pipe
     public displayDate(dateString: string) {

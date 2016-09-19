@@ -13,10 +13,10 @@ export class AuthorisationPermissionsComponent {
     @Input('data') public data: AuthorisationPermissionsComponentData;
 
     public toggle(permissionAttribute: IRelationshipAttribute, permittedValue: string) {
-        if (permissionAttribute.value.length === 0 || permissionAttribute.value[0] !== permittedValue) {
+        if (!permissionAttribute.value || permissionAttribute.value[0] !== permittedValue) {
             permissionAttribute.value = [permittedValue];
         } else {
-            permissionAttribute.value = [];
+            permissionAttribute.value = null;
         }
     }
 
