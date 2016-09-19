@@ -691,7 +691,7 @@ export class Seeder {
             } as any);
 
             Seeder.delegateRelationshipTypeDeclaration_relAttributeName = await Seeder.createRelationshipAttributeNameModel({
-                code: 'DELEGATE_RELATIONSHIP_TYPE_DECLARATION',
+                code: Constants.RelationshipAttributeNameCode.DELEGATE_RELATIONSHIP_TYPE_DECLARATION,
                 shortDecodeText: 'Delegate Relationship Type Declaration',
                 longDecodeText: 'Delegate Relationship Type Declaration',
                 startDate: now,
