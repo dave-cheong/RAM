@@ -1025,6 +1025,7 @@ definitions:
 
   Identity:
     allOf:
+      - $ref: '#/definitions/IResource'
       - $ref: '#/definitions/IRAMObject'
       - $ref: '#/definitions/IdentityBusinessIdentifier'
       - $ref: '#/definitions/IdentityDetails'
@@ -1558,14 +1559,51 @@ definitions:
 
   ILink:
     type: object
-    required: ['type','href']
+    required: ['type','method','href']
     properties:
       type:
         type: string
         description: Name of link type
+      method:
+        type: string
+        description: HTTP method
       href:
         type: string
         description: URL reference to uniquely identified resource
+
+  IPermission:
+    type: object
+    required: ['code','value']
+    properties:
+      code:
+        type: string
+        description: Unique code for permission
+      description:
+        type: string
+        description: Descriptor for permission
+      value:
+        type: boolean
+        description: Indicator for permission allowed
+      messages:
+        type: array
+        description: Any messages to describe why the permission is not allowed
+        items:
+          type: string
+      linkType:
+        type: string
+        description: Reference to type field of associated ILink
+
+  IResource:
+    type: object
+    properties:
+      _links:
+        type: array
+        items:
+          $ref: '#/definitions/ILink'
+      _perms:
+        type: array
+        items:
+          $ref: '#/definitions/IPermission'
 
   Resource:
     type: object
