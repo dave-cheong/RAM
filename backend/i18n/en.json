@@ -44,7 +44,9 @@
   "relationship.modify.sameDelegate": "Unable to modify your own delegate relationship",
   "relationship.modify.notAuthAdmin": "Unable to modify relationship without auth admin privileges",
 
-  "relationship.canEditDelegate.invalidStatus": "Unable to modify delegate for a non-pending",
+  "relationship.terminate.notAccepted" : "Unable to terminate a non-accepted relationship",
+
+  "relationship.editDelegate.invalidStatus": "Unable to modify delegate for a non-pending",
 
   "relationship.canViewDob.invalidStatus": "Unable to view DOB for a non-pending",
 
