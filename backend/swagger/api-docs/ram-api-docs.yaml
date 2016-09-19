@@ -788,29 +788,6 @@ paths:
           $ref: '#/responses/500'
 
   /role:
-    post:
-      tags:
-        - Role
-      operationId: Role.createByIdentity
-      summary: Create a role with an agency service
-      description: Create a role with an agency service as an agency user
-      parameters:
-        - in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Role'
-      responses:
-        200:
-          schema:
-            $ref: '#/definitions/Role'
-        400:
-          $ref: '#/responses/400'
-        404:
-          $ref: '#/responses/404'
-        500:
-          $ref: '#/responses/500'
-
-  /role:
     put:
       tags:
         - Role
@@ -830,6 +807,24 @@ paths:
           $ref: '#/responses/400'
         404:
           $ref: '#/responses/404'
+        500:
+          $ref: '#/responses/500'
+
+  # Role Status ........................................................................................................
+
+  /roleStatuses:
+    get:
+      tags:
+        - Reference - Role Status
+      operationId: Role.listStatuses
+      summary: Get the role statuses
+      description: Get the role statuses
+      responses:
+        200:
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RoleStatusResourceReference'
         500:
           $ref: '#/responses/500'
 
@@ -1298,7 +1293,7 @@ definitions:
         items:
           $ref: '#/definitions/RelationshipResourceReference'
 
-  # Relationship Attribute ............................................................................................
+  # Relationship Status ............................................................................................
 
   RelationshipStatus:
     type: object
@@ -1501,6 +1496,28 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/RoleResourceReference'
+
+  RoleStatus:
+    type: object
+    description: Role status
+    properties:
+      code:
+        type: string
+        description: The code or name
+      shortDecodeText:
+        type: string
+        description: The human friendly label
+
+  RoleStatusResourceReference:
+    type: object
+    description: A reference to a Resource
+    required: ["href"]
+    properties:
+      href:
+        type: string
+        description: URI that uniquely identifies this RoleStatus
+      value:
+        $ref: '#/definitions/RoleStatus'
 
   RoleResourceReference:
     type: object
