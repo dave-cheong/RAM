@@ -15,6 +15,9 @@
   "pleaseChoose" : "Please Choose ...",
   "date.placeholder" : "dd/mm/yyyy ...",
 
+  "partyType.ABN" : "business",
+  "partyType.INDIVIDUAL" : "individual",
+
   "addRelationship.repDetails.heading" : "Enter representative details",
   "addRelationship.individual" : "Individual",
   "addRelationship.organisation" : "Organisation",
