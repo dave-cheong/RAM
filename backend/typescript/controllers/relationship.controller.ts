@@ -303,14 +303,6 @@ export class RelationshipController {
                     errorMessage: 'Start timestamp is not a valid date'
                 },
                 errorMessage: 'Start timestamp is not valid'
-            },
-            'status': {
-                in: 'body',
-                notEmpty: true,
-                isIn: {
-                    options: [RelationshipStatus.valueStrings()]
-                },
-                errorMessage: 'Status is not valid'
             }
         };
         validateReqSchema(req, schema)
