@@ -1093,8 +1093,7 @@ definitions:
       profile:
         $ref: '#/definitions/Profile'
       party:
-        # todo resource reference or direct party?
-        $ref: '#/definitions/Party'
+        $ref: '#/definitions/Resource'
 
   IdentityResourceReference:
     type: object
