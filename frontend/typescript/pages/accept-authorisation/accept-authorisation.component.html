@@ -105,6 +105,42 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
+        <h4>Access levels</h4>
+    </div>
+    <div class="panel-body">
+        <div class="col-md-12">
+            <h4>Access levels to online government services</h4>
+        </div>
+        <div class="col-md-12">
+            <blockquote>
+                <h4>Access level descriptions:</h4>
+                <p>
+                    {{accessLevelsDescription}}
+                </p>
+            </blockquote>
+        </div>
+        <div class="col-md-12">
+            <table class="table checkbox-table">
+                <tbody>
+                <tr *ngFor="let att of grantedPermissionAttributes" class="active">
+                    <td class="col-md-10 vmiddle">
+                        {{att.attributeName.value.shortDecodeText}}
+                        (<a href="">view list of services</a>)
+                    </td>
+                    <td class="col-md-2 vmiddle">
+                        <button class="pull-right btn btn-block btn-inverse" disabled="disabled">
+                            {{att.value[0]}}
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
         <h4>Authorisation period</h4>
     </div>
     <div class="panel-body">

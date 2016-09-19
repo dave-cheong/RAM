@@ -36,6 +36,8 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
     public declineDisplay: boolean = false;
     public canAccept: boolean;
     public declarationText: string;
+    public grantedPermissionAttributes: IRelationshipAttribute[];
+    public accessLevelsDescription: string = '';
 
     constructor(route: ActivatedRoute, router: Router, fb: FormBuilder, services: RAMServices) {
         super(route, router, fb, services);
@@ -74,11 +76,21 @@ export class AcceptAuthorisationComponent extends AbstractPageComponent {
         this.services.rest.findRelationshipTypeByHref(relationship.relationshipType.href).subscribe({
             next: this.onFindRelationshipType.bind(this)
         });
+
+        this.grantedPermissionAttributes = [];
+        for (let att of this.relationship.attributes) {
+            if (att.attributeName.value.classifier === Constants.RelationshipAttributeNameClassifier.PERMISSION) {
+                if (att.value) {
+                    this.grantedPermissionAttributes.push(att);
+                }
+            }
+        }
     }
 
     private onFindRelationshipType(relationshipType: IRelationshipType) {
         const relationshipAttributeName: IRelationshipAttributeNameUsage = relationshipType.relationshipAttributeNames.find((attributeUsage) => attributeUsage.attributeNameDef.value.code === Constants.RelationshipAttributeNameCode.DELEGATE_RELATIONSHIP_TYPE_DECLARATION);
         this.declarationText = relationshipAttributeName ? relationshipAttributeName.defaultValue[0] : '';
+        this.accessLevelsDescription = relationshipType.getAttributeNameUsage(Constants.RelationshipAttributeNameCode.ACCESS_LEVELS_DESCRIPTION).attributeNameDef.value.longDecodeText;
     }
 
     protected onFindRelationshipError(err: Response) {
