@@ -847,6 +847,8 @@ definitions:
   # Principal .........................................................................................................
 
   Principal:
+    allOf:
+      - $ref: '#/definitions/IResource'
     type: object
     description: |
       A principal is representation of the logged in user, which could refer to an Identity or an Agency User.
