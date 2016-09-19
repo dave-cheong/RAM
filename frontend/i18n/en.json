@@ -45,6 +45,7 @@
   "addRelationship.accessPeriod.noEndDate" : "No end date",
   "addRelationship.authMgmt.header" : "Set authorisation management",
   "addRelationship.declaration.header" : "Accept declaration",
+  "addRelationship.declaration.instructions" : "By authorising the nominated representative to act on behalf of the selected {{partyTypeLabel}}, it is acknowledged that they will be able to perform all of the selected transactions on their behalf.",
   "addRelationship.declaration.agree" : "I agree to this declaration",
   "addRelationship.authorise" : "Authorise",
   "addRelationship.complete.printOption1" : "must accept this authorisation before it is active. Instructions are included in a document for you to",
