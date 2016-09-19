@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "RAM",
-		"_postman_id": "9e18df39-8346-bfd5-5183-7183153f85df",
+		"_postman_id": "60948bdd-b456-fee5-c88e-2b4ff3829b72",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -1140,6 +1140,19 @@
 					"request": {
 						"url": "{{host}}/api/v1/relationship/invitationCode/{{invitationCode}}/accept",
 						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Print By Invitation Code",
+					"request": {
+						"url": "{{host}}/api/v1/relationship/invitationCode/{{invitationCode}}/print",
+						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "formdata",
