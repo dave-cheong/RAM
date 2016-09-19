@@ -37,10 +37,17 @@ export class RelationshipCanTerminatePermissionEnforcer extends PermissionEnforc
             permission.messages.push(Translator.get('relationship.terminate.managedExternally'));
         }
 
-        // validate has access
+        // validate has access to subject
         let subjectDefaultIdentity = await IdentityModel.findDefaultByPartyId(relationship.subject.id);
-        let hasAccess = PartyModel.hasAccess(subjectDefaultIdentity.idValue, context.getAuthenticatedPrincipal());
-        if (!hasAccess) {
+        let hasAccessToSubject = PartyModel.hasAccess(subjectDefaultIdentity.idValue, context.getAuthenticatedPrincipal());
+        if (!hasAccessToSubject) {
+            permission.messages.push(Translator.get('security.noAccess'));
+        }
+
+        // validate has access to delegate
+        let delegateDefaultIdentity = await IdentityModel.findDefaultByPartyId(relationship.delegate.id);
+        let hasAccessToDelegate = PartyModel.hasAccess(delegateDefaultIdentity.idValue, context.getAuthenticatedPrincipal());
+        if (!hasAccessToDelegate) {
             permission.messages.push(Translator.get('security.noAccess'));
         }
 
