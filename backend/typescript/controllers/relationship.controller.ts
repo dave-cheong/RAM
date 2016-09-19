@@ -307,7 +307,9 @@ export class RelationshipController {
             'status': {
                 in: 'body',
                 notEmpty: true,
-                isIn: RelationshipStatus.valueStrings(),
+                isIn: {
+                    options: [RelationshipStatus.valueStrings()]
+                },
                 errorMessage: 'Status is not valid'
             }
         };
