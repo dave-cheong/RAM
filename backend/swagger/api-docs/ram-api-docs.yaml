@@ -716,6 +716,30 @@ paths:
 
   # Role ..............................................................................................................
 
+  /roles/identity/{identity_id}:
+    get:
+      tags:
+        - Role
+      operationId: Role.searchByIdentity
+      summary: List roles by identity
+      description: List roles by identity
+      parameters:
+        - name: identity_id
+          in: path
+          type: string
+          required: true
+          description: Identity id for which to list roles
+      responses:
+        200:
+          schema:
+            $ref: '#/definitions/RoleListResponse'
+        400:
+          $ref: '#/responses/400'
+        404:
+          $ref: '#/responses/404'
+        500:
+          $ref: '#/responses/500'
+
   /role:
     post:
       tags:
@@ -1396,6 +1420,28 @@ definitions:
         description: Role attributes that may be used with this resource
         items:
           $ref: '#/definitions/RoleAttribute'
+
+  RoleListResponse:
+    allOf:
+    - $ref: '#/definitions/SearchResultResponse'
+    type: object
+    required: ["list"]
+    properties:
+      list:
+        type: array
+        items:
+          $ref: '#/definitions/RoleResourceReference'
+
+  RoleResourceReference:
+    type: object
+    description: A reference to a Resource
+    required: ["href"]
+    properties:
+      href:
+        type: string
+        description: URI that uniquely identifies this Relationship
+      value:
+        $ref: '#/definitions/Role'
 
   RoleAttribute:
     type: object
