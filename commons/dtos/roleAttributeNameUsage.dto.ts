@@ -4,7 +4,7 @@ import {IRoleAttributeName, RoleAttributeName} from './roleAttributeName.dto';
 
 export interface IRoleAttributeNameUsage {
     optionalInd: boolean;
-    defaultValue: string;
+    defaultValue: [string];
     attributeNameDef: IHrefValue<IRoleAttributeName>;
 }
 
@@ -16,7 +16,7 @@ export class RoleAttributeNameUsage implements IRoleAttributeNameUsage {
     }
 
     constructor(public optionalInd: boolean,
-                public defaultValue: string,
+                public defaultValue: [string],
                 public attributeNameDef: IHrefValue<IRoleAttributeName>) {
     }
 }

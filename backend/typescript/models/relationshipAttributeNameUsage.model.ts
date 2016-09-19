@@ -25,7 +25,7 @@ const RelationshipAttributeNameUsageSchema = RAMSchema({
         required: [true, 'Optional Indicator is required']
     },
     defaultValue: {
-        type: String,
+        type: [String],
         required: false,
         trim: true
     },

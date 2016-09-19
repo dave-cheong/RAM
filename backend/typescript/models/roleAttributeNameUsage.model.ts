@@ -25,7 +25,7 @@ const RoleAttributeNameUsageSchema = RAMSchema({
         required: [true, 'Optional Indicator is required']
     },
     defaultValue: {
-        type: String,
+        type: [String],
         required: false,
         trim: true
     },
@@ -39,14 +39,14 @@ const RoleAttributeNameUsageSchema = RAMSchema({
 
 export interface IRoleAttributeNameUsage extends IRAMObject {
     optionalInd: boolean;
-    defaultValue?: string;
+    defaultValue: [string];
     attributeName: IRoleAttributeName;
 }
 
 class RoleAttributeNameUsage extends RAMObject implements IRoleAttributeNameUsage {
 
     public optionalInd: boolean;
-    public defaultValue: string;
+    public defaultValue: [string];
     public attributeName: IRoleAttributeName;
 
     public getPermissions(): Promise<Permissions> {

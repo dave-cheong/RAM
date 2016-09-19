@@ -19,10 +19,6 @@ export class CakeryBakeryRelationshipsSeeder {
 
             } else {
 
-                console.log(Seeder.delegateManageAuthorisationAllowedInd_relAttributeName);
-                console.log(Seeder.delegateRelationshipDeclaration_relAttributeName);
-                console.log(Seeder.subjectRelationshipDeclaration_relAttributeName);
-
                 Seeder.cakerybakery_and_jennifermaxims_relationship = await Seeder.createRelationshipModel({
                     relationshipType: Seeder.custom_delegate_relationshipType,
                     subject: Seeder.cakerybakery_party,

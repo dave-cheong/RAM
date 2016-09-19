@@ -374,12 +374,12 @@ export class Seeder {
         }
     }
 
-    public static async createRelationshipAttributeNameUsageModels <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string, sortOrder:number}>(attributeValues:T[]) {
+    public static async createRelationshipAttributeNameUsageModels <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:[string], sortOrder:number}>(attributeValues:T[]) {
         const attributeNameUsages:IRelationshipAttributeNameUsage[] = [];
         if (attributeValues) {
             for (let i = 0; i < attributeValues.length; i = i + 1) {
                 const attributeValue = attributeValues[i];
-                const truncatedDefaultValue = truncateString(attributeValue.defaultValue);
+                const truncatedDefaultValue = attributeValue.defaultValue ? truncateString(attributeValue.defaultValue.join(',')) : null;
                 Seeder.log(`  - ${attributeValue.sortOrder} ${attributeValue.attribute.code} (${truncatedDefaultValue})`.green);
                 const attributeNameUsage = await RelationshipAttributeNameUsageModel.create({
                     attributeName: attributeValue.attribute,
@@ -393,7 +393,7 @@ export class Seeder {
         return attributeNameUsages;
     }
 
-    public static async createRelationshipTypeModel <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:string, sortOrder:number}>
+    public static async createRelationshipTypeModel <T extends { attribute:IRelationshipAttributeName, optionalInd:boolean, defaultValue:[string], sortOrder:number}>
     (values:IRelationshipType, attributeValues:T[]) {
         const code = values.code;
         const existingModel = await RelationshipTypeModel.findByCodeIgnoringDateRange(code);
@@ -427,12 +427,12 @@ export class Seeder {
         }
     }
 
-    public static async createRoleAttributeNameUsageModels <T extends { attribute:IRoleAttributeName, optionalInd:boolean, defaultValue:string}>(attributeValues:T[]) {
+    public static async createRoleAttributeNameUsageModels <T extends { attribute:IRoleAttributeName, optionalInd:boolean, defaultValue:[string]}>(attributeValues:T[]) {
         const attributeNameUsages:IRoleAttributeNameUsage[] = [];
         if (attributeValues) {
             for (let i = 0; i < attributeValues.length; i = i + 1) {
                 const attributeValue = attributeValues[i];
-                const truncatedDefaultValue = truncateString(attributeValue.defaultValue);
+                const truncatedDefaultValue = attributeValue.defaultValue ? truncateString(attributeValue.defaultValue.join(',')) : null;
                 Seeder.log(`  - ${attributeValue.attribute.code} (${truncatedDefaultValue})`.green);
                 const attributeNameUsage = await RoleAttributeNameUsageModel.create({
                     attributeName: attributeValue.attribute,
@@ -445,7 +445,7 @@ export class Seeder {
         return attributeNameUsages;
     }
 
-    public static async createRoleTypeModel <T extends { attribute: IRoleAttributeName, optionalInd: boolean, defaultValue: string}>(values: IRoleType, attributeValues: T[]) {
+    public static async createRoleTypeModel <T extends { attribute: IRoleAttributeName, optionalInd: boolean, defaultValue: [string]}>(values: IRoleType, attributeValues: T[]) {
         const code = values.code;
         const existingModel = await RoleTypeModel.findByCodeIgnoringDateRange(code);
         if (existingModel === null) {
@@ -972,18 +972,18 @@ export class Seeder {
             } as any, [
                 {attribute: Seeder.managedExternallyInd_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.delegateEditOwnInd_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
-                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
+                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: ['false'], sortOrder: 1},
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: ['true'], sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
-                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getDelegateDeclaration(), sortOrder: 3},
+                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: [getDelegateDeclaration()], sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
-                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getSubjectDeclaration(), sortOrder: 4},
-                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 5},
-                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 6},
-                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 7},
-                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 8},
-                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 9}
+                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: [getSubjectDeclaration()], sortOrder: 4},
+                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: [Seeder.full_accessLevel], sortOrder: 5},
+                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: [Seeder.full_accessLevel], sortOrder: 6},
+                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: [Seeder.full_accessLevel], sortOrder: 7},
+                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: [Seeder.full_accessLevel], sortOrder: 8},
+                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: [Seeder.full_accessLevel], sortOrder: 9}
             ]);
 
             Seeder.universal_delegate_relationshipType = await Seeder.createRelationshipTypeModel({
@@ -996,18 +996,18 @@ export class Seeder {
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
                 {attribute: Seeder.delegateEditOwnInd_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
-                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 1},
+                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: ['false'], sortOrder: 1},
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 2},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: ['true'], sortOrder: 2},
                 {attribute: Seeder.delegateRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
-                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getDelegateDeclaration(), sortOrder: 3},
+                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: [getDelegateDeclaration()], sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
-                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getSubjectDeclaration(), sortOrder: 4},
-                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 5},
-                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 6},
-                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 7},
-                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 8},
-                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: Seeder.full_accessLevel, sortOrder: 9}
+                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: [getSubjectDeclaration()], sortOrder: 4},
+                {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: [Seeder.full_accessLevel], sortOrder: 5},
+                {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: [Seeder.full_accessLevel], sortOrder: 6},
+                {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: [Seeder.full_accessLevel], sortOrder: 7},
+                {attribute: Seeder.intermediariesAndQualifiedServices_relAttributeName, optionalInd: false, defaultValue: [Seeder.full_accessLevel], sortOrder: 8},
+                {attribute: Seeder.licenseAndRegistrationServices_relAttributeName, optionalInd: false, defaultValue: [Seeder.full_accessLevel], sortOrder: 9}
             ]);
 
             Seeder.custom_delegate_relationshipType = await Seeder.createRelationshipTypeModel({
@@ -1020,14 +1020,14 @@ export class Seeder {
                 minIdentityStrength: 1,
                 category: RelationshipTypeCategory.Authorisation.code
             } as any, [
-                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'true', sortOrder: 1},
+                {attribute: Seeder.permissionCustomisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: ['true'], sortOrder: 1},
                 {attribute: Seeder.accessLevelsDescription_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
-                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: 2},
-                {attribute: Seeder.delegateManageAuthorisationUserConfigurableInd_relAttributeName, optionalInd: false, defaultValue: 'false', sortOrder: -1},
+                {attribute: Seeder.delegateManageAuthorisationAllowedInd_relAttributeName, optionalInd: false, defaultValue: ['false'], sortOrder: 2},
+                {attribute: Seeder.delegateManageAuthorisationUserConfigurableInd_relAttributeName, optionalInd: false, defaultValue: ['false'], sortOrder: -1},
                 {attribute: Seeder.delegateRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
-                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getDelegateDeclaration(), sortOrder: 3},
+                {attribute: Seeder.delegateRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: [getDelegateDeclaration()], sortOrder: 3},
                 {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 4},
-                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getSubjectDeclaration(), sortOrder: 4},
+                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: [getSubjectDeclaration()], sortOrder: 4},
                 {attribute: Seeder.taxSuperServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 5},
                 {attribute: Seeder.administrativeServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 6},
                 {attribute: Seeder.stateRevenueServices_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 7},
@@ -1047,7 +1047,7 @@ export class Seeder {
                 {attribute: Seeder.selectedGovernmentServicesList_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 1},
                 {attribute: Seeder.ssid_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 2},
                 {attribute: Seeder.subjectRelationshipDeclaration_relAttributeName, optionalInd: false, defaultValue: null, sortOrder: 3},
-                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: getSubjectDeclaration(), sortOrder: 3}
+                {attribute: Seeder.subjectRelationshipTypeDeclaration_relAttributeName, optionalInd: false, defaultValue: [getSubjectDeclaration()], sortOrder: 3}
             ]);
 
         } catch (e) {
