@@ -8,6 +8,7 @@ import {context} from '../providers/context.provider';
 import {Translator} from '../ram/translator';
 import {IdentityModel} from '../models/identity.model';
 import {PartyModel} from '../models/party.model';
+import {Constants} from '../../../commons/constants';
 
 export class RelationshipCanTerminatePermissionEnforcer extends PermissionEnforcer<IRelationship> {
 
@@ -30,10 +31,23 @@ export class RelationshipCanTerminatePermissionEnforcer extends PermissionEnforc
             permission.messages.push(Translator.get('relationship.terminate.notAccepted'));
         }
 
-        // validate has access
+        // validate managed externally
+        let managedExternallyAttribute = await relationship.getAttribute(Constants.RelationshipAttributeNameCode.MANAGED_EXTERNALLY_IND);
+        if (managedExternallyAttribute) {
+            permission.messages.push(Translator.get('relationship.terminate.managedExternally'));
+        }
+
+        // validate has access to subject
         let subjectDefaultIdentity = await IdentityModel.findDefaultByPartyId(relationship.subject.id);
-        let hasAccess = PartyModel.hasAccess(subjectDefaultIdentity.idValue, context.getAuthenticatedPrincipal());
-        if (!hasAccess) {
+        let hasAccessToSubject = PartyModel.hasAccess(subjectDefaultIdentity.idValue, context.getAuthenticatedPrincipal());
+        if (!hasAccessToSubject) {
+            permission.messages.push(Translator.get('security.noAccess'));
+        }
+
+        // validate has access to delegate
+        let delegateDefaultIdentity = await IdentityModel.findDefaultByPartyId(relationship.delegate.id);
+        let hasAccessToDelegate = PartyModel.hasAccess(delegateDefaultIdentity.idValue, context.getAuthenticatedPrincipal());
+        if (!hasAccessToDelegate) {
             permission.messages.push(Translator.get('security.noAccess'));
         }
 

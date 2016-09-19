@@ -8,10 +8,13 @@
   "edit" : "Edit",
   "accept" : "Accept",
   "decline" : "Decline",
+  "terminate" : "Decline",
   "manage" : "Manage",
   "back" : "Back",
   "save" : "Save",
   "submit" : "Submit",
+  "confirm" : "Confirm",
+  "cancel" : "Cancel",
   "pleaseChoose" : "Please Choose ...",
   "date.placeholder" : "dd/mm/yyyy ...",
 

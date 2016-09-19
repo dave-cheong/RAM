@@ -42,9 +42,11 @@
   "relationship.modify.invalidStatus": "Unable to modify a non-pending or non-accepted relationship",
   "relationship.modify.insufficientStrength": "Unable to modify a stronger relationship",
   "relationship.modify.sameDelegate": "Unable to modify your own delegate relationship",
+  "relationship.modify.sameDelegatePending": "Unable to modify your own pending delegate relationship",
   "relationship.modify.notAuthAdmin": "Unable to modify relationship without auth admin privileges",
 
   "relationship.terminate.notAccepted" : "Unable to terminate a non-accepted relationship",
+  "relationship.terminate.managedExternally" : "Unable to terminate a relationship that is managed externally",
 
   "relationship.editDelegate.invalidStatus": "Unable to modify delegate for a non-pending",
 
