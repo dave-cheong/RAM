@@ -555,9 +555,26 @@ export class EditRelationshipComponent extends AbstractPageComponent {
         this.terminateDisplay = false;
     };
 
-    // todo implement terminate
     public confirmTerminate() {
-        alert('TODO: Terminate');
+
+        // keep reference to current status
+        const currentStatus = this.relationship.status;
+
+        // set status to declined
+        this.relationship.status = Constants.RelationshipStatusCode.DECLINED;
+
+        // invoke api and undo status change if erred
+        let terminateHref = this.services.model.getLinkHrefByType(Constants.Link.TERMINATE, this.relationship);
+        if (terminateHref) {
+            this.services.rest.updateRelationshipByHref(terminateHref, this.relationship).subscribe({
+                next: this.onUpdate.bind(this),
+                error: (err) => {
+                    this.relationship.status = currentStatus;
+                    this.onServerError(err);
+                }
+            });
+        }
+
     };
 
     public isAuthorizedBtnEnabled(): boolean {
